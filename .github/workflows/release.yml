@@ -1,0 +1,110 @@
+name: Release Dispatcher
+
+on:
+  workflow_call:
+    inputs:
+      dry-run:
+        description: Run in dry-run mode (preview only)
+        type: boolean
+        default: false
+      app-bot-name:
+        description: GitHub App bot login name (e.g., 'my-app[bot]')
+        type: string
+        required: false
+      app-bot-id:
+        description: GitHub App bot ID for Claude Code Action
+        type: string
+        required: false
+      skip-claude-review:
+        description: Skip Claude Code review for this run
+        type: boolean
+        default: false
+      claude-review-allowed-bots:
+        description: Comma-separated list of bot names allowed to trigger review, or "*" for all
+        type: string
+        default: "*"
+    secrets:
+      APP_ID:
+        required: true
+      APP_PRIVATE_KEY:
+        required: true
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: false
+      CLAUDE_REVIEW_PAT:
+        required: false
+      CUSTOM_REGISTRIES:
+        description: |
+          Custom registry authentication (one per line).
+          Format: https://registry.example.com/_authToken=TOKEN
+        required: false
+      NPM_TOKEN:
+        description: |
+          NPM access token for publishing to npmjs.org.
+          Required for first-time publishes or when OIDC isn't configured.
+        required: false
+
+jobs:
+  control:
+    name: Detect Phase
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      phase: ${{ steps.control.outputs.phase }}
+      should_continue: ${{ steps.control.outputs.should_continue }}
+      has_changesets: ${{ steps.control.outputs.has_changesets }}
+      is_release_commit: ${{ steps.control.outputs.is_release_commit }}
+      merged_pr_number: ${{ steps.control.outputs.merged_pr_number }}
+      is_pr_event: ${{ steps.context.outputs.is_pr_event }}
+      is_pr_merged: ${{ steps.context.outputs.is_pr_merged }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Detect workflow phase
+        id: control
+        uses: savvy-web/workflow-control-action@main
+
+      - name: Set context flags
+        id: context
+        run: |
+          echo "is_pr_event=${{ github.event_name == 'pull_request' }}" >> $GITHUB_OUTPUT
+          echo "is_pr_merged=${{ github.event.pull_request.merged == true }}" >> $GITHUB_OUTPUT
+
+  branch-management:
+    name: Branch Management
+    needs: control
+    if: needs.control.outputs.phase == 'branch-management'
+    uses: soda3js/.github/.github/workflows/release-branch.yml@main
+    with:
+      dry-run: ${{ inputs.dry-run }}
+    secrets: inherit
+
+  validation:
+    name: Validation
+    needs: control
+    if: |
+      needs.control.outputs.is_pr_event == 'true' &&
+      needs.control.outputs.is_pr_merged != 'true'
+    uses: soda3js/.github/.github/workflows/release-validate.yml@main
+    with:
+      phase: ${{ needs.control.outputs.phase }}
+      dry-run: ${{ inputs.dry-run }}
+      app-bot-name: ${{ inputs.app-bot-name }}
+      app-bot-id: ${{ inputs.app-bot-id }}
+      skip-claude-review: ${{ inputs.skip-claude-review }}
+      claude-review-allowed-bots: ${{ inputs.claude-review-allowed-bots }}
+      sbom-config: ${{ vars.SILK_RELEASE_SBOM_TEMPLATE }}
+    secrets: inherit
+
+  publish:
+    name: Publish
+    needs: control
+    if: needs.control.outputs.phase == 'publishing' || needs.control.outputs.phase == 'close-issues'
+    uses: soda3js/.github/.github/workflows/release-publish.yml@main
+    with:
+      phase: ${{ needs.control.outputs.phase }}
+      dry-run: ${{ inputs.dry-run }}
+      sbom-config: ${{ vars.SILK_RELEASE_SBOM_TEMPLATE }}
+    secrets: inherit

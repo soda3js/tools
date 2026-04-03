@@ -1,0 +1,50 @@
+{
+	"name": "soda3js",
+	"version": "0.0.0",
+	"private": true,
+	"description": "CI/CD tooling for the soda3js GitHub Organization",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/soda3js/tools.git"
+	},
+	"type": "module",
+	"scripts": {
+		"ci:build": "CI=\"true\" echo \"No build step required\"",
+		"ci:test": "CI=\"true\" vitest run --coverage --pass-with-no-tests",
+		"ci:version": "savvy-changesets version && biome format --write .",
+		"commit:check": "savvy-commit check",
+		"commit:init": "savvy-commit init",
+		"lint": "biome check --max-diagnostics=none",
+		"lint:fix": "biome check --write --max-diagnostics=none",
+		"lint:fix:unsafe": "biome check --write --unsafe --max-diagnostics=none",
+		"lint:md": "markdownlint-cli2 --config './lib/configs/.markdownlint-cli2.jsonc'",
+		"lint:md:fix": "markdownlint-cli2  --config './lib/configs/.markdownlint-cli2.jsonc' --fix",
+		"prepare": "husky",
+		"test": "vitest run --pass-with-no-tests",
+		"test:coverage": "vitest run --pass-with-no-tests",
+		"test:watch": "vitest --watch --pass-with-no-tests",
+		"typecheck": "turbo run types:check //#types:check --log-prefix=none --log-order=grouped",
+		"types:check": "tsgo --noEmit"
+	},
+	"devDependencies": {
+		"@savvy-web/changesets": "^0.7.3",
+		"@savvy-web/commitlint": "^0.5.1",
+		"@savvy-web/lint-staged": "^0.7.2",
+		"@savvy-web/vitest": "^1.2.1"
+	},
+	"packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "10.33.0",
+			"onFail": "ignore"
+		},
+		"runtime": [
+			{
+				"name": "node",
+				"version": "24.11.0",
+				"onFail": "ignore"
+			}
+		]
+	}
+}

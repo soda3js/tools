@@ -1,0 +1,977 @@
+name: PR Validation
+
+on:
+  workflow_call:
+    inputs:
+      phase:
+        description: The detected workflow phase
+        type: string
+        required: true
+      dry-run:
+        description: Run in dry-run mode
+        type: boolean
+        default: false
+      app-bot-name:
+        description: GitHub App bot login name (e.g., 'my-app[bot]')
+        type: string
+        required: false
+      app-bot-id:
+        description: GitHub App bot ID for Claude Code Action
+        type: string
+        required: false
+      skip-claude-review:
+        description: Skip Claude Code review for this run
+        type: boolean
+        default: false
+      claude-review-allowed-bots:
+        description: Comma-separated list of bot names allowed to trigger review, or "*" for all
+        type: string
+        default: "*"
+      sbom-config:
+        description: SBOM metadata configuration (JSON) for NTIA-compliant SBOM generation
+        type: string
+        required: false
+        default: ""
+    secrets:
+      APP_ID:
+        required: true
+      APP_PRIVATE_KEY:
+        required: true
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: false
+      CLAUDE_REVIEW_PAT:
+        required: false
+      CUSTOM_REGISTRIES:
+        description: |
+          Custom registry authentication (one per line).
+          Format: https://registry.example.com/_authToken=TOKEN
+        required: false
+
+jobs:
+  pre-publish:
+    name: Pre-Publish Validation
+    runs-on: ubuntu-latest
+    if: inputs.phase == 'validation'
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup runtime
+        id: runtime
+        uses: savvy-web/workflow-runtime-action@main
+
+      - name: Pre-publish validation
+        uses: savvy-web/workflow-release-action@main
+        with:
+          phase: validation
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dry-run: ${{ inputs.dry-run }}
+          custom-registries: ${{ secrets.CUSTOM_REGISTRIES }}
+          sbom-config: ${{ inputs.sbom-config }}
+
+  validate:
+    name: Code Validation
+    runs-on: ubuntu-latest
+    env:
+      DO_NOT_TRACK: "1"
+      TURBO_TELEMETRY_DISABLE: "1"
+    permissions:
+      contents: read
+      checks: write
+
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: read
+          permission-checks: write
+
+      - name: Wait for token propagation
+        run: sleep 5
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
+
+      - name: Create validation checks
+        id: create-checks
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const checks = [
+              { name: 'PR Title Validation', env_key: 'PR_TITLE_CHECK_ID' },
+              { name: 'Conventional Commits', env_key: 'COMMITLINT_CHECK_ID' },
+              { name: 'Code Quality', env_key: 'LINT_CHECK_ID' },
+              { name: 'Markdown', env_key: 'MARKDOWNLINT_CHECK_ID' },
+              { name: 'Tests', env_key: 'TEST_CHECK_ID' }
+            ];
+            for (const check of checks) {
+              const { data } = await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head_sha: context.payload.pull_request.head.sha,
+                name: check.name,
+                status: 'in_progress'
+              });
+              core.exportVariable(check.env_key, data.id);
+            }
+
+      - name: Setup runtime
+        id: runtime
+        uses: savvy-web/workflow-runtime-action@main
+
+      - name: Detect package manager
+        id: pm
+        run: |
+          PM=$(jq -r '.devEngines.packageManager.name // "npm"' package.json)
+          echo "name=$PM" >> $GITHUB_OUTPUT
+          case "$PM" in
+            bun) echo "exec=bun x" >> $GITHUB_OUTPUT ;;
+            pnpm) echo "exec=pnpm exec" >> $GITHUB_OUTPUT ;;
+            yarn) echo "exec=yarn exec" >> $GITHUB_OUTPUT ;;
+            *) echo "exec=npx --no" >> $GITHUB_OUTPUT ;;
+          esac
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}
+
+      - name: Validate PR Title
+        id: pr-title
+        continue-on-error: true
+        env:
+          COMMITLINT_SKIP_DCO: "true"
+        run: |
+          set +e
+          ${{ steps.pm.outputs.exec }} commitlint --config lib/configs/commitlint.config.ts <<< "${{ github.event.pull_request.title }}"
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Update PR Title Check
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const ok = '${{ steps.pr-title.outputs.exit_code }}' === '0';
+            await github.rest.checks.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              check_run_id: process.env.PR_TITLE_CHECK_ID,
+              status: 'completed', conclusion: ok ? 'success' : 'failure',
+              output: { title: ok ? 'Valid' : 'Invalid', summary: ok ? 'PR title follows conventional format' : 'PR title must follow conventional format' }
+            });
+
+      - name: Validate Commits
+        id: commitlint
+        continue-on-error: true
+        run: |
+          set +e
+          ${{ steps.pm.outputs.exec }} commitlint --from=origin/${{ github.base_ref }} --to=HEAD --config lib/configs/commitlint.config.ts
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Update Commitlint Check
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const ok = '${{ steps.commitlint.outputs.exit_code }}' === '0';
+            await github.rest.checks.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              check_run_id: process.env.COMMITLINT_CHECK_ID,
+              status: 'completed', conclusion: ok ? 'success' : 'failure',
+              output: { title: ok ? 'Valid' : 'Invalid', summary: ok ? 'All commits follow conventional format' : 'Some commits do not follow format' }
+            });
+
+      - name: Run Biome Lint
+        id: lint
+        continue-on-error: true
+        run: |
+          set +e
+          biome ci . --reporter=github 2>&1 | tee /tmp/biome-output.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Update Lint Check
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const fs = require('fs');
+            const ok = '${{ steps.lint.outputs.exit_code }}' === '0';
+            let annotations = [];
+            let text = '';
+            try {
+              text = fs.readFileSync('/tmp/biome-output.txt', 'utf8').trim();
+              // Parse GitHub workflow commands - fields can be in any order
+              // Format: ::error file=path,line=N,endLine=N,col=N,endColumn=N,title=...::message
+              const lineRegex = /^::(error|warning)\s+(.+)::(.+)$/gm;
+              let match;
+              while ((match = lineRegex.exec(text)) !== null && annotations.length < 50) {
+                const level = match[1];
+                const params = match[2];
+                const message = match[3];
+                // Parse key=value pairs (handles any order)
+                const fields = {};
+                for (const pair of params.split(',')) {
+                  const idx = pair.indexOf('=');
+                  if (idx > 0) {
+                    fields[pair.slice(0, idx)] = pair.slice(idx + 1);
+                  }
+                }
+                if (fields.file && fields.line) {
+                  annotations.push({
+                    path: fields.file,
+                    start_line: parseInt(fields.line, 10),
+                    end_line: fields.endLine ? parseInt(fields.endLine, 10) : parseInt(fields.line, 10),
+                    start_column: fields.col ? parseInt(fields.col, 10) : undefined,
+                    end_column: fields.endColumn ? parseInt(fields.endColumn, 10) : undefined,
+                    annotation_level: level === 'error' ? 'failure' : 'warning',
+                    message: message,
+                    title: fields.title || 'Biome'
+                  });
+                }
+              }
+            } catch (e) {}
+            await github.rest.checks.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              check_run_id: process.env.LINT_CHECK_ID,
+              status: 'completed', conclusion: ok ? 'success' : 'failure',
+              output: {
+                title: ok ? 'Passed' : `Failed (${annotations.length} issues)`,
+                summary: ok ? 'All checks passed' : `Biome found ${annotations.length} issue(s)`,
+                annotations: annotations.length > 0 ? annotations : undefined
+              }
+            });
+
+      - name: Run Markdownlint
+        id: markdownlint
+        continue-on-error: true
+        run: |
+          set +e
+          ${{ steps.pm.outputs.exec }} markdownlint-cli2 --config './lib/configs/.markdownlint-cli2.jsonc' 2>&1 | tee /tmp/markdownlint-output.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Update Markdownlint Check
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const fs = require('fs');
+            const ok = '${{ steps.markdownlint.outputs.exit_code }}' === '0';
+            let annotations = [];
+            try {
+              const text = fs.readFileSync('/tmp/markdownlint-output.txt', 'utf8');
+              const regex = /^([^:]+):(\d+)(?::(\d+))?\s+(error|warning)\s+(\S+)\s+(.+)$/gm;
+              let match;
+              while ((match = regex.exec(text)) !== null && annotations.length < 50) {
+                annotations.push({
+                  path: match[1],
+                  start_line: parseInt(match[2], 10),
+                  end_line: parseInt(match[2], 10),
+                  start_column: match[3] ? parseInt(match[3], 10) : undefined,
+                  annotation_level: match[4] === 'error' ? 'failure' : 'warning',
+                  message: match[6],
+                  title: match[5]
+                });
+              }
+            } catch (e) {}
+            await github.rest.checks.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              check_run_id: process.env.MARKDOWNLINT_CHECK_ID,
+              status: 'completed', conclusion: ok ? 'success' : 'failure',
+              output: {
+                title: ok ? 'Passed' : `Failed (${annotations.length} issues)`,
+                summary: ok ? 'All markdown files valid' : `Found ${annotations.length} issue(s)`,
+                annotations: annotations.length > 0 ? annotations : undefined
+              }
+            });
+
+      - name: Run Tests
+        id: test
+        continue-on-error: true
+        run: |
+          set +e
+          ${{ steps.pm.outputs.name }} run ci:test
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Update Test Check
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const ok = '${{ steps.test.outputs.exit_code }}' === '0';
+            await github.rest.checks.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              check_run_id: process.env.TEST_CHECK_ID,
+              status: 'completed', conclusion: ok ? 'success' : 'failure',
+              output: { title: ok ? 'Passed' : 'Failed', summary: ok ? 'All tests passed' : 'Some tests failed' }
+            });
+
+  claude-review:
+    name: Claude Code Review
+    needs: [validate]
+    runs-on: ubuntu-latest
+    # Only run for human users, configured bot, or copilot (skip other bots like dependabot, renovate, etc.)
+    if: |
+      github.event.pull_request.user.login == inputs.app-bot-name ||
+      github.event.pull_request.user.login == 'copilot[bot]' ||
+      github.event.pull_request.user.type == 'User'
+    env:
+      CHECK_RUN_ID: ""
+      CLAUDE_COMMENT_ID: "0"
+    permissions:
+      contents: read
+      checks: write
+      id-token: write
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
+          permission-actions: read
+          permission-checks: write
+
+      - name: Check if Claude is configured
+        id: check-config
+        run: |
+          if [ -z "${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}" ]; then
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "Claude Code OAuth token not configured - review will be skipped"
+          else
+            echo "configured=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout repository
+        if: steps.check-config.outputs.configured == 'true' && inputs.skip-claude-review != true
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
+
+      - name: Check if PR only contains version/changelog changes
+        if: steps.check-config.outputs.configured == 'true' && inputs.skip-claude-review != true
+        id: check-changes
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          CHANGED_FILES_WITH_STATUS=$(git diff --name-status origin/${{ github.base_ref }}...HEAD)
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          echo "::group::Changed files"
+          echo "$CHANGED_FILES"
+          echo "::endgroup::"
+
+          SKIP_REVIEW=true
+
+          for file in $CHANGED_FILES; do
+            if [[ "$file" == "CHANGELOG.md" || "$file" == *"/CHANGELOG.md" ]]; then
+              continue
+            elif [[ "$file" == ".changeset/"*.md ]]; then
+              if echo "$CHANGED_FILES_WITH_STATUS" | grep -E "^D[[:space:]]+$(echo "$file" | sed 's/[[\.*^$()+?{|]/\\&/g')$" > /dev/null; then
+                continue
+              else
+                SKIP_REVIEW=false
+                break
+              fi
+            elif [[ "$file" == "package.json" || "$file" == *"/package.json" ]]; then
+              DIFF=$(git diff origin/${{ github.base_ref }}...HEAD -- "$file")
+              NON_VERSION_CHANGES=$(echo "$DIFF" | grep -E '^\+|^-' | grep -v '^+++\|^---' | grep -v '"version":' || true)
+              if [ -z "$NON_VERSION_CHANGES" ]; then
+                continue
+              else
+                SKIP_REVIEW=false
+                break
+              fi
+            else
+              SKIP_REVIEW=false
+              break
+            fi
+          done
+
+          echo "skip-review=$SKIP_REVIEW" >> $GITHUB_OUTPUT
+
+          if [ "$SKIP_REVIEW" = "true" ]; then
+            echo "Skipping Claude review - PR only contains version bumps, changelog updates, and/or deleted changeset files"
+          else
+            echo "Running Claude review - PR contains substantive changes"
+          fi
+
+      - name: Create Claude Review check
+        id: create-check
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const isConfigured = '${{ steps.check-config.outputs.configured }}' === 'true';
+            const skipInput = '${{ inputs.skip-claude-review }}' === 'true';
+            const skipChanges = '${{ steps.check-changes.outputs.skip-review }}' === 'true';
+            const shouldSkip = !isConfigured || skipInput || skipChanges;
+
+            let skipReason = '';
+            if (!isConfigured) skipReason = 'Claude Code OAuth token not configured';
+            else if (skipInput) skipReason = 'Review skipped via workflow input';
+            else if (skipChanges) skipReason = 'PR only contains version bumps, changelog updates, and/or deleted changeset files';
+
+            const params = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Claude Code Review',
+              head_sha: context.payload.pull_request.head.sha,
+              status: shouldSkip ? 'completed' : 'queued',
+              output: {
+                title: shouldSkip ? 'Review skipped' : 'Waiting for validation...',
+                summary: shouldSkip ? skipReason : 'Claude Code Review is waiting for validation checks to complete.'
+              }
+            };
+
+            if (shouldSkip) {
+              params.conclusion = 'success';
+            }
+
+            const { data: checkRun } = await github.rest.checks.create(params);
+            core.exportVariable('CHECK_RUN_ID', checkRun.id);
+            core.setOutput('should-skip', shouldSkip);
+            console.log(`Created check run ${checkRun.id}, shouldSkip: ${shouldSkip}`);
+
+      - name: Update check - Starting review
+        if: steps.create-check.outputs.should-skip != 'true'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            async function updateCheckWithRetry(updateParams, maxRetries = 5) {
+              for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                  return await github.rest.checks.update(updateParams);
+                } catch (error) {
+                  const is500Error = error.status >= 500 && error.status < 600;
+                  if (is500Error && attempt < maxRetries) {
+                    const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 16000);
+                    console.log(`Attempt ${attempt} failed with ${error.status}. Retrying in ${delayMs}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                  } else {
+                    throw error;
+                  }
+                }
+              }
+            }
+
+            await updateCheckWithRetry({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: process.env.CHECK_RUN_ID,
+              status: 'in_progress',
+              output: {
+                title: 'Reviewing code...',
+                summary: 'Claude Code Review is analyzing the pull request changes.'
+              }
+            });
+
+      - name: Find existing Claude review comment
+        if: steps.create-check.outputs.should-skip != 'true'
+        id: find-comment
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+
+            const botName = '${{ inputs.app-bot-name }}';
+            const claudeComment = comments.find(comment =>
+              comment.user.login === botName &&
+              (comment.body.includes('# Code Review') || comment.body.includes('<!-- claude-code-review -->'))
+            );
+
+            if (claudeComment) {
+              console.log(`Found existing Claude review comment: ${claudeComment.id}`);
+              core.exportVariable('CLAUDE_COMMENT_ID', claudeComment.id);
+            } else {
+              console.log('No existing Claude review comment found');
+              core.exportVariable('CLAUDE_COMMENT_ID', '0');
+            }
+
+      - name: Run Claude Code Review
+        if: steps.create-check.outputs.should-skip != 'true'
+        id: claude-review-action
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_PAT: ${{ secrets.CLAUDE_REVIEW_PAT }}
+          CLAUDE_COMMENT_ID: ${{ env.CLAUDE_COMMENT_ID }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ steps.app-token.outputs.token }}
+          bot_id: ${{ inputs.app-bot-id }}
+          bot_name: ${{ inputs.app-bot-name }}
+          allowed_bots: ${{ inputs.claude-review-allowed-bots }}
+          show_full_output: true
+          use_sticky_comment: true
+          claude_args: |
+            --allowedTools "mcp__github__pull_request_read,mcp__github__get_pull_request,mcp__github__get_pull_request_diff,mcp__github__get_pull_request_files,mcp__github__get_pull_request_status,mcp__github__get_pull_request_review_comments,mcp__github__list_commits,mcp__github__get_commit,mcp__github__get_issue_comments,mcp__github__add_comment_to_pending_review,mcp__github__pull_request_review_write,mcp__github__create_pending_pull_request_review,mcp__github__add_issue_comment,mcp__github_inline_comment__create_inline_comment,mcp__github_comment__update_claude_comment,mcp__github__get_job_logs,mcp__github__submit_pending_pull_request_review,Bash(gh:*),Bash(git:*),Bash(jq:*),Bash(cat:*),Bash(echo:*),Bash(bash .github/scripts/minimize-review-comment.sh:*),Bash(bash .github/scripts/minimize-all-reviews.sh:*),Bash(bash .github/scripts/resolve-thread.sh:*),Read,Glob,Grep,Write(/tmp/**)"
+          prompt: |
+            # Pull Request Context
+
+            **Repository:** ${{ github.repository }}
+            **PR Number:** ${{ github.event.pull_request.number }}
+            **PR Title:** ${{ github.event.pull_request.title }}
+            **Base Branch:** ${{ github.base_ref }}
+            **Head Branch:** ${{ github.head_ref }}
+            **Current Commit:** ${{ github.event.pull_request.head.sha }}
+            **PR Description:**
+            ${{ github.head_ref == 'changeset-release/main' && '(Skipped - auto-generated changelog for release PR)' || github.event.pull_request.body }}
+
+            ---
+
+            # Your Mission
+
+            You are an expert code reviewer for this repository. Review the PR changes thoughtfully and help improve code quality through constructive feedback.
+
+            **The PR branch is already checked out** in the current working directory.
+
+            ---
+
+            # Step 1: Gather Context
+
+            ## Available Tools
+
+            **MCP Tools** (preferred for data access):
+            - Use these for reading PR data, commits, comments, etc.
+            - More reliable than CLI parsing
+            - Structured JSON responses
+            - MCP tools use the GitHub App token which has full permissions
+            - **Exception:** For check runs, use `gh api` (see section 1.3) - the MCP `get_status` method queries the legacy status API which is empty
+
+            **Helper Scripts** (.github/scripts/):
+            - Ready-to-use scripts for complex review management operations
+            - Call via bash interpreter (scripts are not executable):
+              - `bash .github/scripts/resolve-thread.sh <comment_id> <pr_number> <commit_sha> [repo_owner] [repo_name]` - Reply to thread and mark as resolved (COMMONLY USED)
+              - `bash .github/scripts/minimize-review-comment.sh <comment_id> <commit_sha> [repo_owner] [repo_name]` - Minimize a specific old review comment as outdated (RARELY NEEDED - sticky comments auto-update)
+              - `bash .github/scripts/minimize-all-reviews.sh <pr_number> <current_sha> [bot_login] [repo_owner] [repo_name]` - Minimize all old review summaries (RARELY NEEDED - sticky comments auto-update)
+            - Use when MCP tools + simple bash can't accomplish the task
+            - Repo owner/name default to ${{ github.repository_owner }}/${{ github.event.repository.name }} if not specified
+            - **Note:** With sticky comments enabled, you rarely need to minimize anything
+            - **Tokens:** Helper scripts automatically use `GITHUB_PAT` for operations requiring special permissions (resolving/minimizing threads)
+
+            ---
+
+            Use MCP tools for structured data access (preferred over bash):
+
+            ## 1.1 Get PR Details
+            ```
+            mcp__github__pull_request_read(
+              method: "get",
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              pullNumber: ${{ github.event.pull_request.number }}
+            )
+            ```
+
+            ## 1.2 Get Changed Files
+            ```
+            mcp__github__pull_request_read(
+              method: "get_files",
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              pullNumber: ${{ github.event.pull_request.number }}
+            )
+            ```
+
+            **Note on large responses:** If MCP tools return errors about response size (>25000 tokens), use alternative approaches:
+            - For large file lists: Use `gh api` piped to `jq` to filter fields (avoid `--jq` flag due to shell escaping issues)
+            - For large comment threads: Use `gh api` with pagination (`--paginate`) piped to `jq` for filtering
+            - For file diffs: Use `mcp__github__get_pull_request_diff` or `git diff` commands instead
+
+            ## 1.3 Check Validation Results
+            All validation checks have already run before this review. Check their status by filtering to only the checks we care about:
+
+            ```bash
+            gh api repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }}/check-runs | \
+              jq --argjson names '["PR Title Validation","Conventional Commits","Code Quality","Markdown","Tests"]' \
+              '.check_runs[] | select([.name] | inside($names)) | {name, status, conclusion, details_url}'
+            ```
+
+            This filters to only the validation checks we care about:
+              - **PR Title Validation** - Ensures PR title follows conventional commits
+              - **Conventional Commits** - Validates all commit messages
+              - **Code Quality** - Biome linting and formatting
+              - **Markdown** - Markdown linting
+              - **Tests** - Full test suite execution
+
+            Excludes irrelevant checks like "Validation" (orchestration), "Cleanup", and "Claude Code Review" itself.
+
+            **Note:** Do NOT use `mcp__github__pull_request_read(method: "get_status")` - it queries the legacy status API which is empty. This repository uses the modern check runs API.
+
+            **Important:**
+            - Checks can pass (success), fail (failure), or be skipped (neutral) - all are valid outcomes
+            - Report the status of each check regardless of conclusion
+            - If any checks are still running (status: "in_progress"), note that in your review
+            - Consider validation results when prioritizing review feedback
+
+            ## 1.4 Get Existing Review Comments
+            ```
+            mcp__github__pull_request_read(
+              method: "get_review_comments",
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              pullNumber: ${{ github.event.pull_request.number }}
+            )
+            ```
+            Filter for your comments (author.login == "${{ inputs.app-bot-name }}")
+
+            ## 1.5 Get Previous Top-Level Comments
+            ```
+            mcp__github__get_issue_comments(
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              issue_number: ${{ github.event.pull_request.number }}
+            )
+            ```
+            Filter for your comments (user.login == "${{ inputs.app-bot-name }}")
+
+            ## 1.6 Detect Force-Pushes
+
+            **Method 1: Using MCP tools (preferred)**
+            ```
+            mcp__github__list_commits(
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              sha: "${{ github.head_ref }}"
+            )
+
+            mcp__github__get_commit(
+              owner: "${{ github.repository_owner }}",
+              repo: "${{ github.event.repository.name }}",
+              sha: "commit-sha-from-previous-review"
+            )
+            ```
+
+            **Method 2: Using git (fallback)**
+            ```bash
+            git log --all --oneline -30
+            ```
+
+            **Detection logic:**
+            - Look for your previous review comments that mention specific commit SHAs
+            - Try to fetch those commits using `mcp__github__get_commit`
+            - If commits return 404 → force-push occurred, inline comments are orphaned
+
+            ---
+
+            # Step 2: Determine Review Strategy
+
+            ## If Force-Push Detected:
+
+            **DO NOT create multiple new reviews.** Instead:
+
+            1. **Update your existing sticky comment** (if one exists) using `mcp__github_comment__update_claude_comment`
+            2. In the updated comment:
+               - State: "🔄 Branch was force-pushed (previous review at commit [old-sha], now at ${{ github.event.pull_request.head.sha }})"
+               - Note: "Previous inline comments are orphaned and can be ignored"
+               - Provide a fresh, comprehensive review of the current state
+            3. Only create NEW inline comments for issues in the current code
+            4. Do NOT reference or try to update orphaned inline comments
+
+            ## If No Force-Push (Normal Update):
+
+            ### For Previously Reported Issues:
+
+            Check if your inline comments are still relevant by:
+            1. Reading the file at the line mentioned in your comment
+            2. Checking if the issue still exists
+
+            **If fixed:** Reply to the existing review comment thread and mark as resolved:
+
+            ```bash
+            bash .github/scripts/resolve-thread.sh <comment_id> ${{ github.event.pull_request.number }} ${{ github.event.pull_request.head.sha }}
+            ```
+
+            Replace `<comment_id>` with the actual numeric comment ID from the review comment.
+
+            **If still broken:** Reply to the existing thread (do not mark as resolved):
+            ```bash
+            gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments/<comment_id>/replies \
+              -f body="⚠️ This issue persists at commit ${{ github.event.pull_request.head.sha }}."
+            ```
+
+            Replace `<comment_id>` with the actual numeric comment ID.
+
+            ### For New Issues:
+            - Create pending review first: `mcp__github__pull_request_review_write(method: "create", event: omitted for pending)`
+            - Add inline comments using `mcp__github__add_comment_to_pending_review`:
+              ```
+              mcp__github__add_comment_to_pending_review(
+                owner: "${{ github.repository_owner }}",
+                repo: "${{ github.event.repository.name }}",
+                pullNumber: ${{ github.event.pull_request.number }},
+                path: "path/to/file.ts",
+                body: "Your comment here",
+                line: 42,
+                subjectType: "LINE"  // REQUIRED: "LINE" for line comments, "FILE" for file-level comments
+              )
+              ```
+            - Submit review when done: `mcp__github__pull_request_review_write(method: "submit_pending")`
+
+            ### Manage Summary Comments:
+
+            **IMPORTANT - Sticky Comment Feature:**
+            - This workflow uses sticky comments - your main review comment is automatically updated in place
+            - The sticky comment ID is available in the environment variable `CLAUDE_COMMENT_ID` (0 if this is the first review)
+            - **CRITICAL:** Include `<!-- claude-code-review -->` at the start of your main review comment (after the heading) so it can be identified and updated
+            - **DO NOT minimize the sticky comment** - it will be updated automatically
+            - Only minimize OTHER old review comments (e.g., from before sticky comments were enabled)
+
+            **Main review comment format:**
+            ```markdown
+            # Code Review
+            <!-- claude-code-review -->
+
+            **Current Commit:** abc1234
+
+            ## Summary
+            ...your review content...
+            ```
+
+            **If you need to minimize old non-sticky comments (RARE):**
+
+            ```bash
+            bash .github/scripts/minimize-all-reviews.sh ${{ github.event.pull_request.number }} ${{ github.event.pull_request.head.sha }}
+            ```
+
+            This automatically excludes the sticky comment (ID: ${{ env.CLAUDE_COMMENT_ID }}) and minimizes only old review comments.
+
+            **In most cases, you should NOT need to minimize anything** - just update the sticky comment.
+
+            **Only post new summary when:**
+            - Significant new changes warrant fresh analysis
+            - All previous issues are resolved (final approval)
+            - This is your first review of this PR
+            - Force-push occurred (major rewrite)
+
+            ---
+
+            # Step 3: What to Review
+
+            ## Code Quality
+            - Follow existing patterns in the codebase
+            - Check for proper types (avoid `any` usage where possible)
+            - Verify naming conventions are consistent
+            - Look for code duplication or refactoring opportunities
+
+            ## Correctness & Safety
+            - Logic errors or edge cases
+            - Error handling
+            - Security concerns
+            - Performance issues
+
+            ## Testing
+            - Test coverage for new code
+            - Test quality and edge cases
+
+            ## Positive Observations
+            - Acknowledge well-written code
+            - Note good practices being followed
+            - Celebrate improvements
+
+            **Be constructive:** Suggest improvements, not just problems. Explain "why" behind suggestions.
+
+            ---
+
+            # Step 4: Post Your Review
+
+            ## Workflow:
+
+            1. **Check for existing review comments** from you
+            2. **Check for force-push** (compare commit SHAs)
+            3. **If force-push detected:**
+               - Your sticky comment will be automatically updated in place
+               - Don't try to update orphaned inline comments
+            4. **If normal update:**
+               - **Reply to and resolve** inline comment threads when issues are fixed
+               - Reply to threads that still have issues (do not mark as resolved)
+               - Create new inline comments for new issues
+               - Your main review comment will be automatically updated via sticky comment feature
+            5. **Use structured review workflow:**
+               - Create pending review
+               - Add all inline comments
+               - Submit review with summary
+            6. **If you encounter errors:**
+               - Permission errors (file access, tool execution, etc.)
+               - Tool failures (MCP tools, gh CLI, helper scripts)
+               - API errors or rate limits
+               - **Include a note in your review** mentioning what failed so maintainers can investigate
+
+            ## Comment Quality Rules
+
+            1. **Always verify current commit SHA** before posting
+            2. **Reply to and resolve threads when fixed** - Confirm fixes with a reply and mark the thread as resolved
+            3. **DON'T minimize the sticky comment** - It auto-updates in place (only minimize old non-sticky comments if needed)
+            4. **Use MCP tools** for creating/updating comments (preferred)
+            5. **Fall back to `gh api`** for replying to threads
+            6. **Be efficient** - one clear comment beats many scattered ones
+            7. **Be kind** - focus on the code, not the person
+            8. **Track commit SHAs** - mention current SHA in your summary for force-push detection
+            9. **Report tool/permission errors** - If you encounter permission errors, tool failures, or script errors during the review, mention them in your review comment so the maintainers are aware
+
+            ---
+
+            # Final Notes
+
+            - **Current commit being reviewed:** ${{ github.event.pull_request.head.sha }}
+            - **Always mention this SHA** in your summary comment
+            - **Sticky comment feature is enabled** - your main review comment updates automatically
+            - **Don't minimize the sticky comment (ID: ${{ env.CLAUDE_COMMENT_ID }})** - only minimize other old comments if absolutely necessary
+
+            ## Critical Behaviors for Clean Review History:
+
+            1. **Reply to and resolve fixed inline comments** - Confirm fixes with clear replies and mark threads as resolved
+            2. **Use the sticky comment** - Your main review updates automatically, don't create duplicates
+            3. **Avoid review spam** - PR conversations should be clean and easy to follow
+
+      - name: Complete check - Review skipped
+        if: always() && steps.create-check.outputs.should-skip == 'true'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            // Check already created as completed in create-check step
+            console.log('Review was skipped - check already completed');
+
+      - name: Complete check - Review completed
+        if: always() && steps.create-check.outputs.should-skip != 'true'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            async function updateCheckWithRetry(updateParams, maxRetries = 5) {
+              for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                  return await github.rest.checks.update(updateParams);
+                } catch (error) {
+                  const is500Error = error.status >= 500 && error.status < 600;
+                  if (is500Error && attempt < maxRetries) {
+                    const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 16000);
+                    console.log(`Attempt ${attempt} failed with ${error.status}. Retrying in ${delayMs}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                  } else {
+                    throw error;
+                  }
+                }
+              }
+            }
+
+            const checkRunId = process.env.CHECK_RUN_ID;
+            const reviewResult = '${{ steps.claude-review-action.outcome }}';
+
+            const conclusion = reviewResult === 'success' ? 'success' :
+                              reviewResult === 'failure' ? 'failure' :
+                              'neutral';
+
+            const title = reviewResult === 'success' ? 'Review completed' :
+                         reviewResult === 'failure' ? 'Review failed' :
+                         'Review completed with warnings';
+
+            await updateCheckWithRetry({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: checkRunId,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: title,
+                summary: 'Claude Code Review has completed. Check the pull request comments for detailed feedback.'
+              }
+            });
+
+  cleanup:
+    name: Cleanup
+    needs: [validate, claude-review]
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      checks: write
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-checks: write
+
+      - name: Cleanup in-progress checks
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            async function updateCheckWithRetry(updateParams, maxRetries = 5) {
+              for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                  return await github.rest.checks.update(updateParams);
+                } catch (error) {
+                  const is500Error = error.status >= 500 && error.status < 600;
+                  if (is500Error && attempt < maxRetries) {
+                    const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 16000);
+                    console.log(`Attempt ${attempt} failed with ${error.status}. Retrying in ${delayMs}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                  } else {
+                    throw error;
+                  }
+                }
+              }
+            }
+
+            const names = ['PR Title Validation', 'Conventional Commits', 'Code Quality', 'Markdown', 'Tests', 'Claude Code Review'];
+            const { data } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.payload.pull_request.head.sha
+            });
+
+            const inProgressChecks = data.check_runs.filter(x => names.includes(x.name) && x.status === 'in_progress');
+
+            if (inProgressChecks.length === 0) {
+              console.log('No in-progress checks to clean up');
+              return;
+            }
+
+            console.log(`Found ${inProgressChecks.length} in-progress check(s) to clean up`);
+
+            for (const c of inProgressChecks) {
+              console.log(`Resolving check: ${c.name} (ID: ${c.id})`);
+              await updateCheckWithRetry({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: c.id,
+                status: 'completed',
+                conclusion: 'neutral',
+                output: {
+                  title: 'Workflow cancelled',
+                  summary: 'This check was cancelled because a newer workflow run was triggered or the workflow was manually cancelled.'
+                }
+              });
+            }
+
+            console.log('All in-progress checks resolved as neutral');

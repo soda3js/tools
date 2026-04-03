@@ -1,0 +1,94 @@
+name: Release Publishing
+
+on:
+  workflow_call:
+    inputs:
+      phase:
+        description: The release phase (publishing or close-issues)
+        type: string
+        required: true
+      dry-run:
+        description: Run in dry-run mode
+        type: boolean
+        default: false
+      sbom-config:
+        description: SBOM metadata configuration (JSON) for NTIA-compliant SBOM generation
+        type: string
+        required: false
+        default: ""
+    secrets:
+      APP_ID:
+        required: true
+      APP_PRIVATE_KEY:
+        required: true
+      ANTHROPIC_API_KEY:
+        required: false
+      CLAUDE_REVIEW_PAT:
+        required: false
+      CUSTOM_REGISTRIES:
+        description: |
+          Custom registry authentication (one per line).
+          Format: https://registry.example.com/_authToken=TOKEN
+        required: false
+      NPM_TOKEN:
+        description: |
+          NPM access token for publishing to npmjs.org.
+          Required for first-time publishes or when OIDC isn't configured.
+        required: false
+
+jobs:
+  publish:
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      packages: write
+      attestations: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Setup runtime
+        id: runtime
+        uses: savvy-web/workflow-runtime-action@main
+
+      - name: Run release
+        id: release
+        uses: savvy-web/workflow-release-action@main
+        with:
+          phase: ${{ inputs.phase }}
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dry-run: ${{ inputs.dry-run }}
+          custom-registries: ${{ secrets.CUSTOM_REGISTRIES }}
+          npm-token: ${{ secrets.NPM_TOKEN }}
+          sbom-config: ${{ inputs.sbom-config }}
+
+      - name: Generate GitHub App token
+        id: app-token
+        if: steps.release.outputs.released_packages != '[]' && !inputs.dry-run
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: savvy-web
+
+      - name: Notify package release router
+        if: steps.release.outputs.released_packages != '[]' && !inputs.dry-run
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          # Extract package names from released_packages JSON
+          packages=$(echo '${{ steps.release.outputs.released_packages }}' | jq -r '.[].name' | tr '\n' ',' | sed 's/,$//')
+
+          echo "Notifying router of released packages: $packages"
+
+          gh api repos/soda3js/.github-private/dispatches \
+            -f event_type=packages-released \
+            -f "client_payload[packages]=$packages" \
+            -f "client_payload[repository]=${{ github.repository }}"
