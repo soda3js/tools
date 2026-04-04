@@ -1,0 +1,8 @@
+{
+  "code": "query.compiler.malformed",
+  "error": true,
+  "message": "Could not parse SoQL query \"SELEC *\"",
+  "data": {
+    "query": "SELEC *"
+  }
+}

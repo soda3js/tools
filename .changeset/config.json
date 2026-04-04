@@ -9,7 +9,7 @@
 	"commit": false,
 	"access": "public",
 	"baseBranch": "main",
-	"fixed": [["@soda3js/soql", "@soda3js/client", "@soda3js/cli"]],
+	"fixed": [["@soda3js/soql", "@soda3js/protocol", "@soda3js/client", "@soda3js/rest", "@soda3js/cli"]],
 	"updateInternalDependencies": "patch",
 	"ignore": [],
 	"privatePackages": {
