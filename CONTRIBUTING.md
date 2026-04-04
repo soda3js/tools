@@ -117,7 +117,7 @@ git commit -s -m "feat: add new feature"
 Or configure git to always sign off:
 
 ```bash
-git config --local commit.gpgsign true
+git config --local format.signOff true
 ```
 
 ### Commit Message Body
