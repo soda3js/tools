@@ -2,7 +2,7 @@ import type { ChildProcess } from "node:child_process";
 import { execSync, spawn } from "node:child_process";
 import open from "open";
 
-const PORT = 4173;
+const PORT: number = Number(process.env.PREVIEW_PORT ?? process.env.DEV_PORT) || 4173;
 
 function killProcessOnPort(port: number): void {
 	try {

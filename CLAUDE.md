@@ -24,7 +24,22 @@ Dependency graph: `soql` is the leaf. `client` depends on `soql`. `cli` depends 
 - **Testing:** `@savvy-web/vitest` for test discovery and coverage
 - **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `client`, `cli`
 - **Commits:** Husky + lint-staged + commitlint (DCO signoff required)
-- **Builders:** `@savvy-web/rslib-builder` for soql/client/cli; raw Bun for api/server
+- **Builders:** `@savvy-web/rslib-builder` for all packages
+
+## Build System (rslib-builder)
+
+Source `package.json` files have `"private": true` intentionally. The
+`@savvy-web/rslib-builder` transforms packages at build time based on
+`publishConfig.access`:
+
+- `private: true` becomes `private: false` in `dist/npm/package.json`
+- `exports` are rewritten from `./src/*.ts` to `./index.js` + `./index.d.ts`
+- `bin` entries are rewritten to point to built JS with shebang
+- `devDependencies`, `publishConfig`, `scripts` are stripped by the `transform` callback
+- `workspace:*` deps are resolved to concrete versions
+
+Do not remove `private: true` from source package.json files or manually
+edit export paths. The `dist/npm/package.json` is the published artifact.
 
 ## Conventions
 
