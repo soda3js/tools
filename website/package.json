@@ -1,0 +1,28 @@
+{
+	"name": "@soda3js/docs",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Documentation website for soda3js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/soda3js/tools.git",
+		"directory": "website"
+	},
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"build": "rspress build",
+		"dev": "node lib/scripts/dev.mts",
+		"preview": "node lib/scripts/preview.mts",
+		"types:check": "tsgo --noEmit"
+	},
+	"devDependencies": {
+		"@rspress/core": "^2.0.0",
+		"@savvy-web/rslib-builder": "^0.19.0",
+		"@types/react": "^19.2.10",
+		"@typescript/native-preview": "catalog:silk",
+		"open": "^11.0.0",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4"
+	}
+}

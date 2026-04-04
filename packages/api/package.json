@@ -1,0 +1,29 @@
+{
+	"name": "@soda3js/api",
+	"version": "0.0.0",
+	"private": true,
+	"description": "SODA3-compatible server framework",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/soda3js/tools.git",
+		"directory": "packages/api"
+	},
+	"license": "MIT",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "turbo run build:dev build:prod --log-order=grouped",
+		"build:dev": "rslib build --config-loader native --env-mode dev",
+		"build:prod": "rslib build --config-loader native --env-mode npm",
+		"types:check": "tsgo --noEmit"
+	},
+	"dependencies": {
+		"@soda3js/soql": "workspace:*"
+	},
+	"devDependencies": {
+		"@savvy-web/rslib-builder": "^0.19.1",
+		"@types/node": "catalog:silk"
+	}
+}
