@@ -136,6 +136,11 @@ The core class in `soda3-client.ts`:
     (collects the paginated stream)
   - `metadata(datasetId)` -- returns `Promise<DatasetMetadata>`
 
+**QueryOptions parsing:** The `orderBy` option in `QueryOptions` accepts
+strings in `"column:DIR"` format (e.g., `"population:DESC"`). A
+`parseOrderBy` helper splits these into separate column and direction
+arguments for the SoQL builder's `.orderBy(column, direction)` call.
+
 Each method internally runs an Effect program against the composed layer via
 `Effect.runPromise`.
 

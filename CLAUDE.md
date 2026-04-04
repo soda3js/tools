@@ -83,6 +83,26 @@ pnpm lint:fix                 # Fix with Biome
 pnpm typecheck                # TypeScript check (tsgo)
 ```
 
+## Root-Level Scripts
+
+The root workspace has `@soda3js/rest`, `@soda3js/cli`, and `tsx` as
+devDependencies. This allows running ad-hoc scripts that import from
+published packages (e.g., `import { Soda3Client } from "@soda3js/rest/node"`).
+
+All packages have `prepare` scripts that build `dist/dev/`, so workspace
+symlinks resolve to compiled output after `pnpm install`.
+
+```bash
+npx tsx scripts/test-rest.ts  # Exercise rest API against live Socrata portals
+```
+
+`SOCRATA_APP_TOKEN` env var is required for SODA3-mode requests in
+`scripts/test-rest.ts`.
+
+This setup prepares for Phase 4 (CLI) testing: root-level integration
+tests will spin up the test server (Phase 3) and point both CLI and
+rest client at it.
+
 ## Design Documentation
 
 - **Agent workflow guide:** `.claude/design/workflow/agent-workflow.md` — read this first every session

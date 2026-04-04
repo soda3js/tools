@@ -253,6 +253,15 @@ runtime.
 `bun:sqlite`). They use `@savvy-web/rslib-builder` in early phases and will
 migrate to a Bun-specific builder when Bun APIs are actively imported.
 
+### Workspace Root Development Setup
+
+The root `package.json` includes `@soda3js/rest`, `@soda3js/cli`, and `tsx` as
+devDependencies. All packages have `prepare` scripts that build `dist/dev/`
+during `pnpm install`, so workspace symlinks resolve correctly at the root
+level. This enables workspace-level scripts to import from `@soda3js/rest/node`
+and run against live portals, and will allow root-level integration tests
+(Phase 3+) and CLI development (Phase 4) without manual build steps.
+
 ---
 
 ## Auth Strategy

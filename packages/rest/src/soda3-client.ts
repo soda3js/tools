@@ -7,6 +7,16 @@ import { Effect, Layer, Stream } from "effect";
 
 export type { DatasetMetadata } from "@soda3js/client";
 
+type SortDirection = "ASC" | "DESC";
+
+function parseOrderBy(orderBy: string): [string, SortDirection] {
+	const idx = orderBy.lastIndexOf(":");
+	if (idx === -1) return [orderBy, "ASC"];
+	const col = orderBy.slice(0, idx);
+	const dir = orderBy.slice(idx + 1).toUpperCase();
+	return [col, dir === "DESC" ? "DESC" : "ASC"];
+}
+
 export interface Soda3ClientConfig {
 	readonly domain: string;
 	readonly appToken?: string;
@@ -50,7 +60,10 @@ export class Soda3ClientBase {
 		if (options.where) soql = soql.where(SoQL.raw(options.where));
 		if (options.limit !== undefined) soql = soql.limit(options.limit);
 		if (options.offset !== undefined) soql = soql.offset(options.offset);
-		if (options.orderBy) soql = soql.orderBy(options.orderBy);
+		if (options.orderBy) {
+			const [col, dir] = parseOrderBy(options.orderBy);
+			soql = soql.orderBy(col, dir);
+		}
 
 		return this.run((soda) => soda.query(this.domain, datasetId, soql).pipe(Effect.orDie));
 	}
@@ -65,7 +78,10 @@ export class Soda3ClientBase {
 		if (options.where) soql = soql.where(SoQL.raw(options.where));
 		if (options.limit !== undefined) soql = soql.limit(options.limit);
 		if (options.offset !== undefined) soql = soql.offset(options.offset);
-		if (options.orderBy) soql = soql.orderBy(options.orderBy);
+		if (options.orderBy) {
+			const [col, dir] = parseOrderBy(options.orderBy);
+			soql = soql.orderBy(col, dir);
+		}
 
 		const domain = this.domain;
 		const layer = this.layer;
