@@ -1,8 +1,10 @@
 ---
-"@soda3js/soql": patch
+"@soda3js/soql": minor
 ---
 
 ## Features
+
+### Adds @soda3js/soql Package
 
 Initial release of `@soda3js/soql` — a type-safe, zero-dependency SoQL query builder for the Socrata SODA3 Open Data API.
 
