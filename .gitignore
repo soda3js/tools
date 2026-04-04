@@ -2,6 +2,10 @@
 **/node_modules
 **/*.tsbuildinfo
 
+# Build artifacts
+**/dist
+**/.rslib
+
 # Generated TypeScript declaration files for config files
 *.config.d.ts
 **/build

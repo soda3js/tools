@@ -7,8 +7,9 @@
 		}
 	],
 	"commit": false,
-	"access": "restricted",
+	"access": "public",
 	"baseBranch": "main",
+	"fixed": [["@soda3js/soql", "@soda3js/client", "@soda3js/cli"]],
 	"updateInternalDependencies": "patch",
 	"ignore": [],
 	"privatePackages": {

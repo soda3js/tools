@@ -43,6 +43,17 @@
 			],
 			"outputLogs": "full",
 			"outputs": ["dist/npm/**"]
+		},
+		"dev": {
+			"cache": false,
+			"dependsOn": ["^build"],
+			"interactive": true,
+			"persistent": true
+		},
+		"preview": {
+			"cache": false,
+			"dependsOn": ["build"],
+			"persistent": true
 		}
 	}
 }
