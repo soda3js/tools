@@ -1,6 +1,6 @@
 {
 	"name": "@soda3js/client",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"private": true,
 	"description": "Effect-TS HTTP client for the Socrata SODA3 API",
 	"repository": {
