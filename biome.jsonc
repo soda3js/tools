@@ -1,4 +1,17 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.4.9/schema.json",
-	"extends": ["@savvy-web/lint-staged/biome/silk.jsonc"]
+	"extends": ["@savvy-web/lint-staged/biome/silk.jsonc"],
+	"overrides": [
+		{
+			// useImportExtensions rewrites .json to .js on JSON import assertions, breaking them
+			"includes": ["**/__test__/**/*.ts"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"useImportExtensions": "off"
+					}
+				}
+			}
+		}
+	]
 }

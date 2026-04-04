@@ -1,0 +1,8 @@
+{
+  "code": "internal_error",
+  "error": true,
+  "message": "An unexpected error occurred.",
+  "data": {
+    "requestId": "abc-123-def"
+  }
+}

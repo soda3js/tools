@@ -17,24 +17,21 @@
 		"build": "turbo run build:dev build:prod --log-order=grouped",
 		"build:dev": "rslib build --config-loader native --env-mode dev",
 		"build:prod": "rslib build --config-loader native --env-mode npm",
+		"prepare": "turbo run build:dev --output-logs=errors-only",
 		"types:check": "tsgo --noEmit"
 	},
 	"dependencies": {
 		"@soda3js/soql": "workspace:*"
 	},
 	"devDependencies": {
+		"@effect/platform": "catalog:silk",
 		"@savvy-web/rslib-builder": "^0.19.1",
-		"@types/node": "catalog:silk"
+		"@types/node": "catalog:silk",
+		"effect": "catalog:silk"
 	},
 	"peerDependencies": {
 		"@effect/platform": ">=0.70.0",
-		"@effect/platform-node": ">=0.66.0",
 		"effect": ">=3.21.0"
-	},
-	"peerDependenciesMeta": {
-		"@effect/platform-node": {
-			"optional": true
-		}
 	},
 	"publishConfig": {
 		"access": "public",

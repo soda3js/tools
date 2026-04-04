@@ -1,0 +1,176 @@
+{
+	"$schema": "https://spencerbegg.gs/schemas/design-config/1.0.0/schema.json",
+	"version": "1.0.0",
+	"project": {
+		"name": "soda3js/tools",
+		"type": "monorepo",
+		"repository": "https://github.com/soda3js/tools",
+		"maintainer": "C. Spencer Beggs"
+	},
+	"paths": {
+		"designDocs": ".claude/design",
+		"plans": ".claude/plans",
+		"skills": ".claude/skills",
+		"context": "CLAUDE.md",
+		"localContext": "CLAUDE.local.md"
+	},
+	"modules": {
+		"soql": {
+			"path": "packages/soql",
+			"designDocsPath": ".claude/design/soql",
+			"categories": ["architecture", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/soql/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"client": {
+			"path": "packages/client",
+			"designDocsPath": ".claude/design/client",
+			"categories": ["architecture", "integration", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/client/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"cli": {
+			"path": "packages/cli",
+			"designDocsPath": ".claude/design/cli",
+			"categories": ["architecture", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/cli/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"api": {
+			"path": "packages/api",
+			"designDocsPath": ".claude/design/api",
+			"categories": ["architecture", "integration", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/api/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"server": {
+			"path": "packages/server",
+			"designDocsPath": ".claude/design/server",
+			"categories": ["architecture", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": null,
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"protocol": {
+			"path": "packages/protocol",
+			"designDocsPath": ".claude/design/protocol",
+			"categories": ["architecture"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/protocol/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"rest": {
+			"path": "packages/rest",
+			"designDocsPath": ".claude/design/rest",
+			"categories": ["architecture", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/rest/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"workflow": {
+			"path": ".claude",
+			"designDocsPath": ".claude/design/workflow",
+			"categories": ["other"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": null,
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		}
+	},
+	"skills": {
+		"baseNamespace": "/",
+		"enabled": [
+			"design-init",
+			"design-validate",
+			"design-update",
+			"design-review",
+			"design-sync",
+			"design-audit",
+			"plan-create",
+			"plan-list",
+			"plan-validate",
+			"plan-complete",
+			"plan-explore"
+		]
+	},
+	"quality": {
+		"designDocs": {
+			"maxLineLength": 120,
+			"requireFrontmatter": true,
+			"requireTOC": true,
+			"minSections": ["Overview", "Current State", "Rationale"]
+		},
+		"userDocs": {
+			"level1": {
+				"targetWordCount": [200, 500],
+				"maxLineLength": 80,
+				"requireSections": ["Features", "Installation", "Usage"]
+			},
+			"level3": {
+				"framework": "rspress",
+				"requireMetadata": true,
+				"requireCodeExamples": true
+			}
+		},
+		"context": {
+			"rootMaxLines": 500,
+			"childMaxLines": 300,
+			"requireDesignDocPointers": true
+		},
+		"plans": {
+			"maxLineLength": 120,
+			"requireFrontmatter": true,
+			"requiredFields": ["name", "title", "created", "status", "progress"],
+			"validStatuses": ["ready", "in-progress", "blocked", "completed", "abandoned"],
+			"progressRange": [0, 100],
+			"stalenessThresholdDays": 30,
+			"archiveAfterDays": 30
+		}
+	},
+	"integration": {
+		"ci": {
+			"enabled": false,
+			"validateOnPR": false,
+			"syncOnMerge": false
+		},
+		"git": {
+			"trackDesignDocs": true,
+			"requireReviewForChanges": false
+		},
+		"plans": {
+			"enabled": true,
+			"bidirectionalLinking": true,
+			"autoSyncProgress": false,
+			"validateOnCommit": true,
+			"cacheMetadata": true,
+			"cacheTTL": 300
+		}
+	}
+}

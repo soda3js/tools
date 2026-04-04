@@ -1,0 +1,48 @@
+{
+	"name": "@soda3js/protocol",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Wire-format TypeScript interfaces for the Socrata SODA3 API",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/soda3js/tools.git",
+		"directory": "packages/protocol"
+	},
+	"license": "MIT",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "turbo run build:dev build:prod --log-order=grouped",
+		"build:dev": "rslib build --config-loader native --env-mode dev",
+		"build:prod": "rslib build --config-loader native --env-mode npm",
+		"prepare": "turbo run build:dev --output-logs=errors-only",
+		"types:check": "tsgo --noEmit"
+	},
+	"devDependencies": {
+		"@savvy-web/rslib-builder": "^0.19.1",
+		"@types/node": "catalog:silk"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist/dev",
+		"linkDirectory": true,
+		"targets": [
+			{
+				"protocol": "npm",
+				"registry": "https://npm.pkg.github.com/",
+				"directory": "dist/npm",
+				"access": "public",
+				"provenance": true
+			},
+			{
+				"protocol": "npm",
+				"registry": "https://registry.npmjs.org/",
+				"directory": "dist/npm",
+				"access": "public",
+				"provenance": true
+			}
+		]
+	}
+}

@@ -4,28 +4,40 @@ A modern TypeScript toolkit for the Socrata SODA3 Open Data API.
 
 ## Current Phase
 
-**Phase 1 — `@soda3js/soql` — In Progress**
+**Phase 2 — `@soda3js/protocol` + `@soda3js/client` + `@soda3js/rest` — In Progress**
 
-Active tasks: #9 (expressions) → #10 (compiler) → #11 (functions) → #12 (clauses) → #13 (builder) → #14 (ast-contract).
-Milestone: `v0.0.1`. All tasks are `In Progress` on the project board, Iteration 1, P0.
+Phase 1 (soql) is complete. Phase 2 builds three packages: `protocol`
+(wire-format types), `client` (Effect service library), and `rest`
+(batteries-included REST client). Epic: #3. Milestone: v0.0.2.
+Iteration 2, P1.
 
-Before writing any code, read `.claude/WORKFLOW.md`. It explains the full issue/spec/board workflow expected in every session.
+Active tasks: #15-#22 (client sub-issues). New issues needed for
+protocol and rest packages.
+
+Before writing any code, read `.claude/design/workflow/agent-workflow.md`. It explains the
+full issue/spec/board workflow expected in every session.
 
 ---
 
 ## Project Structure
 
-Monorepo with five packages under `packages/`:
+Monorepo with seven packages under `packages/`:
 
 | Package | Purpose | Published |
 | --- | --- | --- |
-| `@soda3js/soql` | SoQL query builder (pure TS, zero deps) | Yes |
-| `@soda3js/client` | SODA3 HTTP client (Effect-TS, conditional exports) | Yes |
+| `@soda3js/soql` | SoQL query builder (pure TS, zero deps) -- Phase 1 complete | Yes |
+| `@soda3js/protocol` | Wire-format TS interfaces for SODA3 responses (zero deps) | Yes |
+| `@soda3js/client` | Platform-agnostic Effect service library (single entry point) | Yes |
+| `@soda3js/rest` | Batteries-included REST client (`Soda3Client` class, subpath exports: `./node`, `./bun`, `./browser`) | Yes |
 | `@soda3js/cli` | Terminal client (`@effect/cli`, bin: `soda3`) | Yes |
 | `@soda3js/api` | SODA3 server framework (Bun-native) | Eventually |
 | `@soda3js/server` | Internal integration test harness (Bun-native) | No (private) |
 
-Dependency graph: `soql` is the leaf. `client` depends on `soql`. `cli` depends on `client` + `soql`. `api` depends on `soql`. `server` depends on `api` + `client`.
+Dependency graph: `soql` and `protocol` are leaves (zero deps).
+`client` depends on `soql` (peers: `effect`, `@effect/platform`).
+`rest` depends on `client` + `soql` (fixed deps, not peers; bundles
+all Effect platform deps). `cli` depends on `client` + `soql`
+directly (not `rest`). `api` depends on `soql` + `protocol`.
 
 ## Toolchain
 
@@ -33,7 +45,7 @@ Dependency graph: `soql` is the leaf. `client` depends on `soql`. `cli` depends 
 - **Build orchestration:** Turborepo
 - **Linting/formatting:** Biome (extends `@savvy-web/lint-staged/biome/silk.jsonc`)
 - **Testing:** `@savvy-web/vitest` for test discovery and coverage
-- **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `client`, `cli`
+- **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `protocol`, `client`, `rest`, `cli`
 - **Commits:** Husky + lint-staged + commitlint (DCO signoff required)
 - **Builders:** `@savvy-web/rslib-builder` for all packages
 
@@ -73,7 +85,7 @@ pnpm typecheck                # TypeScript check (tsgo)
 
 ## Design Documentation
 
-- **Agent workflow guide:** `.claude/WORKFLOW.md` — read this first every session
+- **Agent workflow guide:** `.claude/design/workflow/agent-workflow.md` — read this first every session
 - **Full project spec:** `docs/superpowers/specs/2026-04-02-soda3js-toolkit-design.md`
 - **Design docs:** `.claude/design/` with per-module subdirectories
 - **Design config:** `.claude/design/design.config.json`

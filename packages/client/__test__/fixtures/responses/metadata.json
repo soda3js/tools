@@ -1,0 +1,40 @@
+{
+  "id": "erm2-nwe9",
+  "name": "311 Service Requests from 2010 to Present",
+  "description": "All 311 Service Requests from 2010 to present.",
+  "assetType": "dataset",
+  "category": "Social Services",
+  "tags": ["311", "service request"],
+  "columns": [
+    {
+      "id": 552689589,
+      "fieldName": "unique_key",
+      "dataTypeName": "text",
+      "description": "Unique identifier",
+      "renderTypeName": "text",
+      "position": 1
+    },
+    {
+      "id": 552689590,
+      "fieldName": "complaint_type",
+      "dataTypeName": "text",
+      "description": "The type of complaint",
+      "renderTypeName": "text",
+      "position": 2
+    },
+    {
+      "id": 552689591,
+      "fieldName": "borough",
+      "dataTypeName": "text",
+      "description": "Borough of the incident",
+      "renderTypeName": "text",
+      "position": 3
+    }
+  ],
+  "owner": {
+    "id": "txun-eb7e",
+    "displayName": "NYC OpenData"
+  },
+  "rowsUpdatedAt": 1712200000,
+  "viewLastModified": 1712100000
+}
