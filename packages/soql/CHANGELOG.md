@@ -1,10 +1,10 @@
----
-"@soda3js/soql": minor
----
+# @soda3js/soql
 
-## Features
+## 0.1.0
 
-### Adds @soda3js/soql Package
+### Features
+
+* [`e560c23`](https://github.com/soda3js/tools/commit/e560c239b182308e129b41600fb48ebbf43816cf) ### Adds @soda3js/soql Package
 
 Initial release of `@soda3js/soql` — a type-safe, zero-dependency SoQL query builder for the Socrata SODA3 Open Data API.
 
@@ -72,15 +72,15 @@ Functions are available both as named exports for tree-shaking and as static pro
 
 The seven AST node types are exported as stable public types for downstream consumers (such as `@soda3js/api`) that need to inspect or transform query trees:
 
-| Type | Description |
-| :--- | :--- |
-| `Column` | A named column reference |
-| `Literal` | A scalar value (`string`, `number`, `boolean`, `null`) |
-| `FunctionCall` | A named function with argument list |
-| `BinaryOp` | An infix operator expression |
-| `UnaryOp` | A prefix or postfix operator expression |
-| `Alias` | An expression with an `AS name` label |
-| `Raw` | A pre-serialized SoQL string (escape hatch) |
+| Type           | Description                                            |
+| :------------- | :----------------------------------------------------- |
+| `Column`       | A named column reference                               |
+| `Literal`      | A scalar value (`string`, `number`, `boolean`, `null`) |
+| `FunctionCall` | A named function with argument list                    |
+| `BinaryOp`     | An infix operator expression                           |
+| `UnaryOp`      | A prefix or postfix operator expression                |
+| `Alias`        | An expression with an `AS name` label                  |
+| `Raw`          | A pre-serialized SoQL string (escape hatch)            |
 
 All nodes carry a `_tag` discriminant for exhaustive `switch` matching. Constructor functions (`column`, `literal`, `functionCall`, `binaryOp`, `unaryOp`, `alias`, `raw`) are also exported.
 
