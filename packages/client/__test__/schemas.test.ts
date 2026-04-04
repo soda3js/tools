@@ -187,7 +187,6 @@ describe("SodaClientConfig", () => {
 	it("decodes a full config", async () => {
 		const input = {
 			appToken: "my-token",
-			defaultDomain: "data.example.com",
 			mode: "auto",
 		};
 		const result = await Effect.runPromise(Schema.decodeUnknown(SodaClientConfig)(input));

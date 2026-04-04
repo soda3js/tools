@@ -71,7 +71,9 @@ export function mapResponseError(
 		}
 
 		if (status === 429) {
-			return yield* new SodaRateLimitError({ retryAfter: 1000 });
+			const retryHeader = error.response.headers["retry-after"];
+			const retryAfter = retryHeader ? Number.parseInt(retryHeader, 10) * 1000 : 1000;
+			return yield* new SodaRateLimitError({ retryAfter: Number.isNaN(retryAfter) ? 1000 : retryAfter });
 		}
 
 		return yield* new SodaServerError({ code, message });

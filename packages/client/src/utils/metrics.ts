@@ -1,3 +1,7 @@
+// Metric definitions only — not yet instrumented in endpoints.
+// These will be wired into endpoint functions when retry and timeout
+// logic is implemented. Consumers can reference these constants to
+// build dashboards ahead of instrumentation.
 import { Metric, MetricBoundaries } from "effect";
 
 export const requestsTotal = Metric.counter("soda3js.client.requests.total", {

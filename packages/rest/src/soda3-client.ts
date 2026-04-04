@@ -84,49 +84,9 @@ export class Soda3ClientBase {
 		}
 
 		const domain = this.domain;
-		const layer = this.layer;
+		const stream = await this.run((soda) => soda.queryAll(domain, datasetId, soql).pipe(Effect.orDie));
 
-		// Buffer rows into an async channel: producer pushes via runForEach, consumer yields
-		const buffer: Record<string, unknown>[] = [];
-		let done = false;
-		let error: unknown;
-		let resolve: (() => void) | undefined;
-
-		const program = Effect.gen(function* () {
-			const soda = yield* SodaClient;
-			const stream = yield* soda.queryAll(domain, datasetId, soql).pipe(Effect.orDie);
-			yield* Stream.runForEach(stream, (row) =>
-				Effect.sync(() => {
-					buffer.push(row);
-					resolve?.();
-				}),
-			).pipe(Effect.orDie);
-		});
-
-		Effect.runPromise(Effect.provide(program, layer))
-			.then(() => {
-				done = true;
-				resolve?.();
-			})
-			.catch((err) => {
-				error = err;
-				done = true;
-				resolve?.();
-			});
-
-		let cursor = 0;
-		while (true) {
-			if (cursor < buffer.length) {
-				yield buffer[cursor++];
-			} else if (done) {
-				if (error) throw error;
-				break;
-			} else {
-				await new Promise<void>((r) => {
-					resolve = r;
-				});
-			}
-		}
+		yield* Stream.toAsyncIterable(stream);
 	}
 
 	export_(datasetId: string, format: "csv" | "json" | "tsv"): ReadableStream<Uint8Array> {
