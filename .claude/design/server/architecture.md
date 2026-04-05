@@ -3,9 +3,9 @@ status: current
 module: server
 category: architecture
 created: 2026-04-04
-updated: 2026-04-04
-last-synced: 2026-04-04
-completeness: 85
+updated: 2026-04-05
+last-synced: 2026-04-05
+completeness: 95
 related:
   - ../rest/architecture.md
   - ../client/architecture.md
@@ -107,13 +107,6 @@ The server is a test utility, not a production service. Plain Node APIs
 (`http`, `fs`, `crypto`) keep the implementation simple with zero runtime
 dependencies. Effect would add complexity without proportional benefit for
 a package that is never published or used in production paths.
-
-### @soda3js/api Shelved
-
-The original plan included `@soda3js/api` as a Bun-native SODA3 server
-framework. This has been shelved indefinitely in favor of the simpler
-replay-based test server, which satisfies integration testing needs without
-requiring a full query engine.
 
 ---
 

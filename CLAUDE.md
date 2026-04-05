@@ -17,7 +17,7 @@ full issue/spec/board workflow expected in every session.
 
 ## Project Structure
 
-Monorepo with seven packages under `packages/`:
+Monorepo with six packages under `packages/`:
 
 | Package | Purpose | Published |
 | --- | --- | --- |
@@ -26,7 +26,6 @@ Monorepo with seven packages under `packages/`:
 | `@soda3js/client` | Platform-agnostic Effect service library (single entry point) | Yes |
 | `@soda3js/rest` | Batteries-included REST client (`Soda3Client` class, subpath exports: `./node`, `./bun`, `./browser`) | Yes |
 | `@soda3js/cli` | Terminal client (`@effect/cli`, bin: `soda3`) | Yes |
-| `@soda3js/api` | SODA3 server framework (shelved) | Eventually |
 | `@soda3js/server` | Replay/record/chaos test server (Node, Vitest plugin) | No (private) |
 
 Dependency graph: `soql` and `protocol` are leaves (zero deps).

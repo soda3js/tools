@@ -3,7 +3,7 @@ status: current
 module: soql
 category: architecture
 created: 2026-04-03
-updated: 2026-04-03
+updated: 2026-04-05
 last-synced: 2026-04-03
 completeness: 85
 related: []
@@ -257,8 +257,8 @@ composition, pattern matching, and future extensibility.
    - Pros: Idiomatic TypeScript, exhaustive switch matching, aligns with Effect-TS
      conventions, zero overhead
    - Cons: Adding new node types requires updating the union
-   - Why chosen: Best TypeScript ergonomics, zero runtime cost, enables future
-     `@soda3js/api` transpiler to pattern-match on AST nodes
+   - Why chosen: Best TypeScript ergonomics, zero runtime cost, enables
+     downstream consumers to pattern-match on AST nodes
 
 2. **Class hierarchy with visitor pattern:**
    - Pros: Familiar OOP pattern, extensible
@@ -447,12 +447,6 @@ methods. Queries are built with the fluent API and compiled to params (GET) or b
 
 **How it integrates:** CLI builds queries from command-line arguments using SoQL
 functions, then compiles to the appropriate format.
-
-#### Integration 3: `@soda3js/api` (future)
-
-**How it integrates:** API server will import individual function constructors from
-`functions.ts` and AST node types from `expressions.ts` for query transpilation and
-validation on the server side.
 
 ---
 

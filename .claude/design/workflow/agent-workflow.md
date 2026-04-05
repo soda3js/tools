@@ -73,7 +73,6 @@ The work is organized in two tiers on the public project board at `https://githu
 | --- | --- | --- | --- |
 | #2 | `@soda3js/soql: Phase 1` | Phase 1 | v0.0.1 |
 | #3 | `@soda3js/client: Phase 2` | Phase 2 | v0.0.2 |
-| #5 | `@soda3js/api: Phase 3` | Phase 3 | -- |
 | #6 | `@soda3js/server: Phase 3` | Phase 3 | -- |
 | #7 | `@soda3js/cli: Phase 4` | Phase 4 | v0.1.0 |
 | #8 | `Release hardening: Phase 5` | Phase 5 | v0.1.0 |

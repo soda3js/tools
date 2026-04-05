@@ -2,7 +2,7 @@
 
 A modern TypeScript toolkit for the [Socrata SODA3 Open Data API](https://dev.socrata.com/).
 
-> **Status:** Pre-release (v0.0.x). APIs will change before v0.1.0.
+> **Status:** Approaching v0.1.0 release. APIs may still change.
 
 ## What is this?
 
@@ -13,14 +13,15 @@ when you provide an app token.
 
 ## Packages
 
-This monorepo contains five packages:
+This monorepo contains six packages:
 
 | Package | Description | Install |
 | --- | --- | --- |
 | `@soda3js/soql` | Type-safe SoQL query builder (pure TS, zero deps) | `npm i @soda3js/soql` |
+| `@soda3js/protocol` | Wire-format type contracts (plain TS interfaces, zero deps) | `npm i @soda3js/protocol` |
 | `@soda3js/client` | Effect-TS HTTP client with Node/Bun/Browser support | `npm i @soda3js/client` |
+| `@soda3js/rest` | Batteries-included REST client (Node/Bun/Browser) | `npm i @soda3js/rest` |
 | `@soda3js/cli` | Terminal client for querying datasets (`soda3` binary) | `npm i -g @soda3js/cli` |
-| `@soda3js/api` | SODA3-compatible server framework | Coming soon |
 | `@soda3js/server` | Internal integration test harness | Private |
 
 ## Quick Start
@@ -72,9 +73,10 @@ soda3 query ydr8-5enu \
 soda3js/tools/
   packages/
     soql/          # SoQL query builder
+    protocol/      # Wire-format type contracts
     client/        # Effect-TS HTTP client
+    rest/          # Batteries-included REST client
     cli/           # Terminal client (soda3 binary)
-    api/           # SODA3 server framework
     server/        # Internal test harness (private)
   website/         # RSPress documentation site
   __fixtures__/    # Shared test fixture data

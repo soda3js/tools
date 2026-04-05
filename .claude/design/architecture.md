@@ -15,7 +15,7 @@ dependencies: []
 
 # soda3js Monorepo — Architecture
 
-A seven-package TypeScript monorepo providing a full toolkit for the Socrata
+A six-package TypeScript monorepo providing a full toolkit for the Socrata
 SODA3 Open Data API, from a zero-dependency query builder through an
 Effect-TS service library to a batteries-included REST client and CLI.
 
@@ -36,7 +36,7 @@ Effect-TS service library to a batteries-included REST client and CLI.
 ## Overview
 
 The soda3js toolkit is organized around a clear separation of concerns across
-seven packages under `packages/`. Two packages are pure-TypeScript leaves with
+six packages under `packages/`. Two packages are pure-TypeScript leaves with
 zero runtime dependencies. The rest layer upward, each adding one concern:
 Effect service semantics, platform I/O adapters, a CLI runtime, or a
 server-side framework.
@@ -50,7 +50,6 @@ server-side framework.
 | `@soda3js/client` | Effect service library (peer deps: effect, @effect/platform) | Yes |
 | `@soda3js/rest` | Batteries-included REST client (fixed platform deps) | Yes |
 | `@soda3js/cli` | Terminal client (`@effect/cli`, bin: `soda3`) | Yes |
-| `@soda3js/api` | SODA3 server framework (Bun-native) | Eventually |
 | `@soda3js/server` | Internal integration test harness (private) | No |
 
 **SODA API dual-mode operation:**
@@ -90,13 +89,26 @@ All three Phase 2 packages are implemented on the `feat/client` branch:
 
 Target milestone: publish `v0.0.2` with all three packages.
 
-### Phases 3–5 Pending
+### Phase 3 Complete — `@soda3js/server`
 
-- Phase 3: `@soda3js/server` (replay harness) + `@soda3js/api` (route handlers
-  - in-memory engine)
-- Phase 4: `@soda3js/cli` terminal client
-- Phase 5: full v0.1.0 release with docs, geospatial functions (Tier 3),
-  SQLite and Postgres backends for `api`
+The `server` package is implemented as a standalone replay/record/chaos test
+server. Provides fixture-based HTTP replay, deterministic fault injection,
+seeded chaos monkey, record mode for capturing live responses, and a Vitest
+plugin for integration testing. The originally planned `@soda3js/api` server
+framework was shelved.
+
+### Phase 4 Complete — `@soda3js/cli`
+
+The `cli` package implements the `soda3` binary with four commands: `query`,
+`export`, `meta`, and `config` (init/show/edit/add-profile). TOML profile
+management, domain/profile resolution, and TTY-aware output formatting
+(table, json, ndjson, csv). Uses `@soda3js/client` directly with
+`NodeHttpClient.layerUndici`.
+
+### Phase 5 Pending — Release v0.1.0
+
+Documentation site, e2e testing against live portals, release hardening,
+and Tier 3 SoQL functions (geospatial).
 
 ---
 
@@ -153,19 +165,18 @@ Leaves are at the top. Arrows point from consumer to dependency.
 
 ```text
 @soda3js/soql       @soda3js/protocol        (leaves, pure TS, zero deps)
-    ^    ^                ^    ^    ^
-    |    |                |    |    |
-    |    +----------+     |    |    |
-    |               |     |    |    |
-@soda3js/client ----+-----+    |    |  (Effect service lib, peer deps)
-    ^    ^                     |    |
-    |    |                     |    |
-    |  @soda3js/rest           |    |  (batteries-included, fixed deps)
-    |                          |    |
-@soda3js/cli         @soda3js/api           (applications/frameworks)
-                           ^
-                           |
-                     @soda3js/server        (private test harness)
+    ^    ^                ^    ^
+    |    |                |    |
+    |    +----------+     |    |
+    |               |     |    |
+@soda3js/client ----+-----+    (Effect service lib, peer deps)
+    ^    ^
+    |    |
+    |  @soda3js/rest           (batteries-included, fixed deps)
+    |
+@soda3js/cli                   (terminal client)
+
+@soda3js/server                (private test harness, standalone)
 ```
 
 **Key relationships:**
@@ -180,9 +191,8 @@ Leaves are at the top. Arrows point from consumer to dependency.
   and browser.
 - `cli` depends on `client` and `soql` directly, wires its own HttpClient layer
   (Node undici), and reads auth from TOML profiles.
-- `api` depends on `soql` (to consume AST types for the SoQL-to-SQL transpiler)
-  and on `protocol` (to produce responses the `client` can decode).
-- `server` depends on `api` and `client`, used only for integration testing.
+- `server` is standalone with no workspace dependencies. It is a pure Node.js
+  HTTP server used only for integration testing.
 
 ---
 
@@ -249,9 +259,8 @@ a specific platform entry:
 its own `NodeHttpClient.layerUndici` layer, and controls the entire Effect
 runtime.
 
-**`@soda3js/api`** and **`@soda3js/server`** are Bun-native (use `Bun.serve()`,
-`bun:sqlite`). They use `@savvy-web/rslib-builder` in early phases and will
-migrate to a Bun-specific builder when Bun APIs are actively imported.
+**`@soda3js/server`** is Node-native (uses `node:http`, `node:fs`, `node:crypto`).
+It uses `@savvy-web/rslib-builder` for builds.
 
 ### Workspace Root Development Setup
 
@@ -290,17 +299,13 @@ with `X-App-Token` header). If no token is found, it falls back to SODA2 mode
 `{ domain, appToken?, mode? }` in its constructor. The domain is captured
 at construction time (unlike the Effect API where domain is per-call).
 
-**`@soda3js/api` validates inbound tokens:** The server framework validates
-`X-App-Token` on SODA3 endpoints, mirroring how the real Socrata API behaves.
-Token validation is done in `middleware/auth.ts`.
-
 ---
 
 ## Wire-Format Contract
 
-**Problem:** `@soda3js/client` decodes API responses. `@soda3js/api` produces
-API responses. They must agree on shape, or schema drift causes silent data
-loss.
+**Problem:** `@soda3js/client` decodes API responses. Any future server-side
+package would produce API responses. They must agree on shape, or schema drift
+causes silent data loss.
 
 **Solution:** The `@soda3js/protocol` package defines plain TypeScript
 interfaces for all SODA wire formats:
@@ -310,14 +315,13 @@ interfaces for all SODA wire formats:
 - `SodaErrorResponseShape` — shape of all SODA error responses
   (`{ code, error: true, message, data? }`)
 
-Both `client` (decoding) and `api` (producing) import from `protocol`. Because
-`protocol` has zero dependencies and no Effect or runtime coupling, it can be
-safely imported by both packages regardless of their runtime environments.
+`client` imports from `protocol` to decode responses. Because `protocol` has
+zero dependencies and no Effect or runtime coupling, it can be safely imported
+by any package regardless of its runtime environment.
 
 **AST types as a secondary contract:** The `soql` package exports its AST node
-types publicly. The `api` package consumes these types for its SoQL-to-SQL
-transpiler (Phase 2). The `ast-contract.test.ts` test suite in the `soql`
-package pins AST shapes to prevent silent drift.
+types publicly. The `ast-contract.test.ts` test suite in the `soql` package
+pins AST shapes to prevent silent drift.
 
 ---
 
@@ -347,27 +351,27 @@ client. Target milestone: publish `v0.0.2`.
 - **Phase 2c:** `rest` — platform entries (node, bun, browser), Promise-based
   `Soda3Client` class, conditional exports
 
-### Phase 3 — `@soda3js/server` + `@soda3js/api` Test Infrastructure (Pending)
+### Phase 3 — `@soda3js/server` Test Infrastructure (Complete)
 
-Private packages enabling integration tests. `api` implements route handlers,
-in-memory engine, and auth middleware. `server` wraps `api` with replay
-(fixture-based) and fault injection (429, 401, timeouts) capabilities.
+Private replay/record/chaos test server for integration testing. Standalone
+Node.js HTTP server with fixture-based replay, deterministic fault injection,
+seeded chaos monkey, and a Vitest plugin. The originally planned
+`@soda3js/api` server framework was shelved.
 
-### Phase 4 — `@soda3js/cli` Terminal Client (Pending)
+### Phase 4 — `@soda3js/cli` Terminal Client (Complete)
 
-`@effect/cli`-based terminal client published as the `soda3` binary. TOML
-profile management, structured query options, multiple output formats (table,
-JSON, ndjson, CSV, GeoJSON), and TTY auto-detection.
+`@effect/cli`-based terminal client published as the `soda3` binary. Four
+commands (`query`, `export`, `meta`, `config`), TOML profile management,
+domain/profile resolution, and TTY-aware output formatting (table, json,
+ndjson, csv).
 
 ### Phase 5 — Full Release v0.1.0 (Pending)
 
-Documentation site, Tier 3 SoQL functions (geospatial, regression, type
-casting), SQLite and Postgres backends for `api`, `@soda3js/api` added to the
-fixed-versioning group and published.
+Documentation site, e2e testing against live portals, release hardening,
+and Tier 3 SoQL functions (geospatial).
 
 ---
 
-**Document Status:** Current — reflects Phase 1 and Phase 2 complete.
-Phase 2 implemented on `feat/client` branch.
+**Document Status:** Current — reflects Phases 1–4 complete.
 
-**Next update:** When Phase 3 packages (server, api) begin implementation.
+**Next update:** When Phase 5 release work begins.
