@@ -1,0 +1,19 @@
+{
+  "dataset_id": "test-1234",
+  "portal": "test.example.com",
+  "recorded_at": "2026-04-04T00:00:00.000Z",
+  "latency_ms": 50,
+  "auth": { "required": true, "token_used": false },
+  "request": {
+    "method": "POST",
+    "path": "/api/v3/views/test-1234/query.json",
+    "headers": {},
+    "body": { "$select": "*" }
+  },
+  "response": {
+    "status": 401,
+    "content_type": "application/json",
+    "headers": {},
+    "body_file": "error-401.body.json"
+  }
+}

@@ -125,5 +125,25 @@ describe("Soda3ClientBase", () => {
 			expect(result).toEqual([]);
 			expect(mock.requests[0].url).toContain("$select=");
 		});
+
+		it("query() with orderBy DESC passes descending sort", async () => {
+			const mock = makeMockHttpClient();
+			const soda = new Soda3ClientBase({ domain: "data.example.com", mode: "soda2" }, mock.layer);
+			const result = await soda.query("xxxx-yyyy", {
+				orderBy: "name:DESC",
+			});
+			expect(result).toEqual([]);
+			expect(mock.requests[0].url).toContain("$order=");
+		});
+
+		it("queryAll() with orderBy option applies sort", async () => {
+			const mock = makeMockHttpClient();
+			const soda = new Soda3ClientBase({ domain: "data.example.com", mode: "soda2" }, mock.layer);
+			const items: Record<string, unknown>[] = [];
+			for await (const item of soda.queryAll("xxxx-yyyy", { orderBy: "value:DESC" })) {
+				items.push(item);
+			}
+			expect(items).toEqual([]);
+		});
 	});
 });

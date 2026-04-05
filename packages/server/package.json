@@ -20,12 +20,19 @@
 		"prepare": "turbo run build:dev --output-logs=errors-only",
 		"types:check": "tsgo --noEmit"
 	},
-	"dependencies": {
-		"@soda3js/api": "workspace:*",
-		"@soda3js/client": "workspace:*"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@savvy-web/rslib-builder": "^0.19.1",
-		"@types/node": "catalog:silk"
+		"@savvy-web/vitest": "^1.2.2",
+		"@types/node": "catalog:silk",
+		"vitest": "^4.1.0"
+	},
+	"peerDependencies": {
+		"vitest": ">=4.1.0"
+	},
+	"peerDependenciesMeta": {
+		"vitest": {
+			"optional": true
+		}
 	}
 }

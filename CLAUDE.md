@@ -4,15 +4,11 @@ A modern TypeScript toolkit for the Socrata SODA3 Open Data API.
 
 ## Current Phase
 
-**Phase 2 — `@soda3js/protocol` + `@soda3js/client` + `@soda3js/rest` — In Progress**
+**Phase 4 — `@soda3js/cli` — Up Next**
 
-Phase 1 (soql) is complete. Phase 2 builds three packages: `protocol`
-(wire-format types), `client` (Effect service library), and `rest`
-(batteries-included REST client). Epic: #3. Milestone: v0.0.2.
-Iteration 2, P1.
-
-Active tasks: #15-#22 (client sub-issues). New issues needed for
-protocol and rest packages.
+Phases 1 (soql), 2 (protocol, client, rest), and 3 (server) are
+complete. Current branch: `feat/cli`. Phase 4 builds the terminal
+client package (`cli`).
 
 Before writing any code, read `.claude/design/workflow/agent-workflow.md`. It explains the
 full issue/spec/board workflow expected in every session.
@@ -30,14 +26,15 @@ Monorepo with seven packages under `packages/`:
 | `@soda3js/client` | Platform-agnostic Effect service library (single entry point) | Yes |
 | `@soda3js/rest` | Batteries-included REST client (`Soda3Client` class, subpath exports: `./node`, `./bun`, `./browser`) | Yes |
 | `@soda3js/cli` | Terminal client (`@effect/cli`, bin: `soda3`) | Yes |
-| `@soda3js/api` | SODA3 server framework (Bun-native) | Eventually |
-| `@soda3js/server` | Internal integration test harness (Bun-native) | No (private) |
+| `@soda3js/api` | SODA3 server framework (shelved) | Eventually |
+| `@soda3js/server` | Replay/record/chaos test server (Node, Vitest plugin) | No (private) |
 
 Dependency graph: `soql` and `protocol` are leaves (zero deps).
 `client` depends on `soql` (peers: `effect`, `@effect/platform`).
 `rest` depends on `client` + `soql` (fixed deps, not peers; bundles
 all Effect platform deps). `cli` depends on `client` + `soql`
-directly (not `rest`). `api` depends on `soql` + `protocol`.
+directly (not `rest`). `server` has no runtime deps (optional peer:
+`vitest`).
 
 ## Toolchain
 
@@ -108,4 +105,5 @@ rest client at it.
 - **Agent workflow guide:** `.claude/design/workflow/agent-workflow.md` — read this first every session
 - **Full project spec:** `docs/superpowers/specs/2026-04-02-soda3js-toolkit-design.md`
 - **Design docs:** `.claude/design/` with per-module subdirectories
+- **Server architecture:** `.claude/design/server/architecture.md`
 - **Design config:** `.claude/design/design.config.json`
