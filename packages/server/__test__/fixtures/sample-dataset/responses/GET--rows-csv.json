@@ -1,0 +1,19 @@
+{
+  "dataset_id": "test-1234",
+  "portal": "test.example.com",
+  "recorded_at": "2026-04-04T00:00:00.000Z",
+  "latency_ms": 300,
+  "auth": { "required": false, "token_used": false },
+  "request": {
+    "method": "GET",
+    "path": "/api/views/test-1234/rows.csv",
+    "headers": {},
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "text/csv",
+    "headers": {},
+    "body_file": "GET--rows-csv.body.csv"
+  }
+}

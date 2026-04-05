@@ -13,6 +13,7 @@ export default VitestConfig.create(
 			...config.resolve,
 			alias: {
 				"@soda3js/client": resolve(__dirname, "packages/client/src/index.ts"),
+				"@soda3js/server": resolve(__dirname, "packages/server/src/index.ts"),
 				"@soda3js/soql": resolve(__dirname, "packages/soql/src/index.ts"),
 			},
 		},
