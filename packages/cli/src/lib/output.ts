@@ -36,6 +36,7 @@ export function formatNdjson(rows: ReadonlyArray<Record<string, unknown>>): stri
  * Format rows as CSV with headers derived from the first row.
  */
 export function formatCsv(rows: ReadonlyArray<Record<string, unknown>>): string {
+	// Empty results return empty string with no header row (no keys to derive headers from)
 	if (rows.length === 0) return "";
 
 	const headers = Object.keys(rows[0]);

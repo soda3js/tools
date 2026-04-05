@@ -50,7 +50,7 @@ const formatOption = Options.choice("format", ["table", "json", "ndjson", "csv"]
 );
 
 const rawSoqlOption = Options.text("q").pipe(
-	Options.withDescription("Raw SoQL query (bypasses structured options)"),
+	Options.withDescription("Raw SoQL SELECT expression (bypasses structured options)"),
 	Options.optional,
 );
 
@@ -166,7 +166,7 @@ export const queryCommand = Command.make(
 			const rows = yield* Effect.provide(queryEffect, clientLayer);
 
 			// 5. Format and output
-			const fmt: OutputFormat = format._tag === "Some" ? (format.value as OutputFormat) : detectFormat(rows.length);
+			const fmt: OutputFormat = format._tag === "Some" ? format.value : detectFormat(rows.length);
 			const output = formatOutput(rows, fmt);
 			yield* Console.log(output);
 		}),
