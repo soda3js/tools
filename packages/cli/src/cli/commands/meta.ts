@@ -79,7 +79,7 @@ export const metaCommand = Command.make(
 			});
 
 			const clientConfig = new SodaClientConfig({
-				...(resolved.appToken !== undefined ? { appToken: resolved.appToken } : {}),
+				...(resolved.appToken !== undefined ? { domains: { [resolved.domain]: { appToken: resolved.appToken } } } : {}),
 			});
 
 			const clientLayer = Layer.provide(SodaClientLive(clientConfig), NodeHttpClient.layerUndici);

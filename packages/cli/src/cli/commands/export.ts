@@ -1,4 +1,4 @@
-import { writeFile } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
 import { Args, Command, Options } from "@effect/cli";
 import { NodeHttpClient } from "@effect/platform-node";
 import { SodaClient, SodaClientConfig, SodaClientLive } from "@soda3js/client";
@@ -40,7 +40,7 @@ export const exportCommand = Command.make(
 			const resolved = resolveDomain(config, opts);
 
 			const clientConfig = new SodaClientConfig({
-				...(resolved.appToken !== undefined ? { appToken: resolved.appToken } : {}),
+				...(resolved.appToken !== undefined ? { domains: { [resolved.domain]: { appToken: resolved.appToken } } } : {}),
 			});
 
 			const clientLayer = Layer.provide(SodaClientLive(clientConfig), NodeHttpClient.layerUndici);
@@ -48,24 +48,22 @@ export const exportCommand = Command.make(
 			const exportEffect = Effect.gen(function* () {
 				const soda = yield* SodaClient;
 				const stream = yield* soda.export_(resolved.domain, datasetId, format as "csv" | "json");
-				const chunks = yield* Stream.runCollect(stream);
-				const allChunks = Array.from(chunks);
-
-				// Concatenate Uint8Arrays
-				const totalLength = allChunks.reduce((sum, chunk) => sum + chunk.length, 0);
-				const merged = new Uint8Array(totalLength);
-				let offset = 0;
-				for (const chunk of allChunks) {
-					merged.set(chunk, offset);
-					offset += chunk.length;
-				}
-
-				const text = new TextDecoder().decode(merged);
 
 				if (output._tag === "Some") {
-					yield* Effect.promise(() => writeFile(output.value, text, "utf-8"));
+					const ws = createWriteStream(output.value);
+					yield* Stream.runForEach(stream, (chunk) =>
+						Effect.async<void>((resume) => {
+							const ok = ws.write(chunk);
+							if (ok) resume(Effect.void);
+							else ws.once("drain", () => resume(Effect.void));
+						}),
+					);
+					yield* Effect.async<void>((resume) => {
+						ws.end(() => resume(Effect.void));
+					});
+					yield* Console.log(`Exported to ${output.value}`);
 				} else {
-					yield* Console.log(text);
+					yield* Stream.runForEach(stream, (chunk) => Effect.sync(() => process.stdout.write(chunk)));
 				}
 			});
 

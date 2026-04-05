@@ -44,7 +44,7 @@ const orderOption = Options.text("order").pipe(
 	Options.optional,
 );
 
-const formatOption = Options.text("format").pipe(
+const formatOption = Options.choice("format", ["table", "json", "ndjson", "csv"]).pipe(
 	Options.withDescription("Output format: table, json, ndjson, csv"),
 	Options.optional,
 );

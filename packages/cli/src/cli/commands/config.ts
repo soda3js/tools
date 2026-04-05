@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { access, readFile } from "node:fs/promises";
 import { Args, Command, Options } from "@effect/cli";
 import { Console, Effect, Option } from "effect";
@@ -115,8 +115,8 @@ const editCommand = Command.make("edit", {}, () =>
 			yield* Console.log("No config file found. Run `soda3 config init` to create one.");
 			return;
 		}
-		const editor = process.env.EDITOR || "vi";
-		yield* Effect.sync(() => execSync(`${editor} ${filePath}`, { stdio: "inherit" }));
+		const [editorBin, ...editorArgs] = (process.env.EDITOR || "vi").split(/\s+/);
+		yield* Effect.sync(() => execFileSync(editorBin, [...editorArgs, filePath], { stdio: "inherit" }));
 	}),
 ).pipe(Command.withDescription("Open the config file in your editor"));
 
