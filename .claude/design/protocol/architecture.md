@@ -3,7 +3,7 @@ status: current
 module: protocol
 category: architecture
 created: 2026-04-04
-updated: 2026-04-04
+updated: 2026-04-05
 last-synced: 2026-04-04
 completeness: 85
 related:
@@ -37,8 +37,8 @@ dependencies and exports only `interface` and `type` declarations -- no
 runtime code.
 
 The package exists so that `@soda3js/client` (which decodes API responses) and
-`@soda3js/api` (which produces API responses) can agree on wire-format shapes
-without importing each other or pulling in any shared runtime dependency.
+any future server-side packages can agree on wire-format shapes without
+importing each other or pulling in any shared runtime dependency.
 
 ---
 
@@ -134,13 +134,6 @@ Effect `Schema.Class` types. `DatasetMetadata`, `Column`, `Owner`, and
 protocol shapes. The client validates incoming JSON against these schemas at
 runtime.
 
-### `@soda3js/api` (produces)
-
-The API server package (Phase 3, pending) will import protocol interfaces to
-type its response builders. Route handlers will construct objects satisfying
-`DatasetMetadataShape` and `SodaErrorResponseShape`, ensuring wire-format
-compatibility with what the client expects to decode.
-
 ---
 
 ## Testing Strategy
@@ -150,9 +143,6 @@ Protocol interfaces are tested at the type level rather than at runtime:
 - The `@soda3js/client` schema tests (`schemas.test.ts`) decode raw JSON
   through `Schema.decodeUnknown` using objects that conform to protocol
   interface shapes. If the interfaces drift from reality, these tests fail.
-- When `@soda3js/api` is implemented, its response builders will be typed
-  against protocol interfaces, providing compile-time verification from the
-  producer side.
 
 No standalone runtime tests exist in the protocol package because there is no
 runtime code to test.

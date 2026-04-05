@@ -150,9 +150,10 @@ changeset file will be committed with your PR.
 ```text
 packages/
   soql/            # @soda3js/soql -- SoQL query builder
+  protocol/        # @soda3js/protocol -- Wire-format type contracts
   client/          # @soda3js/client -- Effect-TS HTTP client
+  rest/            # @soda3js/rest -- Batteries-included REST client
   cli/             # @soda3js/cli -- Terminal client
-  api/             # @soda3js/api -- SODA3 server framework
   server/          # @soda3js/server -- Internal test harness (private)
 website/           # RSPress documentation site
 __fixtures__/      # Shared test fixture data (checked into git)
@@ -166,18 +167,17 @@ lib/
 soql (leaf, pure TS)
   ^
   |
-client (depends on soql)
-  ^
-  |
-cli (depends on client + soql)
+client (depends on soql + protocol)
+  ^         ^
+  |         |
+cli       rest (depends on client + soql)
 
-soql
+protocol (leaf, pure TS)
   ^
   |
-api (depends on soql)
-  ^
-  |
-server (depends on api + client)
+client (depends on protocol + soql)
+
+server (standalone, no workspace deps)
 ```
 
 ### Build Toolchain

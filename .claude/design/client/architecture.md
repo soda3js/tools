@@ -3,7 +3,7 @@ status: current
 module: client
 category: architecture
 created: 2026-04-04
-updated: 2026-04-04
+updated: 2026-04-05
 last-synced: 2026-04-04
 completeness: 85
 related:
@@ -372,10 +372,6 @@ types from `@soda3js/client`. CLI provides its own platform layer (likely
 `SodaClientLive` with the correct platform `HttpClient` layer and re-exports the
 `Soda3Client` class for Promise-based consumers. All platform dependencies are
 fixed (not peer), so `npm install @soda3js/rest` resolves everything.
-
-### Downstream: `@soda3js/api` (pending)
-
-API server will import error types and potentially `SodaClientConfig` schemas.
 
 ### Peer: `@soda3js/protocol` (implemented)
 

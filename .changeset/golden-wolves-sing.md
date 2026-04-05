@@ -70,7 +70,7 @@ Functions are available both as named exports for tree-shaking and as static pro
 
 ### Public discriminated-union AST
 
-The seven AST node types are exported as stable public types for downstream consumers (such as `@soda3js/api`) that need to inspect or transform query trees:
+The seven AST node types are exported as stable public types for downstream consumers (such as `@soda3js/client`) that need to inspect or transform query trees:
 
 | Type | Description |
 | :--- | :--- |

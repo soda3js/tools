@@ -48,17 +48,6 @@
 				"siteDocs": null
 			}
 		},
-		"api": {
-			"path": "packages/api",
-			"designDocsPath": ".claude/design/api",
-			"categories": ["architecture", "integration", "testing"],
-			"maintainer": "C. Spencer Beggs",
-			"userDocs": {
-				"readme": "packages/api/README.md",
-				"repoDocs": null,
-				"siteDocs": null
-			}
-		},
 		"server": {
 			"path": "packages/server",
 			"designDocsPath": ".claude/design/server",

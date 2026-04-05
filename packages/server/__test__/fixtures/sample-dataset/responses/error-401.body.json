@@ -1,0 +1,5 @@
+{
+  "code": "authentication_required",
+  "error": true,
+  "message": "This request requires authentication."
+}
