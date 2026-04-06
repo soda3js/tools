@@ -34,6 +34,15 @@ export { SodaClientConfig } from "./schemas/SodaClientConfig.js";
 export { SodaErrorResponse } from "./schemas/SodaErrorResponse.js";
 // Service
 export { SodaClient } from "./services/SodaClient.js";
+export type { CachedMetadataOptions, CachedQueryOptions } from "./utils/cache.js";
+// Cache utilities
+export {
+	FRESHNESS_KEY_PREFIX,
+	cachedMetadata,
+	cachedQuery,
+	getFreshness,
+	setFreshness,
+} from "./utils/cache.js";
 // Metrics
 export { errorsTotal, requestDuration, requestsTotal, retriesTotal } from "./utils/metrics.js";
 export type { ApiModeConfig } from "./utils/mode.js";

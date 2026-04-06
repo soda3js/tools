@@ -70,6 +70,39 @@
 				"siteDocs": null
 			}
 		},
+		"cache": {
+			"path": "packages/cache",
+			"designDocsPath": ".claude/design/cache",
+			"categories": ["architecture", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/cache/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"cache-fs": {
+			"path": "packages/cache-fs",
+			"designDocsPath": ".claude/design/cache-fs",
+			"categories": ["architecture", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/cache-fs/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"cache-sqlite": {
+			"path": "packages/cache-sqlite",
+			"designDocsPath": ".claude/design/cache-sqlite",
+			"categories": ["architecture", "testing"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/cache-sqlite/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
 		"rest": {
 			"path": "packages/rest",
 			"designDocsPath": ".claude/design/rest",

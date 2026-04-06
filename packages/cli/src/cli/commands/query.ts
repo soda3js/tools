@@ -3,7 +3,8 @@ import { NodeHttpClient } from "@effect/platform-node";
 import { SodaClient, SodaClientConfig, SodaClientLive } from "@soda3js/client";
 import type { SoQLBuilder } from "@soda3js/soql";
 import { SoQL } from "@soda3js/soql";
-import { Console, Effect, Layer } from "effect";
+import { Console, Effect, Layer, Option } from "effect";
+import { createCache, resolveCacheConfig } from "../../lib/cache-factory.js";
 import { readConfig } from "../../lib/config-store.js";
 import { resolveDomain } from "../../lib/domain.js";
 import type { OutputFormat } from "../../lib/output.js";
@@ -54,6 +55,21 @@ const rawSoqlOption = Options.text("q").pipe(
 	Options.optional,
 );
 
+const noCacheOption = Options.boolean("no-cache").pipe(
+	Options.withDescription("Disable caching for this query"),
+	Options.withDefault(false),
+);
+
+const cacheTtlOption = Options.integer("cache-ttl").pipe(
+	Options.withDescription("Cache TTL in seconds (overrides config)"),
+	Options.optional,
+);
+
+const groupByOption = Options.text("group-by").pipe(
+	Options.withDescription("Comma-separated columns to group by"),
+	Options.optional,
+);
+
 // ---------------------------------------------------------------------------
 // Query options type (exported for testing)
 // ---------------------------------------------------------------------------
@@ -65,6 +81,7 @@ export interface QueryOptions {
 	readonly offset?: number;
 	readonly order?: string;
 	readonly q?: string;
+	readonly groupBy?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -87,7 +104,8 @@ export function buildQuery(options: QueryOptions): SoQLBuilder {
 
 	if (options.select !== undefined) {
 		const columns = options.select.split(",").map((c) => c.trim());
-		builder = builder.select(...columns);
+		const selectArgs = columns.map((col) => (col.includes("(") ? SoQL.raw(col) : col));
+		builder = builder.select(...selectArgs);
 	}
 
 	if (options.where !== undefined) {
@@ -110,6 +128,11 @@ export function buildQuery(options: QueryOptions): SoQLBuilder {
 		}
 	}
 
+	if (options.groupBy !== undefined) {
+		const columns = options.groupBy.split(",").map((c) => c.trim());
+		builder = builder.groupBy(...columns);
+	}
+
 	return builder;
 }
 
@@ -130,20 +153,42 @@ export const queryCommand = Command.make(
 		order: orderOption,
 		format: formatOption,
 		q: rawSoqlOption,
+		noCache: noCacheOption,
+		cacheTtl: cacheTtlOption,
+		groupBy: groupByOption,
 	},
-	({ datasetId, domain, profile, select, where, limit, offset, order, format, q }) =>
+	({ datasetId, domain, profile, select, where, limit, offset, order, format, q, noCache, cacheTtl, groupBy }) =>
 		Effect.gen(function* () {
 			// 1. Read config and resolve domain
 			const config = yield* Effect.promise(() => readConfig());
+			const profileName = profile._tag === "Some" ? profile.value : undefined;
 			const resolved = resolveDomain(config, {
-				...(profile._tag === "Some" ? { profile: profile.value } : {}),
+				...(profileName !== undefined ? { profile: profileName } : {}),
 				...(domain._tag === "Some" ? { domain: domain.value } : {}),
 			});
 
 			// 2. Build SodaClientConfig from resolved domain
-			const clientConfig = new SodaClientConfig({
-				...(resolved.appToken !== undefined ? { domains: { [resolved.domain]: { appToken: resolved.appToken } } } : {}),
+			const profileCache = profileName !== undefined ? config.profiles[profileName]?.cache : undefined;
+			const cacheConfig = resolveCacheConfig(config.cache, profileCache, {
+				noCache,
+				...(Option.isSome(cacheTtl) ? { cacheTtl: cacheTtl.value } : {}),
 			});
+
+			const clientConfig = cacheConfig.enabled
+				? SodaClientConfig.withCache(
+						{
+							...(resolved.appToken !== undefined
+								? { domains: { [resolved.domain]: { appToken: resolved.appToken } } }
+								: {}),
+						},
+						createCache(),
+						cacheConfig.ttl,
+					)
+				: new SodaClientConfig({
+						...(resolved.appToken !== undefined
+							? { domains: { [resolved.domain]: { appToken: resolved.appToken } } }
+							: {}),
+					});
 
 			// 3. Build SoQL query
 			const soql = buildQuery({
@@ -153,6 +198,7 @@ export const queryCommand = Command.make(
 				...(offset._tag === "Some" ? { offset: offset.value } : {}),
 				...(order._tag === "Some" ? { order: order.value } : {}),
 				...(q._tag === "Some" ? { q: q.value } : {}),
+				...(groupBy._tag === "Some" ? { groupBy: groupBy.value } : {}),
 			});
 
 			// 4. Execute query via SodaClient

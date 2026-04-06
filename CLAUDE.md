@@ -17,7 +17,7 @@ full issue/spec/board workflow expected in every session.
 
 ## Project Structure
 
-Monorepo with six packages under `packages/`:
+Monorepo with nine packages under `packages/`:
 
 | Package | Purpose | Published |
 | --- | --- | --- |
@@ -26,14 +26,18 @@ Monorepo with six packages under `packages/`:
 | `@soda3js/client` | Platform-agnostic Effect service library (single entry point) | Yes |
 | `@soda3js/rest` | Batteries-included REST client (`Soda3Client` class, subpath exports: `./node`, `./bun`, `./browser`) | Yes |
 | `@soda3js/cli` | Terminal client (`@effect/cli`, bin: `soda3`) | Yes |
+| `@soda3js/cache` | Response caching (MemoryCache, BrowserCache, cache key builder) | Yes |
+| `@soda3js/cache-fs` | Filesystem cache (XDG dirs, Effect Layer) | Yes |
+| `@soda3js/cache-sqlite` | SQLite cache (Effect SQL, migrations) | Yes |
 | `@soda3js/server` | Replay/record/chaos test server (Node, Vitest plugin) | No (private) |
 
 Dependency graph: `soql` and `protocol` are leaves (zero deps).
 `client` depends on `soql` (peers: `effect`, `@effect/platform`).
 `rest` depends on `client` + `soql` (fixed deps, not peers; bundles
 all Effect platform deps). `cli` depends on `client` + `soql`
-directly (not `rest`). `server` has no runtime deps (optional peer:
-`vitest`).
+directly (not `rest`). `cache` depends on `protocol`. `cache-fs`
+peers: `effect`, `@effect/platform`. `cache-sqlite` peers: `effect`,
+`@effect/sql`. `server` has no runtime deps (optional peer: `vitest`).
 
 ## Toolchain
 
@@ -41,7 +45,7 @@ directly (not `rest`). `server` has no runtime deps (optional peer:
 - **Build orchestration:** Turborepo
 - **Linting/formatting:** Biome (extends `@savvy-web/lint-staged/biome/silk.jsonc`)
 - **Testing:** `@savvy-web/vitest` for test discovery and coverage
-- **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `protocol`, `client`, `rest`, `cli`
+- **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `protocol`, `client`, `rest`, `cli`, `cache`, `cache-fs`, `cache-sqlite`
 - **Commits:** Husky + lint-staged + commitlint (DCO signoff required)
 - **Builders:** `@savvy-web/rslib-builder` for all packages
 
@@ -105,4 +109,7 @@ rest client at it.
 - **Full project spec:** `docs/superpowers/specs/2026-04-02-soda3js-toolkit-design.md`
 - **Design docs:** `.claude/design/` with per-module subdirectories
 - **Server architecture:** `.claude/design/server/architecture.md`
+- **Cache architecture:** `.claude/design/cache/architecture.md`
+- **Cache-FS architecture:** `.claude/design/cache-fs/architecture.md`
+- **Cache-SQLite architecture:** `.claude/design/cache-sqlite/architecture.md`
 - **Design config:** `.claude/design/design.config.json`
