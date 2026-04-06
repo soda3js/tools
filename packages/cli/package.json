@@ -27,6 +27,7 @@
 		"@effect/cli": "catalog:silk",
 		"@effect/platform": "catalog:silk",
 		"@effect/platform-node": "catalog:silk",
+		"@soda3js/cache-fs": "workspace:*",
 		"@soda3js/client": "workspace:*",
 		"@soda3js/soql": "workspace:*",
 		"effect": "catalog:silk",

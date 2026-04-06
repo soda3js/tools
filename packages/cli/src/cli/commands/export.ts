@@ -2,7 +2,8 @@ import { createWriteStream } from "node:fs";
 import { Args, Command, Options } from "@effect/cli";
 import { NodeHttpClient } from "@effect/platform-node";
 import { SodaClient, SodaClientConfig, SodaClientLive } from "@soda3js/client";
-import { Console, Effect, Layer, Stream } from "effect";
+import { Console, Effect, Layer, Option, Stream } from "effect";
+import { createCache, resolveCacheConfig } from "../../lib/cache-factory.js";
 import { readConfig } from "../../lib/config-store.js";
 import { resolveDomain } from "../../lib/domain.js";
 
@@ -28,20 +29,57 @@ const outputOption = Options.file("output").pipe(
 	Options.optional,
 );
 
+const noCacheOption = Options.boolean("no-cache").pipe(
+	Options.withDescription("Disable caching for this query"),
+	Options.withDefault(false),
+);
+
+const cacheTtlOption = Options.integer("cache-ttl").pipe(
+	Options.withDescription("Cache TTL in seconds (overrides config)"),
+	Options.optional,
+);
+
 export const exportCommand = Command.make(
 	"export",
-	{ datasetId: datasetIdArg, domain: domainOption, profile: profileOption, format: formatOption, output: outputOption },
-	({ datasetId, domain, profile, format, output }) =>
+	{
+		datasetId: datasetIdArg,
+		domain: domainOption,
+		profile: profileOption,
+		format: formatOption,
+		output: outputOption,
+		noCache: noCacheOption,
+		cacheTtl: cacheTtlOption,
+	},
+	({ datasetId, domain, profile, format, output, noCache, cacheTtl }) =>
 		Effect.gen(function* () {
 			const config = yield* Effect.promise(() => readConfig());
+			const profileName = profile._tag === "Some" ? profile.value : undefined;
 			const opts: { profile?: string; domain?: string } = {};
-			if (profile._tag === "Some") opts.profile = profile.value;
+			if (profileName !== undefined) opts.profile = profileName;
 			if (domain._tag === "Some") opts.domain = domain.value;
 			const resolved = resolveDomain(config, opts);
 
-			const clientConfig = new SodaClientConfig({
-				...(resolved.appToken !== undefined ? { domains: { [resolved.domain]: { appToken: resolved.appToken } } } : {}),
+			const profileCache = profileName !== undefined ? config.profiles[profileName]?.cache : undefined;
+			const cacheConfig = resolveCacheConfig(config.cache, profileCache, {
+				noCache,
+				...(Option.isSome(cacheTtl) ? { cacheTtl: cacheTtl.value } : {}),
 			});
+
+			const clientConfig = cacheConfig.enabled
+				? SodaClientConfig.withCache(
+						{
+							...(resolved.appToken !== undefined
+								? { domains: { [resolved.domain]: { appToken: resolved.appToken } } }
+								: {}),
+						},
+						createCache(),
+						cacheConfig.ttl,
+					)
+				: new SodaClientConfig({
+						...(resolved.appToken !== undefined
+							? { domains: { [resolved.domain]: { appToken: resolved.appToken } } }
+							: {}),
+					});
 
 			const clientLayer = Layer.provide(SodaClientLive(clientConfig), NodeHttpClient.layerUndici);
 

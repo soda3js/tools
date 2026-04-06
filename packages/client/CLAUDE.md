@@ -17,7 +17,8 @@ Layered module structure:
   SodaQueryError, SodaRateLimitError, SodaServerError, SodaTimeoutError)
 - `layers/SodaClientLive.ts` -- Live layer wiring endpoints to service tag
 - `utils/` -- metrics (4 Effect Metric constants), redact (URL/header
-  redaction), mode (query mode detection), pagination
+  redaction), mode (query mode detection), pagination, cache (freshness
+  tracking and cache-aware endpoint wrappers)
 
 Platform entry points (node.ts, bun.ts, browser.ts) and `Soda3Client`
 class live in `@soda3js/rest`, not here.
@@ -26,6 +27,17 @@ class live in `@soda3js/rest`, not here.
 `@./.claude/design/client/architecture.md`
 
 Load when modifying endpoints, schemas, error mapping, or layer wiring.
+
+## Cache Integration
+
+- `SodaClientConfig.withCache(config, cache, ttl?)` -- static factory
+  that attaches a `CacheStore` and optional TTL to the config
+- When a `CacheStore` is present, `query` and `metadata` endpoints
+  wrap responses with cache-aware logic (check/store/freshness)
+- `utils/cache.ts` provides freshness tracking helpers used by
+  the cache-aware endpoint wrappers
+- `CacheStore` is an interface from `@soda3js/cache`; concrete
+  implementations live in `cache-fs` and `cache-sqlite`
 
 ## Key Patterns
 

@@ -2,6 +2,7 @@ import type { HttpClient } from "@effect/platform";
 import { FetchHttpClient } from "@effect/platform";
 import type { DatasetMetadata } from "@soda3js/client";
 import { SodaClient, SodaClientConfig } from "@soda3js/client";
+import type { CacheStore } from "@soda3js/protocol";
 import { SoQL } from "@soda3js/soql";
 import { Effect, Layer, Stream } from "effect";
 
@@ -21,6 +22,8 @@ export interface Soda3ClientConfig {
 	readonly domain: string;
 	readonly appToken?: string;
 	readonly mode?: "auto" | "soda2" | "soda3";
+	readonly cache?: CacheStore;
+	readonly cacheTtl?: number;
 }
 
 export interface QueryOptions {
@@ -38,10 +41,19 @@ export class Soda3ClientBase {
 	constructor(config: Soda3ClientConfig, platformLayer: Layer.Layer<HttpClient.HttpClient> = FetchHttpClient.layer) {
 		this.domain = config.domain;
 
-		const sodaConfig = new SodaClientConfig({
-			...(config.appToken !== undefined ? { appToken: config.appToken } : {}),
-			...(config.mode !== undefined ? { mode: config.mode } : {}),
-		});
+		const sodaConfig = config.cache
+			? SodaClientConfig.withCache(
+					{
+						...(config.appToken !== undefined ? { appToken: config.appToken } : {}),
+						...(config.mode !== undefined ? { mode: config.mode } : {}),
+					},
+					config.cache,
+					config.cacheTtl,
+				)
+			: new SodaClientConfig({
+					...(config.appToken !== undefined ? { appToken: config.appToken } : {}),
+					...(config.mode !== undefined ? { mode: config.mode } : {}),
+				});
 
 		this.layer = Layer.effect(SodaClient, SodaClient.makeSodaClient(sodaConfig)).pipe(Layer.provide(platformLayer));
 	}

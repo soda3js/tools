@@ -4,13 +4,15 @@ module: client
 category: architecture
 created: 2026-04-04
 updated: 2026-04-05
-last-synced: 2026-04-04
-completeness: 85
+last-synced: 2026-04-05
+completeness: 90
 related:
   - ../architecture.md
   - ../soql/architecture.md
   - ../protocol/architecture.md
   - ../rest/architecture.md
+  - ../cache/architecture.md
+  - ../cache-fs/architecture.md
 dependencies: []
 ---
 
@@ -18,7 +20,7 @@ dependencies: []
 
 Effect-TS service library for the Socrata SODA3 API. Provides a platform-agnostic
 `SodaClient` service tag, typed errors, Effect Schema-validated models, four
-endpoint implementations, metrics, and log redaction.
+endpoint implementations, optional response caching, metrics, and log redaction.
 
 ## Table of Contents
 
@@ -26,11 +28,12 @@ endpoint implementations, metrics, and log redaction.
 2. [Current State](#current-state)
 3. [Rationale](#rationale)
 4. [System Architecture](#system-architecture)
-5. [Data Flow](#data-flow)
-6. [Integration Points](#integration-points)
-7. [Observability](#observability)
-8. [Testing Strategy](#testing-strategy)
-9. [Future Work](#future-work)
+5. [Cache Integration](#cache-integration)
+6. [Data Flow](#data-flow)
+7. [Integration Points](#integration-points)
+8. [Observability](#observability)
+9. [Testing Strategy](#testing-strategy)
+10. [Future Work](#future-work)
 
 ---
 
@@ -106,6 +109,7 @@ packages/client/src/
     SodaRateLimitError.ts       # Data.TaggedError — 429
     SodaTimeoutError.ts         # Data.TaggedError — client timeout
   utils/
+    cache.ts                    # cachedQuery(), cachedMetadata(), getFreshness(), setFreshness()
     mode.ts                     # resolveMode() — pure function
     pagination.ts               # paginateSoda2(), paginateSoda3()
     metrics.ts                  # Effect Metric constants (4 metrics)
@@ -273,6 +277,97 @@ Both terminate when the fetched page is empty.
 
 ---
 
+## Cache Integration
+
+### SodaClientConfig Cache Fields
+
+`SodaClientConfig` (in `schemas/SodaClientConfig.ts`) has been extended with
+two cache-related fields:
+
+- **`cacheTtl`** (Schema.optional Number): Controls how long freshness
+  records are considered valid before triggering a metadata preflight check.
+  Defaults to 300 seconds. This is an Effect Schema field and participates
+  in runtime validation.
+
+- **`cache`** (class property, `CacheStore | undefined`): A class instance
+  property (not a Schema field) holding the `CacheStore` implementation.
+  Because `CacheStore` is an interface with async methods, it cannot be
+  represented as an Effect Schema field. It is set via the `static
+  withCache()` factory method.
+
+The `withCache()` static method constructs a `SodaClientConfig` with the
+cache attached:
+
+```typescript
+SodaClientConfig.withCache(
+  { appToken: "...", mode: "auto" },
+  myCache,
+  600, // optional cacheTtl override
+)
+```
+
+### Cache-Aware Endpoint Wiring
+
+`SodaClient.makeSodaClient()` checks `config.cache` at construction time.
+When a cache is provided, the `query` and `metadata` methods are wrapped
+with cache logic:
+
+- **query:** Wrapped with `cachedQuery()` from `utils/cache.ts`. The
+  function checks freshness, builds a cache key, looks up cached data,
+  and falls back to the live endpoint if needed. Cache errors are caught
+  and mapped to `SodaServerError({ code: "cache_error" })`.
+
+- **metadata:** Wrapped with `cachedMetadata()`. Similar TTL-gated
+  freshness check, then cache lookup, then live fetch. The raw cached
+  JSON is re-decoded through `Schema.decodeUnknown(DatasetMetadata)` to
+  maintain type safety.
+
+- **queryAll:** Not cached (streaming responses are not suitable for
+  cache-store semantics).
+
+- **export_:** Not cached (byte streams are not suitable for cache-store
+  semantics).
+
+### Cache Utility Functions (utils/cache.ts)
+
+Four exported functions provide the cache plumbing:
+
+- **`getFreshness(cache, domain, datasetId)`** -- Reads a freshness record
+  from the cache using the `__freshness__/domain/datasetId` key convention.
+  Decodes the `CacheEntry` body as JSON to reconstruct a `DatasetFreshness`
+  object.
+
+- **`setFreshness(cache, freshness)`** -- Writes a freshness record as a
+  non-cleanable `CacheEntry` with `cleanable: false` so prune operations
+  do not remove freshness tracking data.
+
+- **`cachedQuery(options)`** -- Full cache-aware query flow:
+  1. Check freshness (reuse if TTL-valid, otherwise fetch metadata)
+  2. Build cache key via `buildCacheKey()` from `@soda3js/cache`
+  3. Check cache for existing response
+  4. Fetch from live endpoint on miss
+  5. Store result with `query` field populated for inspectability
+  Supports an optional `pageNumber` suffix for paginated queries.
+
+- **`cachedMetadata(options)`** -- Cache-aware metadata flow:
+  1. Check freshness
+  2. Build cache key with `query: "__metadata__"` sentinel
+  3. Return cached metadata if freshness is valid
+  4. Fetch and store on miss, updating freshness simultaneously
+
+### Key Format
+
+Cache keys follow a hierarchical path-like format:
+`{domain}/{datasetId}/{hash}`. The hash is generated by `buildCacheKey()`
+from `@soda3js/cache`. This format enables `FileSystemCacheImpl` in
+`@soda3js/cache-fs` to route entries into a domain/dataset directory
+hierarchy, while `MemoryCache` and `BrowserCache` treat keys as opaque
+strings.
+
+Freshness keys use a separate prefix: `__freshness__/{domain}/{datasetId}`.
+
+---
+
 ## Data Flow
 
 ### Request Lifecycle
@@ -362,16 +457,24 @@ need only import from `@soda3js/client`.
 ### Downstream: `@soda3js/cli` (current)
 
 CLI imports `SodaClient`, `SodaClientLive`, `SodaClientConfig`, `SoQL`, and error
-types from `@soda3js/client`. CLI provides its own platform layer (likely
-`NodeSodaClientLive`) and manages the Effect runtime.
+types from `@soda3js/client`. CLI provides its own platform layer and manages
+the Effect runtime. The CLI's `cache-factory.ts` module calls
+`SodaClientConfig.withCache()` to inject a `FileSystemCache` instance based
+on TOML configuration (`[cache]` section) and command-line flags
+(`--no-cache`, `--cache-ttl`). Per-profile cache settings are supported.
+The CLI also provides `soda3 cache status/inspect/clear/prune` subcommands
+that operate directly on the cache directory.
 
 ### Downstream: `@soda3js/rest` (implemented)
 
-`@soda3js/rest` is a batteries-included wrapper with no main export — only
+`@soda3js/rest` is a batteries-included wrapper with no main export -- only
 `@soda3js/rest/node`, `/bun`, and `/browser` subpath exports. Each entry wires
 `SodaClientLive` with the correct platform `HttpClient` layer and re-exports the
 `Soda3Client` class for Promise-based consumers. All platform dependencies are
 fixed (not peer), so `npm install @soda3js/rest` resolves everything.
+
+`Soda3ClientConfig` now accepts optional `cache` and `cacheTtl` fields, which
+are passed through to `SodaClientConfig` via `withCache()` when provided.
 
 ### Peer: `@soda3js/protocol` (implemented)
 
@@ -460,7 +563,9 @@ using `Effect.timeoutFail` around endpoint execution needs to be wired in.
 
 ---
 
-**Document Status:** Current — all Phase 2 client functionality implemented on
-`feat/client` branch, including metrics, redaction, and protocol integration.
+**Document Status:** Current -- all Phase 2 client functionality plus cache
+integration implemented on `feat/caching` branch. Cache-aware query and
+metadata endpoints, freshness tracking, and REST/CLI passthrough are wired.
 
-**Next Update:** When retry logic or timeout enforcement is added.
+**Next Update:** When retry logic, timeout enforcement, or queryAll caching
+is added.

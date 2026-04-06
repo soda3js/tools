@@ -21,6 +21,8 @@
 		"types:check": "tsgo --noEmit"
 	},
 	"dependencies": {
+		"@soda3js/cache": "workspace:*",
+		"@soda3js/protocol": "workspace:*",
 		"@soda3js/soql": "workspace:*"
 	},
 	"devDependencies": {

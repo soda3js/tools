@@ -64,6 +64,87 @@ importers:
         specifier: catalog:silk
         version: 4.21.0
 
+  packages/cache:
+    dependencies:
+      '@soda3js/protocol':
+        specifier: workspace:*
+        version: link:../protocol/dist/dev
+    devDependencies:
+      '@savvy-web/rslib-builder':
+        specifier: ^0.19.1
+        version: 0.19.1(@microsoft/api-extractor@7.58.1(@types/node@25.5.2))(@pnpm/logger@1001.0.1)(@rsbuild/plugin-react@1.4.6(@rsbuild/core@2.0.0-rc.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)))(@rslib/core@0.20.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@microsoft/api-extractor@7.58.1(@types/node@25.5.2))(@typescript/native-preview@7.0.0-dev.20260404.1)(typescript@5.9.3))(@types/node@25.5.2)(@types/react@19.2.14)(@typescript/native-preview@7.0.0-dev.20260404.1)(jiti@2.6.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      '@savvy-web/vitest':
+        specifier: ^1.2.2
+        version: 1.2.2(@types/node@25.5.2)(@typescript/native-preview@7.0.0-dev.20260404.1)(@vitest/coverage-v8@4.1.2(vitest@4.1.2(@types/node@25.5.2)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))))(typescript@5.9.3)(vitest-agent-reporter@1.2.1(aa9105e5a93c844af63d6838fda9b3b9))(vitest@4.1.2(@types/node@25.5.2)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))
+      '@types/node':
+        specifier: catalog:silk
+        version: 25.5.2
+      fake-indexeddb:
+        specifier: ^6.2.5
+        version: 6.2.5
+    publishDirectory: dist/dev
+
+  packages/cache-fs:
+    dependencies:
+      '@soda3js/protocol':
+        specifier: workspace:*
+        version: link:../protocol/dist/dev
+    devDependencies:
+      '@effect/platform':
+        specifier: catalog:silk
+        version: 0.96.0(effect@3.21.0)
+      '@effect/platform-node':
+        specifier: catalog:silk
+        version: 0.106.0(@effect/cluster@0.58.0(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/sql@0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/workflow@0.18.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/sql@0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(effect@3.21.0)
+      '@savvy-web/rslib-builder':
+        specifier: ^0.19.1
+        version: 0.19.1(@microsoft/api-extractor@7.58.1(@types/node@25.5.2))(@pnpm/logger@1001.0.1)(@rsbuild/plugin-react@1.4.6(@rsbuild/core@2.0.0-rc.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)))(@rslib/core@0.20.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@microsoft/api-extractor@7.58.1(@types/node@25.5.2))(@typescript/native-preview@7.0.0-dev.20260404.1)(typescript@5.9.3))(@types/node@25.5.2)(@types/react@19.2.14)(@typescript/native-preview@7.0.0-dev.20260404.1)(jiti@2.6.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      '@savvy-web/vitest':
+        specifier: ^1.2.2
+        version: 1.2.2(@types/node@25.5.2)(@typescript/native-preview@7.0.0-dev.20260404.1)(@vitest/coverage-v8@4.1.2(vitest@4.1.2(@types/node@25.5.2)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))))(typescript@5.9.3)(vitest-agent-reporter@1.2.1(aa9105e5a93c844af63d6838fda9b3b9))(vitest@4.1.2(@types/node@25.5.2)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))
+      '@types/node':
+        specifier: catalog:silk
+        version: 25.5.2
+      effect:
+        specifier: catalog:silk
+        version: 3.21.0
+    publishDirectory: dist/dev
+
+  packages/cache-sqlite:
+    dependencies:
+      '@soda3js/protocol':
+        specifier: workspace:*
+        version: link:../protocol/dist/dev
+    devDependencies:
+      '@effect/experimental':
+        specifier: ^0.60.0
+        version: 0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0)
+      '@effect/platform':
+        specifier: catalog:silk
+        version: 0.96.0(effect@3.21.0)
+      '@effect/platform-node':
+        specifier: catalog:silk
+        version: 0.106.0(@effect/cluster@0.58.0(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/sql@0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/workflow@0.18.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/sql@0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(effect@3.21.0)
+      '@effect/sql':
+        specifier: ^0.51.0
+        version: 0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0)
+      '@effect/sql-sqlite-node':
+        specifier: ^0.52.0
+        version: 0.52.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(@effect/sql@0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(effect@3.21.0)
+      '@savvy-web/rslib-builder':
+        specifier: ^0.19.1
+        version: 0.19.1(@microsoft/api-extractor@7.58.1(@types/node@25.5.2))(@pnpm/logger@1001.0.1)(@rsbuild/plugin-react@1.4.6(@rsbuild/core@2.0.0-rc.0(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)))(@rslib/core@0.20.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@microsoft/api-extractor@7.58.1(@types/node@25.5.2))(@typescript/native-preview@7.0.0-dev.20260404.1)(typescript@5.9.3))(@types/node@25.5.2)(@types/react@19.2.14)(@typescript/native-preview@7.0.0-dev.20260404.1)(jiti@2.6.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      '@savvy-web/vitest':
+        specifier: ^1.2.2
+        version: 1.2.2(@types/node@25.5.2)(@typescript/native-preview@7.0.0-dev.20260404.1)(@vitest/coverage-v8@4.1.2(vitest@4.1.2(@types/node@25.5.2)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))))(typescript@5.9.3)(vitest-agent-reporter@1.2.1(aa9105e5a93c844af63d6838fda9b3b9))(vitest@4.1.2(@types/node@25.5.2)(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))
+      '@types/node':
+        specifier: catalog:silk
+        version: 25.5.2
+      effect:
+        specifier: catalog:silk
+        version: 3.21.0
+    publishDirectory: dist/dev
+
   packages/cli:
     dependencies:
       '@effect/cli':
@@ -75,6 +156,9 @@ importers:
       '@effect/platform-node':
         specifier: catalog:silk
         version: 0.106.0(@effect/cluster@0.58.0(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/sql@0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/workflow@0.18.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(@effect/rpc@0.75.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/sql@0.51.0(@effect/experimental@0.60.0(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(@effect/platform@0.96.0(effect@3.21.0))(effect@3.21.0))(effect@3.21.0)
+      '@soda3js/cache-fs':
+        specifier: workspace:*
+        version: link:../cache-fs/dist/dev
       '@soda3js/client':
         specifier: workspace:*
         version: link:../client/dist/dev
@@ -98,6 +182,12 @@ importers:
 
   packages/client:
     dependencies:
+      '@soda3js/cache':
+        specifier: workspace:*
+        version: link:../cache/dist/dev
+      '@soda3js/protocol':
+        specifier: workspace:*
+        version: link:../protocol/dist/dev
       '@soda3js/soql':
         specifier: workspace:*
         version: link:../soql/dist/dev
@@ -137,6 +227,9 @@ importers:
       '@soda3js/client':
         specifier: workspace:*
         version: link:../client/dist/dev
+      '@soda3js/protocol':
+        specifier: workspace:*
+        version: link:../protocol/dist/dev
       '@soda3js/soql':
         specifier: workspace:*
         version: link:../soql/dist/dev
@@ -2511,6 +2604,10 @@ packages:
   external-editor@3.1.0:
     resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
     engines: {node: '>=4'}
+
+  fake-indexeddb@6.2.5:
+    resolution: {integrity: sha512-CGnyrvbhPlWYMngksqrSSUT1BAVP49dZocrHuK0SvtR0D5TMs5wP0o3j7jexDJW01KSadjBp1M/71o/KR3nD1w==}
+    engines: {node: '>=18'}
 
   fast-check@3.23.2:
     resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
@@ -7494,6 +7591,8 @@ snapshots:
       chardet: 0.7.0
       iconv-lite: 0.4.24
       tmp: 0.2.5
+
+  fake-indexeddb@6.2.5: {}
 
   fast-check@3.23.2:
     dependencies:

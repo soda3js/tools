@@ -34,3 +34,6 @@ Fixed (not peer) deps: `@soda3js/client`, `@soda3js/soql`,
   keeping `@soda3js/client` pure and platform-agnostic
 - **Subpath-only exports:** Import from `@soda3js/rest/node` (etc.),
   never from `@soda3js/rest` directly
+- **Optional caching:** `Soda3ClientConfig` accepts optional `cache`
+  (`CacheStore`) and `cacheTtl` (number) fields; when provided,
+  query and metadata calls use cache-aware endpoints from `@soda3js/client`

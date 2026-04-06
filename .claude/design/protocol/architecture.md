@@ -4,11 +4,14 @@ module: protocol
 category: architecture
 created: 2026-04-04
 updated: 2026-04-05
-last-synced: 2026-04-04
-completeness: 85
+last-synced: 2026-04-05
+completeness: 90
 related:
   - ../architecture.md
   - ../client/architecture.md
+  - ../cache/architecture.md
+  - ../cache-fs/architecture.md
+  - ../cache-sqlite/architecture.md
 dependencies: []
 ---
 
@@ -44,13 +47,14 @@ importing each other or pulling in any shared runtime dependency.
 
 ## Current State
 
-The package is fully implemented with three source files:
+The package is fully implemented with four source files:
 
 ```text
 packages/protocol/src/
   index.ts       # re-exports all interfaces
   metadata.ts    # dataset metadata, column, and owner shapes
   errors.ts      # SODA error response shape
+  cache.ts       # cache store interface and cache types
 ```
 
 All interfaces mirror the raw JSON field names from the Socrata API. The
@@ -122,6 +126,57 @@ Describes all SODA API error responses.
 Fields: `code` (string), `error` (literal `true`), `message` (string),
 `data` (optional unknown).
 
+### From `cache.ts`
+
+#### CacheEntry
+
+A cached API response with metadata for invalidation and cleanup.
+
+Fields: `body` (Uint8Array), `contentType` (string), `headers`
+(Record<string, string>), `created` (string), `datasetId` (string),
+`domain` (string), `rowsUpdatedAt` (number), `sizeBytes` (number),
+`ttl` (number), `cleanable` (boolean), `query` (optional string).
+
+The optional `query` field stores the original SoQL query string (or
+`"__metadata__"` for cached metadata responses). This enables the CLI
+`cache inspect` command to display human-readable descriptions of cached
+entries and allows cache-fs to include the query in sidecar `.meta.json`
+files for inspectability.
+
+#### CacheKeyInput
+
+Input fields for building a deterministic cache key.
+
+Fields: `domain` (string), `datasetId` (string), `query` (string),
+`format` (optional string), `rowsUpdatedAt` (optional number).
+
+#### PruneOptions
+
+Options for pruning stale or oversized cache entries.
+
+Fields: `maxAge` (optional number), `maxSize` (optional number),
+`cleanableOnly` (optional boolean).
+
+#### PruneResult
+
+Result of a prune operation.
+
+Fields: `removed` (number), `freedBytes` (number).
+
+#### CacheStore
+
+Async key-value store interface for cached SODA3 API responses. Methods:
+`get(key)`, `set(key, entry)`, `has(key)`, `invalidate(key)`,
+`prune(options?)`. Implemented by `MemoryCache`, `BrowserCache`,
+`FileSystemCache`, `SqliteCache`, or any custom backend.
+
+#### DatasetFreshness
+
+Tracks when a dataset's metadata was last checked for freshness.
+
+Fields: `domain` (string), `datasetId` (string), `rowsUpdatedAt` (number),
+`lastChecked` (string), `ttl` (number).
+
 ---
 
 ## Consumer Packages
@@ -133,6 +188,22 @@ Effect `Schema.Class` types. `DatasetMetadata`, `Column`, `Owner`, and
 `SodaErrorResponse` in `client/src/schemas/` decode from the corresponding
 protocol shapes. The client validates incoming JSON against these schemas at
 runtime.
+
+### `@soda3js/cache` (implements CacheStore)
+
+The cache package imports `CacheStore`, `CacheEntry`, `CacheKeyInput`,
+`PruneOptions`, `PruneResult`, and `DatasetFreshness` from protocol.
+`MemoryCache` and `BrowserCache` implement the `CacheStore` interface.
+
+### `@soda3js/cache-fs` (implements CacheStore)
+
+The cache-fs package imports cache types and implements `CacheStore` via
+`FileSystemCacheImpl` backed by filesystem storage.
+
+### `@soda3js/cache-sqlite` (implements CacheStore)
+
+The cache-sqlite package imports cache types and implements `CacheStore` via
+`SqliteCacheImpl` backed by SQLite.
 
 ---
 
@@ -159,7 +230,18 @@ runtime code to test.
 
 ---
 
-**Document Status:** Current -- all planned Phase 2 interfaces implemented.
+### `@soda3js/client` (cache integration)
 
-**Next Update:** When Phase 3 adds API server response types or new wire
-formats are identified.
+The client package imports `CacheStore`, `CacheEntry`, and `DatasetFreshness`
+from protocol for use in its `utils/cache.ts` module. The `cachedQuery` and
+`cachedMetadata` functions create `CacheEntry` objects with the `query` field
+populated, enabling downstream cache backends to store and display the
+original query context.
+
+---
+
+**Document Status:** Current -- all planned interfaces implemented including
+cache types with `query` field added on `feat/caching` branch.
+
+**Next Update:** When new wire formats are identified or additional cache
+interface methods are needed.
