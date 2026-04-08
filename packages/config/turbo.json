@@ -1,0 +1,32 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build:dev": {
+			"cache": true,
+			"dependsOn": ["types:check"],
+			"outputLogs": "errors-only",
+			"outputs": ["dist/dev/**", ".rslib/declarations/dev/**"]
+		},
+		"build:prod": {
+			"cache": true,
+			"dependsOn": ["types:check"],
+			"outputs": ["dist/npm/**", ".rslib/declarations/npm/**"]
+		},
+		"generate:json-schema": {
+			"cache": true,
+			"inputs": ["lib/scripts/generate-json-schema.ts", "src/schemas/config.ts", "src/schemas/cache.ts"],
+			"outputLogs": "new-only",
+			"outputs": [
+				"$TURBO_ROOT$/website/public/schemas/config.json",
+				"$TURBO_ROOT$/website/public/schemas/cache-entry.json",
+				"$TURBO_ROOT$/website/public/schemas/freshness.json"
+			]
+		},
+		"types:check": {
+			"cache": true,
+			"dependsOn": ["generate:json-schema"],
+			"outputLogs": "errors-only",
+			"outputs": ["dist/.tsbuildinfo.lib"]
+		}
+	}
+}

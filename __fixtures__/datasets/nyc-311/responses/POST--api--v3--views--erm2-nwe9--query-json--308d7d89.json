@@ -1,0 +1,52 @@
+{
+  "dataset_id": "erm2-nwe9",
+  "portal": "data.cityofnewyork.us",
+  "recorded_at": "2026-04-07T21:31:40.809Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": true,
+    "token_used": true
+  },
+  "request": {
+    "method": "POST",
+    "path": "/api/v3/views/erm2-nwe9/query.json",
+    "headers": {
+      "host": "localhost:49506",
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate",
+      "content-length": "30"
+    },
+    "body": {
+      "query": "SELECT * LIMIT 100"
+    }
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:31:40 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "last-modified": "Tue, 07 Apr 2026 21:31:19 GMT",
+      "etag": "W/\"Fj6skSIkFq8I8qpmMxr56W4xAm26mveps1KbdLwClz8\"",
+      "x-soda2-secondary": "pg.pg13-a-fedramp-prod",
+      "x-soda2-cached": "false",
+      "x-soda2-data-out-of-date": "[]",
+      "x-soda2-warning": "X-SODA2-Fields, X-SODA2-Types, and X-SODA2-Legacy-Types are deprecated",
+      "x-soda2-fields": "[\"unique_key\",\"created_date\",\"closed_date\",\"agency\",\"agency_name\",\"complaint_type\",\"descriptor\",\"descriptor_2\",\"location_type\",\"incident_zip\",\"incident_address\",\"street_name\",\"cross_street_1\",\"cross_street_2\",\"intersection_street_1\",\"intersection_street_2\",\"address_type\",\"city\",\"landmark\",\"facility_type\",\"status\",\"due_date\",\"resolution_description\",\"resolution_action_updated_date\",\"community_board\",\"council_district\",\"police_precinct\",\"bbl\",\"borough\",\"x_coordinate_state_plane\",\"y_coordinate_state_plane\",\"open_data_channel_type\",\"park_facility_name\",\"park_borough\",\"vehicle_type\",\"taxi_company_borough\",\"taxi_pick_up_location\",\"bridge_highway_name\",\"bridge_highway_direction\",\"road_ramp\",\"bridge_highway_segment\",\"latitude\",\"longitude\",\"location\",\":id\",\":version\",\":created_at\",\":updated_at\",\":@computed_region_f5dn_yrer\",\":@computed_region_yeji_bk3q\",\":@computed_region_sbqj_enih\",\":@computed_region_92fq_4b7q\"]",
+      "x-soda2-types": "[\"text\",\"floating_timestamp\",\"floating_timestamp\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"floating_timestamp\",\"text\",\"floating_timestamp\",\"text\",\"text\",\"text\",\"text\",\"text\",\"number\",\"number\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"number\",\"number\",\"point\",\"row_identifier\",\"row_version\",\"fixed_timestamp\",\"fixed_timestamp\",\"number\",\"number\",\"number\",\"number\"]",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "b6294072b219e27fb235b31bb8f14b08"
+    },
+    "body_file": "POST--api--v3--views--erm2-nwe9--query-json--308d7d89.body.json"
+  }
+}

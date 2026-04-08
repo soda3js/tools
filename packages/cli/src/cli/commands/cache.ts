@@ -1,10 +1,9 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { Args, Command, Options } from "@effect/cli";
-import { cacheDir } from "@soda3js/cache-fs/node";
+import { Soda3Config } from "@soda3js/config";
 import { Console, Effect, Option } from "effect";
 import { createCache } from "../../lib/cache-factory.js";
-import { readConfig } from "../../lib/config-store.js";
 import { resolveDomain } from "../../lib/domain.js";
 
 const statusCommand = Command.make("status", {}, () =>
@@ -68,14 +67,14 @@ const inspectCommand = Command.make(
 	{ datasetId: inspectDatasetArg, profile: inspectProfileOption },
 	({ datasetId, profile }) =>
 		Effect.gen(function* () {
-			const config = yield* Effect.promise(() => readConfig());
+			const config = yield* Effect.promise(() => Soda3Config.load());
 			const resolved = resolveDomain(config, {
 				...(profile._tag === "Some" ? { profile: profile.value } : {}),
 			});
 			const domain = resolved.domain;
 
 			// Freshness is stored at domain/dataset/_freshness.json
-			const freshnessPath = join(cacheDir(), domain, datasetId, "_freshness.json");
+			const freshnessPath = join(Soda3Config.cacheDir(), domain, datasetId, "_freshness.json");
 			const freshness = yield* Effect.tryPromise(() => readFile(freshnessPath, "utf-8")).pipe(
 				Effect.map((raw) => JSON.parse(raw) as { rowsUpdatedAt: number; lastChecked: string; ttl: number }),
 				Effect.catchAll(() => Effect.succeed(undefined)),
@@ -91,7 +90,7 @@ const inspectCommand = Command.make(
 			}
 
 			// Read sidecars from queries/ subdir
-			const queryDir = join(cacheDir(), domain, datasetId, "queries");
+			const queryDir = join(Soda3Config.cacheDir(), domain, datasetId, "queries");
 			const sidecars = yield* Effect.promise(() => readSidecars(queryDir));
 
 			if (sidecars.length === 0) {

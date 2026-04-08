@@ -1,0 +1,41 @@
+{
+  "dataset_id": "ijzp-q8t2",
+  "portal": "data.cityofchicago.org",
+  "recorded_at": "2026-04-07T21:34:36.093Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": false,
+    "token_used": true
+  },
+  "request": {
+    "method": "GET",
+    "path": "/api/views/ijzp-q8t2.json",
+    "headers": {
+      "host": "localhost:50534",
+      "connection": "keep-alive",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:34:36 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "vary": "Accept-Encoding",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "965a0d9920c7a51072253c187f14f784"
+    },
+    "body_file": "GET--api--views--ijzp-q8t2-json.body.json"
+  }
+}

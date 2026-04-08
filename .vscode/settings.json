@@ -42,14 +42,15 @@
 	"geminicodeassist.enable": false,
 	"files.exclude": {
 		"**/.coverage": true,
-		"**/.rslib": false,
+		"**/coverage": true,
+		"**/.rslib": true,
 		"**/.turbo": true,
 		"**/.vitest": true,
 		"**/*.tsbuildinfo": true,
-		"**/dist": false,
-		"**/node_modules": false
+		"**/dist": true,
+		"**/node_modules": true
 	},
-	"typescript.preferences.preferTypeOnlyAutoImports": true,
+	"js/ts.preferences.preferTypeOnlyAutoImports": true,
 	"gitlens.statusBar.pullRequests.enabled": true,
 	"typescript.experimental.useTsgo": true,
 	"gitlens.gitkraken.cli.integration.enabled": true,

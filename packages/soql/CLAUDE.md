@@ -5,8 +5,8 @@ dependency graph -- all other packages depend on it, it depends on nothing.
 
 ## Status
 
-Phase 1 complete: types, AST expressions, compiler, functions, clauses, builder.
-138 tests passing with strict coverage (80/75/80/80).
+Phases 1 and 2 complete: types, AST expressions, compiler, Tier 1 + Tier 2
+functions, clauses, builder. Strict coverage (80/75/80/80).
 
 ## Architecture
 
@@ -18,8 +18,13 @@ Layered module structure (bottom to top):
 3. `clauses.ts` -- 8 clause types + `Clauses` bag
 4. `compiler.ts` -- `compileExpression()` recursive walker, `compileToParams()`
    (SODA2 URL), `compileToBody()` (SODA3 POST SQL)
-5. `functions.ts` -- Tier 1 function constructors (comparison, range, null,
-   set, pattern, boolean, aggregate, string, arithmetic, case)
+5. `functions.ts` -- Function constructors in two tiers:
+   - **Tier 1:** comparison, range, null, set, pattern, boolean, aggregate
+     (count, sum, avg, min, max), string (upper, lower, concat), arithmetic, case
+   - **Tier 2:** date extraction (dateExtractY/M/D/HH/MM/SS/Dow/Woy),
+     date truncation (dateTruncY/YM/YMD), geospatial (withinCircle,
+     withinBox, distanceInMeters), casting (toNumber, toText),
+     string (contains, length, startsWith), aggregate (median)
 6. `builder.ts` -- `SoQLBuilder` (immutable fluent API), `SoQL` (static facade)
 7. `index.ts` -- re-exports full public API
 
@@ -47,6 +52,7 @@ Load when adding AST nodes, modifying compiler output, or debugging compilation.
 - Column names with spaces are backtick-quoted; system columns (`:id`) pass through
 - Strings are single-quoted with doubled internal quotes; `*` passes through unquoted
 - `.where()` AND-folds with any prior WHERE clause
+- `.whereRaw(expr)` -- shorthand for `.where(SoQL.raw(expr))`
 - `.orderBy()` appends to existing ORDER BY items
 
 ## Testing
@@ -66,7 +72,6 @@ Coverage: strict level via root `vitest.config.ts` (80/75/80/80).
 
 ## Future Work
 
-- Tier 2 functions: date/time, geospatial, conversion
 - Schema-aware type parameter (`SoQLBuilder<T>`) for compile-time column checking
 - AST visitor/transformer utilities
 - Effect Schema integration

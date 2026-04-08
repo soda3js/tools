@@ -3,8 +3,8 @@ status: current
 module: protocol
 category: architecture
 created: 2026-04-04
-updated: 2026-04-05
-last-synced: 2026-04-05
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 90
 related:
   - ../architecture.md
@@ -241,7 +241,10 @@ original query context.
 ---
 
 **Document Status:** Current -- all planned interfaces implemented including
-cache types with `query` field added on `feat/caching` branch.
+cache types with `query` field. Discovery API types (CatalogResponse,
+DiscoveryResult) are defined as Effect Schema classes in
+`@soda3js/client/schemas/` rather than as protocol interfaces, since
+they are tightly coupled to the client's Schema-based decoding pipeline.
 
 **Next Update:** When new wire formats are identified or additional cache
 interface methods are needed.

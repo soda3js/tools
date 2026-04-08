@@ -3,9 +3,9 @@ status: current
 module: soql
 category: architecture
 created: 2026-04-03
-updated: 2026-04-05
-last-synced: 2026-04-03
-completeness: 85
+updated: 2026-04-07
+last-synced: 2026-04-07
+completeness: 90
 related: []
 dependencies: []
 ---
@@ -132,8 +132,8 @@ the package.
 
 **Location:** `packages/soql/src/lib/functions.ts`
 
-**Purpose:** Tier 1 SoQL function constructors -- standalone exported functions that return
-AST nodes.
+**Purpose:** SoQL function constructors in two tiers -- standalone exported
+functions that return AST nodes.
 
 **Categories:**
 
@@ -143,12 +143,19 @@ AST nodes.
 | Range | `between`, `notBetween` | `BinaryOp` (BETWEEN) |
 | Null | `isNull`, `isNotNull` | `UnaryOp` (postfix) |
 | Set | `in_`, `notIn` | `BinaryOp` (IN/NOT IN) |
-| Pattern | `like`, `notLike`, `startsWith` | `BinaryOp` (LIKE) |
+| Pattern | `like`, `notLike`, `startsWith` | `BinaryOp` (LIKE)/`FunctionCall` |
 | Boolean | `and`, `or` (variadic fold), `not` | `BinaryOp`/`UnaryOp` |
-| Aggregate | `count`, `sum`, `avg`, `min`, `max` | `FunctionCall` |
-| String | `upper`, `lower`, `concat` | `FunctionCall`/`BinaryOp` |
+| Aggregate | `count`, `sum`, `avg`, `min`, `max`, `median` | `FunctionCall` |
+| String | `upper`, `lower`, `concat`, `contains`, `length` | `FunctionCall`/`BinaryOp` |
 | Arithmetic | `add`, `sub`, `mul`, `div` | `BinaryOp` |
 | Case | `case_` | `FunctionCall` (__case) |
+| Date Extract | `dateExtractY/M/D/HH/MM/SS/Dow/Woy` | `FunctionCall` |
+| Date Truncate | `dateTruncY`, `dateTruncYM`, `dateTruncYMD` | `FunctionCall` |
+| Geospatial | `withinCircle`, `withinBox`, `distanceInMeters` | `FunctionCall` |
+| Casting | `toNumber`, `toText` | `FunctionCall` |
+
+`count()` accepts an optional `{ distinct: true }` option, generating
+`COUNT(DISTINCT col)` via the `__count_distinct` internal sentinel name.
 
 **Argument coercion:** `toExpression()` auto-wraps bare strings as `Column` nodes and
 primitives as `Literal` nodes. `toValue()` always wraps as `Literal` (right-hand side
@@ -233,7 +240,7 @@ is optional, allowing partial query construction.
 
 ### Current Limitations
 
-- No Tier 2/3 SoQL functions (date/time, geospatial, window functions)
+- No window functions (Tier 3)
 - No schema-aware type parameter for compile-time column checking
 - No Effect Schema definitions (pure TS only)
 - No runtime validation of column names or types
@@ -487,25 +494,21 @@ All tests live in `packages/soql/__test__/lib/` with 6 test files covering 138 t
 
 ## Future Enhancements
 
-### Phase 2: Tier 2 Functions (date/time, geospatial)
-
-- Date functions: `date_trunc_y`, `date_trunc_ym`, `date_extract_y`, etc.
-- Geospatial: `within_circle`, `within_box`, `within_polygon`, `intersects`,
-  `distance_in_meters`
-- Conversion: `to_number`, `to_fixed_timestamp`, `to_floating_timestamp`
-
 ### Phase 3: Advanced Features
 
 - AST visitor/transformer utilities for query analysis
 - Schema-aware type parameter (generic `SoQLBuilder<T>`) for compile-time column checking
 - Effect Schema integration for runtime validation
 - Query optimization passes (e.g., redundant WHERE elimination)
+- Window functions (Tier 3)
+- Additional geospatial: `within_polygon`, `intersects`
+- Additional conversion: `to_fixed_timestamp`, `to_floating_timestamp`
 
 ### Potential Refactoring
 
 - Operator type narrowing: Replace `op: string` with a string literal union for
   compile-time operator validation
-- Expression node extensibility: Consider a registry pattern if Tier 2/3 adds
+- Expression node extensibility: Consider a registry pattern if further tiers add
   many new node types
 
 ---
@@ -526,8 +529,8 @@ All tests live in `packages/soql/__test__/lib/` with 6 test files covering 138 t
 
 ---
 
-**Document Status:** Current -- documents the complete Phase 1 implementation as built
-on the feat/phase-1 branch.
+**Document Status:** Current -- documents the Phase 1 + Tier 2 implementation
+including date, geospatial, casting, and additional string/aggregate functions.
 
-**Next Steps:** Update when Tier 2/3 functions are added or when schema-aware typing
-is implemented.
+**Next Steps:** Update when Tier 3 functions (window functions) are added or
+when schema-aware typing is implemented.

@@ -1,9 +1,9 @@
 import { execFileSync } from "node:child_process";
 import { access, readFile } from "node:fs/promises";
 import { Args, Command, Options } from "@effect/cli";
+import type { Profile } from "@soda3js/config";
+import { Soda3Config } from "@soda3js/config";
 import { Console, Effect, Option } from "effect";
-import type { Config, Profile } from "../../lib/config-store.js";
-import { addProfile, configPath, readConfig, writeConfig } from "../../lib/config-store.js";
 
 // ---------------------------------------------------------------------------
 // Exported helpers (testable with custom config paths)
@@ -15,29 +15,26 @@ export async function initConfig(
 	name: string,
 	path?: string,
 ): Promise<{ created: boolean; configPath: string }> {
-	const filePath = path ?? configPath();
+	const filePath = path ?? Soda3Config.configPath();
 	try {
 		await access(filePath);
 		return { created: false, configPath: filePath };
 	} catch {
-		// File does not exist — proceed
+		// File does not exist -- proceed
 	}
 
 	const profile: Profile = { domain };
 	if (token !== undefined) {
-		profile.token = token;
+		(profile as Record<string, unknown>).token = token;
 	}
 
-	const config: Config = {
-		default_profile: name,
-		profiles: { [name]: profile },
-	};
-	await writeConfig(config, filePath);
+	const config = Soda3Config.empty().withProfile(name, profile).withDefault(name);
+	await config.save(filePath);
 	return { created: true, configPath: filePath };
 }
 
 export async function showConfig(path?: string): Promise<{ exists: boolean; content: string }> {
-	const filePath = path ?? configPath();
+	const filePath = path ?? Soda3Config.configPath();
 	try {
 		const content = await readFile(filePath, "utf-8");
 		return { exists: true, content };
@@ -52,14 +49,13 @@ export async function addProfileToConfig(
 	token: string | undefined,
 	path?: string,
 ): Promise<void> {
-	const filePath = path ?? configPath();
-	const config = await readConfig(filePath);
+	const filePath = path ?? Soda3Config.configPath();
+	const config = await Soda3Config.load(filePath);
 	const profile: Profile = { domain };
 	if (token !== undefined) {
-		profile.token = token;
+		(profile as Record<string, unknown>).token = token;
 	}
-	const updated = addProfile(config, name, profile);
-	await writeConfig(updated, filePath);
+	await config.withProfile(name, profile).save(filePath);
 }
 
 // ---------------------------------------------------------------------------
@@ -108,7 +104,7 @@ const showCommand = Command.make("show", {}, () =>
 
 const editCommand = Command.make("edit", {}, () =>
 	Effect.gen(function* () {
-		const filePath = configPath();
+		const filePath = Soda3Config.configPath();
 		try {
 			yield* Effect.tryPromise(() => access(filePath));
 		} catch {

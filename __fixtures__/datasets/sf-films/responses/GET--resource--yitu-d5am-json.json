@@ -1,0 +1,19 @@
+{
+  "dataset_id": "yitu-d5am",
+  "portal": "data.sfgov.org",
+  "recorded_at": "2026-04-07T00:00:00.000Z",
+  "latency_ms": 100,
+  "auth": { "required": false, "token_used": false },
+  "request": {
+    "method": "GET",
+    "path": "/resource/yitu-d5am.json",
+    "headers": {},
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json",
+    "headers": { "x-soda2-fields": "[\"title\",\"release_year\",\"locations\",\"fun_facts\",\"production_company\",\"distributor\",\"director\",\"writer\",\"actor_1\",\"actor_2\",\"actor_3\"]" },
+    "body_file": "GET--resource--yitu-d5am-json.body.json"
+  }
+}

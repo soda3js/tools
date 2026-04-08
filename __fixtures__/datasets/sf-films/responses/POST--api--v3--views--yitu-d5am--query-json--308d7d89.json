@@ -1,0 +1,52 @@
+{
+  "dataset_id": "yitu-d5am",
+  "portal": "data.sfgov.org",
+  "recorded_at": "2026-04-07T21:30:46.307Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": true,
+    "token_used": true
+  },
+  "request": {
+    "method": "POST",
+    "path": "/api/v3/views/yitu-d5am/query.json",
+    "headers": {
+      "host": "localhost:49497",
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate",
+      "content-length": "30"
+    },
+    "body": {
+      "query": "SELECT * LIMIT 100"
+    }
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:30:46 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "last-modified": "Tue, 07 Apr 2026 21:30:45 GMT",
+      "etag": "W/\"6WTq152eGeP4-1cGM2U8I-tm8nxNY1We4d9rYQ8kgAg\"",
+      "x-soda2-secondary": "pg.pg12-c-fedramp-prod",
+      "x-soda2-cached": "false",
+      "x-soda2-data-out-of-date": "[]",
+      "x-soda2-warning": "X-SODA2-Fields, X-SODA2-Types, and X-SODA2-Legacy-Types are deprecated",
+      "x-soda2-fields": "[\"title\",\"release_year\",\"locations\",\"fun_facts\",\"production_company\",\"distributor\",\"director\",\"writer\",\"actor_1\",\"actor_2\",\"actor_3\",\"point\",\"longitude\",\"latitude\",\"analysis_neighborhood\",\"supervisor_district\",\"data_as_of\",\"data_loaded_at\",\":id\",\":version\",\":created_at\",\":updated_at\",\":@computed_region_6qbp_sg9q\",\":@computed_region_ajp5_b2md\",\":@computed_region_26cr_cadq\"]",
+      "x-soda2-types": "[\"text\",\"number\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"point\",\"number\",\"number\",\"text\",\"text\",\"floating_timestamp\",\"floating_timestamp\",\"row_identifier\",\"row_version\",\"fixed_timestamp\",\"fixed_timestamp\",\"number\",\"number\",\"number\"]",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "0a6809dee7d8291af01444ddfaaf5577"
+    },
+    "body_file": "POST--api--v3--views--yitu-d5am--query-json--308d7d89.body.json"
+  }
+}

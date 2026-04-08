@@ -3,8 +3,8 @@ status: current
 module: client
 category: architecture
 created: 2026-04-04
-updated: 2026-04-05
-last-synced: 2026-04-05
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 90
 related:
   - ../architecture.md
@@ -13,14 +13,17 @@ related:
   - ../rest/architecture.md
   - ../cache/architecture.md
   - ../cache-fs/architecture.md
+  - ../mcp/architecture.md
 dependencies: []
 ---
 
 # @soda3js/client - Architecture
 
 Effect-TS service library for the Socrata SODA3 API. Provides a platform-agnostic
-`SodaClient` service tag, typed errors, Effect Schema-validated models, four
-endpoint implementations, optional response caching, metrics, and log redaction.
+`SodaClient` service tag, typed errors, Effect Schema-validated models, five
+endpoint implementations (query, queryAll, metadata, export, discover),
+optional response caching, typed results with Schema validation, response
+hooks, metrics, and log redaction.
 
 ## Table of Contents
 
@@ -44,8 +47,8 @@ portals. It sits between the pure SoQL query builder (`@soda3js/soql`) and the
 consuming packages (`@soda3js/cli`, `@soda3js/rest`). The package has a single
 `"."` export and:
 
-- Defines the `SodaClient` Effect service tag with four methods: `query`, `queryAll`,
-  `metadata`, and `export_`
+- Defines the `SodaClient` Effect service tag with five methods: `query`, `queryAll`,
+  `metadata`, `export_`, and `discover`
 - Implements dual-protocol support: SODA2 (GET with URL params) and SODA3 (POST with
   JSON body), with auto-selection based on whether an app token is present
 - Validates configuration and response shapes with Effect Schema
@@ -68,17 +71,24 @@ are declared as peer dependencies.
 
 ### What Is Implemented
 
-All four service methods are fully implemented and tested:
+All five service methods are fully implemented and tested:
 
 | Method | SODA2 path | SODA3 path | Return type |
 | --- | --- | --- | --- |
-| `query` | `GET /resource/{id}.json?{params}` | `POST /api/v3/views/{id}/query.json` | `Effect<Row[], SodaError>` |
+| `query` | `GET /resource/{id}.json?{params}` | `POST /api/v3/views/{id}/query.json` | `Effect<Row[], SodaError \| SodaParseError>` |
 | `queryAll` | offset-based pagination via `paginateSoda2` | page-number pagination via `paginateSoda3` | `Effect<Stream<Row, SodaError>>` |
-| `metadata` | `GET /api/views/{id}.json` | (same — no v3 variant) | `Effect<DatasetMetadata, SodaError>` |
+| `metadata` | `GET /api/views/{id}.json` | (same -- no v3 variant) | `Effect<DatasetMetadata, SodaError>` |
 | `export_` | `GET /api/views/{id}/rows.{fmt}?accessType=DOWNLOAD` | (same) | `Effect<Stream<Uint8Array, SodaError>, SodaError>` |
+| `discover` | `GET api.us.socrata.com/api/catalog/v1?{params}` | (cross-domain) | `Effect<CatalogResponse, SodaError>` |
 
-All six error types are implemented. All five schemas are implemented. Mode resolution,
-pagination helpers, and the response-error mapper are implemented.
+The `query` method accepts an optional `{ schema }` parameter for row-level
+Schema validation. When provided, each row is decoded through the schema and
+failures produce `SodaParseError`.
+
+All seven error types are implemented (`SodaAuthError`, `SodaQueryError`,
+`SodaNotFoundError`, `SodaServerError`, `SodaRateLimitError`,
+`SodaTimeoutError`, `SodaParseError`). Mode resolution, pagination helpers,
+response hooks, and the response-error mapper are implemented.
 
 ### Source Files
 
@@ -94,6 +104,7 @@ packages/client/src/
     query-all.ts                # paginated Stream via pagination utils
     metadata.ts                 # GET /api/views/{id}.json + Schema decode
     export.ts                   # GET /api/views/{id}/rows.{fmt} -> byte Stream
+    discovery.ts                # GET api.us.socrata.com/api/catalog/v1
     map-response-error.ts       # HTTP status -> typed SodaError
   schemas/
     SodaClientConfig.ts         # Schema.Class — runtime-validated config
@@ -101,6 +112,8 @@ packages/client/src/
     Column.ts                   # Schema.Class — column descriptor
     Owner.ts                    # Schema.Class — dataset owner
     SodaErrorResponse.ts        # Schema.Class — SODA error envelope
+    CatalogResponse.ts          # Schema.Class — discovery catalog response
+    DiscoveryResult.ts          # Schema.Class — individual discovery result
   errors/
     SodaAuthError.ts            # Schema.TaggedError — 401/403
     SodaQueryError.ts           # Schema.TaggedError — 400
@@ -108,8 +121,10 @@ packages/client/src/
     SodaServerError.ts          # Schema.TaggedError — 5xx + internal
     SodaRateLimitError.ts       # Data.TaggedError — 429
     SodaTimeoutError.ts         # Data.TaggedError — client timeout
+    SodaParseError.ts           # Schema.TaggedError — schema validation failure
   utils/
     cache.ts                    # cachedQuery(), cachedMetadata(), getFreshness(), setFreshness()
+    hooks.ts                    # ResponseHook, ResponseHooks, runHook()
     mode.ts                     # resolveMode() — pure function
     pagination.ts               # paginateSoda2(), paginateSoda3()
     metrics.ts                  # Effect Metric constants (4 metrics)
@@ -463,7 +478,16 @@ the Effect runtime. The CLI's `cache-factory.ts` module calls
 on TOML configuration (`[cache]` section) and command-line flags
 (`--no-cache`, `--cache-ttl`). Per-profile cache settings are supported.
 The CLI also provides `soda3 cache status/inspect/clear/prune` subcommands
-that operate directly on the cache directory.
+that operate directly on the cache directory. The `soda3 search` command
+uses the `discover()` endpoint for catalog search.
+
+### Downstream: `@soda3js/mcp` (current)
+
+MCP server imports `SodaClient`, `SodaClientLive`, `SodaClientConfig` from
+`@soda3js/client`. Creates a `ManagedRuntime` at startup with all services
+pre-wired. Tool handlers execute Effect programs within the shared runtime.
+Uses `discover()` for catalog search and `query()`/`metadata()` for dataset
+operations.
 
 ### Downstream: `@soda3js/rest` (implemented)
 
@@ -564,8 +588,8 @@ using `Effect.timeoutFail` around endpoint execution needs to be wired in.
 ---
 
 **Document Status:** Current -- all Phase 2 client functionality plus cache
-integration implemented on `feat/caching` branch. Cache-aware query and
-metadata endpoints, freshness tracking, and REST/CLI passthrough are wired.
+integration, Discovery API, typed results, response hooks, and SodaParseError
+implemented on `feat/wrap-up` branch.
 
 **Next Update:** When retry logic, timeout enforcement, or queryAll caching
 is added.

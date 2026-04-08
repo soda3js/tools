@@ -2,10 +2,11 @@ import { Args, Command, Options } from "@effect/cli";
 import { NodeHttpClient } from "@effect/platform-node";
 import type { DatasetMetadata } from "@soda3js/client";
 import { SodaClient, SodaClientConfig, SodaClientLive } from "@soda3js/client";
+import { Soda3Config } from "@soda3js/config";
 import { Console, Effect, Layer, Option } from "effect";
 import { createCache, resolveCacheConfig } from "../../lib/cache-factory.js";
-import { readConfig } from "../../lib/config-store.js";
 import { resolveDomain } from "../../lib/domain.js";
+import { isTTY, renderInk } from "../../ui/render.js";
 
 const datasetIdArg = Args.text({ name: "dataset-id" }).pipe(Args.withDescription("Socrata dataset identifier"));
 
@@ -90,7 +91,7 @@ export const metaCommand = Command.make(
 	},
 	({ datasetId, domain, profile, format, noCache, cacheTtl }) =>
 		Effect.gen(function* () {
-			const config = yield* Effect.promise(() => readConfig());
+			const config = yield* Effect.promise(() => Soda3Config.load());
 			const profileName = profile._tag === "Some" ? profile.value : undefined;
 			const resolved = resolveDomain(config, {
 				...(profileName !== undefined ? { profile: profileName } : {}),
@@ -127,6 +128,23 @@ export const metaCommand = Command.make(
 
 				if (format === "json") {
 					yield* Console.log(JSON.stringify(metadata, null, 2));
+				} else if (isTTY()) {
+					const output = yield* renderInk(async (React) => {
+						const { MetadataView } = await import("../../ui/MetadataView.js");
+						return React.createElement(MetadataView, {
+							name: metadata.name,
+							id: metadata.id,
+							description: metadata.description,
+							category: metadata.category,
+							rowsUpdatedAt: metadata.rowsUpdatedAt,
+							columns: metadata.columns.map((col) => ({
+								fieldName: col.fieldName,
+								dataTypeName: col.dataTypeName,
+								description: col.description,
+							})),
+						});
+					});
+					yield* Console.log(output);
 				} else {
 					yield* Console.log(formatMetadataTable(metadata));
 				}

@@ -1,14 +1,11 @@
+import { Soda3Config } from "@soda3js/config";
 import { describe, expect, it } from "vitest";
-import type { Config } from "../../src/lib/config-store.js";
 import { DomainResolutionError, resolveDomain } from "../../src/lib/domain.js";
 
-const testConfig: Config = {
-	default_profile: "nyc",
-	profiles: {
-		nyc: { domain: "data.cityofnewyork.us", token: "nyc-token" },
-		sf: { domain: "data.sfgov.org" },
-	},
-};
+const testConfig = Soda3Config.empty()
+	.withProfile("nyc", { domain: "data.cityofnewyork.us", token: "nyc-token" })
+	.withProfile("sf", { domain: "data.sfgov.org" })
+	.withDefault("nyc");
 
 describe("resolveDomain", () => {
 	it("resolves --profile flag with token", () => {
@@ -43,12 +40,12 @@ describe("resolveDomain", () => {
 	});
 
 	it("throws when default_profile references missing profile", () => {
-		const config: Config = { default_profile: "gone", profiles: {} };
+		const config = Soda3Config.empty().withDefault("gone");
 		expect(() => resolveDomain(config, {})).toThrow('Default profile "gone" not found');
 	});
 
 	it("throws when no resolution is possible", () => {
-		const config: Config = { profiles: {} };
+		const config = Soda3Config.empty();
 		expect(() => resolveDomain(config, {})).toThrow("No domain could be resolved");
 	});
 });

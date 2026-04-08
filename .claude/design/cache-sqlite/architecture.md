@@ -3,14 +3,15 @@ status: current
 module: cache-sqlite
 category: architecture
 created: 2026-04-06
-updated: 2026-04-06
-last-synced: 2026-04-06
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 85
 related:
   - ../protocol/architecture.md
   - ../cache/architecture.md
   - ../cache-fs/architecture.md
   - ../client/architecture.md
+  - ../config/architecture.md
 dependencies: []
 ---
 
@@ -266,7 +267,8 @@ requires running the migration Effect.
 `node.ts` exports `NodeSqliteCacheLive`, a fully-wired Layer that requires
 no dependencies:
 
-1. Resolves the database path from options or XDG (`~/.cache/soda3js/cache.db`)
+1. Resolves the database path from options or `Soda3Config.cacheDir()`
+   (via `@soda3js/config`, defaults to `~/.cache/soda3js/cache.db`)
 2. Creates a `SqliteClient.layer` with that filename
 3. Provides it to `SqliteCacheLive`
 4. Wraps with `Layer.orDie` (SQLite connection failure is fatal)
@@ -339,9 +341,9 @@ own `SqlClient` implementation.
 ---
 
 **Document Status:** Current -- all planned SQLite cache functionality
-implemented on `feat/caching` branch. Cache keys are now path-like
-(`domain/datasetId/hash`) following the hierarchical refactor, but SQLite
-treats them as opaque TEXT primary keys -- no schema changes required.
+implemented. XDG resolution migrated to `@soda3js/config`. Cache keys are
+path-like (`domain/datasetId/hash`) but SQLite treats them as opaque TEXT
+primary keys.
 
 **Next Update:** When Bun SQLite support is wired or when the `query` column
 is added to the responses table to support the new `CacheEntry.query` field.

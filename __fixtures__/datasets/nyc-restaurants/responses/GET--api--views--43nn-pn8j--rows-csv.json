@@ -1,0 +1,48 @@
+{
+  "dataset_id": "43nn-pn8j",
+  "portal": "data.cityofnewyork.us",
+  "recorded_at": "2026-04-07T21:34:35.723Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": false,
+    "token_used": true
+  },
+  "request": {
+    "method": "GET",
+    "path": "/api/views/43nn-pn8j/rows.csv",
+    "headers": {
+      "host": "localhost:50407",
+      "connection": "keep-alive",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "text/csv; charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:34:10 GMT",
+      "content-type": "text/csv; charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "content-disposition": "attachment; filename=DOHMH_New_York_City_Restaurant_Inspection_Results.csv",
+      "cache-control": "public, must-revalidate, max-age=21600",
+      "etag": "W/\"Zm94dHJvdC4xNTY0OV84XzMyOTk5YVJiYU9sd2o4eXhGVjNncC1VSk5nRDdVZS00---gzipoCfe8wHMqPwnSBVh2ceF6PiU4I0--gzip--gzip\"",
+      "x-soda2-data-out-of-date": "false",
+      "x-soda2-truth-last-modified": "Mon, 06 Apr 2026 22:10:15 GMT",
+      "x-soda2-secondary-last-modified": "Mon, 06 Apr 2026 22:10:15 GMT",
+      "last-modified": "Mon, 06 Apr 2026 22:10:15 GMT",
+      "vary": "Accept-Encoding",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "5d3a4665cdf5e91b0d6ee76143e90aac"
+    },
+    "body_file": "GET--api--views--43nn-pn8j--rows-csv.body.csv"
+  }
+}

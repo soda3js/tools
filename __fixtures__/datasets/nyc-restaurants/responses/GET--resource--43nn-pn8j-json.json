@@ -1,0 +1,48 @@
+{
+  "dataset_id": "43nn-pn8j",
+  "portal": "data.cityofnewyork.us",
+  "recorded_at": "2026-04-07T21:34:08.153Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": false,
+    "token_used": true
+  },
+  "request": {
+    "method": "GET",
+    "path": "/resource/43nn-pn8j.json",
+    "headers": {
+      "host": "localhost:50407",
+      "connection": "keep-alive",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json;charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:34:08 GMT",
+      "content-type": "application/json;charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "etag": "W/\"Zm94dHJvdC4xNTY0OV84XzMyOTk5c3V1dkp2Ump1Um53TVVTelF1d1JjTXpWbExF---gzip5E1_TI9lZm_wOFI8kx4aaZeSjFQ--gzip--gzip\"",
+      "x-soda2-fields": "[\"camis\",\"dba\",\"boro\",\"building\",\"street\",\"zipcode\",\"phone\",\"cuisine_description\",\"inspection_date\",\"action\",\"violation_code\",\"violation_description\",\"critical_flag\",\"score\",\"grade\",\"grade_date\",\"record_date\",\"inspection_type\",\"latitude\",\"longitude\",\"community_board\",\"council_district\",\"census_tract\",\"bin\",\"bbl\",\"nta\",\"location\",\":@computed_region_f5dn_yrer\",\":@computed_region_yeji_bk3q\",\":@computed_region_sbqj_enih\",\":@computed_region_92fq_4b7q\"]",
+      "x-soda2-types": "[\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"floating_timestamp\",\"text\",\"text\",\"text\",\"text\",\"number\",\"text\",\"floating_timestamp\",\"floating_timestamp\",\"text\",\"number\",\"number\",\"text\",\"text\",\"text\",\"text\",\"text\",\"text\",\"point\",\"number\",\"number\",\"number\",\"number\"]",
+      "x-soda2-data-out-of-date": "false",
+      "x-soda2-truth-last-modified": "Mon, 06 Apr 2026 22:10:15 GMT",
+      "x-soda2-secondary-last-modified": "Mon, 06 Apr 2026 22:10:15 GMT",
+      "last-modified": "Mon, 06 Apr 2026 22:10:15 GMT",
+      "vary": "Accept-Encoding",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "1da0d2f6a1f9619999d5e8c115d2aea4"
+    },
+    "body_file": "GET--resource--43nn-pn8j-json.body.json"
+  }
+}

@@ -1,7 +1,9 @@
+import { pluginReact } from "@rsbuild/plugin-react";
 import { NodeLibraryBuilder } from "@savvy-web/rslib-builder";
 
 export default NodeLibraryBuilder.create({
-	externals: ["effect", "@effect/cli", "@effect/platform", "@effect/platform-node", "smol-toml"],
+	externals: ["effect", "@effect/cli", "@effect/platform", "@effect/platform-node", "smol-toml", "ink", "react"],
+	plugins: [pluginReact()],
 	apiModel: {
 		suppressWarnings: [{ messageId: "ae-forgotten-export", pattern: "_base" }],
 		tsdoc: {

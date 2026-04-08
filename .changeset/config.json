@@ -18,7 +18,9 @@
 			"@soda3js/cli",
 			"@soda3js/cache",
 			"@soda3js/cache-fs",
-			"@soda3js/cache-sqlite"
+			"@soda3js/cache-sqlite",
+			"@soda3js/config",
+			"@soda3js/mcp"
 		]
 	],
 	"updateInternalDependencies": "patch",

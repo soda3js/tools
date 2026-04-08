@@ -19,7 +19,20 @@ import {
 	between,
 	case_,
 	concat,
+	contains,
 	count,
+	dateExtractD,
+	dateExtractDow,
+	dateExtractHH,
+	dateExtractM,
+	dateExtractMM,
+	dateExtractSS,
+	dateExtractWoy,
+	dateExtractY,
+	dateTruncY,
+	dateTruncYM,
+	dateTruncYMD,
+	distanceInMeters,
 	div,
 	eq,
 	gt,
@@ -27,11 +40,13 @@ import {
 	in_,
 	isNotNull,
 	isNull,
+	length,
 	like,
 	lower,
 	lt,
 	lte,
 	max,
+	median,
 	min,
 	mul,
 	neq,
@@ -44,7 +59,11 @@ import {
 	sub,
 	sum,
 	toExpression,
+	toNumber,
+	toText,
 	upper,
+	withinBox,
+	withinCircle,
 } from "./functions.js";
 import type { SortDirection } from "./types.js";
 
@@ -85,6 +104,11 @@ export class SoQLBuilder {
 			...this.#clauses,
 			where: whereClause(next),
 		});
+	}
+
+	/** WHERE raw expression -- shorthand for .where(SoQL.raw(expr)). */
+	whereRaw(expression: string): SoQLBuilder {
+		return this.where(raw(expression));
 	}
 
 	/** ORDER BY col [ASC|DESC] — appended to any prior ORDER BY items. */
@@ -202,15 +226,42 @@ export class SoQL {
 	static avg = avg;
 	static min = min;
 	static max = max;
+	static median = median;
 
 	// String
 	static upper = upper;
 	static lower = lower;
 	static concat = concat;
+	static contains = contains;
+	static length = length;
 
 	// Arithmetic
 	static add = add;
 	static sub = sub;
 	static mul = mul;
 	static div = div;
+
+	// Date/Time Extract
+	static dateExtractY = dateExtractY;
+	static dateExtractM = dateExtractM;
+	static dateExtractD = dateExtractD;
+	static dateExtractHH = dateExtractHH;
+	static dateExtractMM = dateExtractMM;
+	static dateExtractSS = dateExtractSS;
+	static dateExtractDow = dateExtractDow;
+	static dateExtractWoy = dateExtractWoy;
+
+	// Date/Time Truncate
+	static dateTruncY = dateTruncY;
+	static dateTruncYM = dateTruncYM;
+	static dateTruncYMD = dateTruncYMD;
+
+	// Geospatial
+	static withinCircle = withinCircle;
+	static withinBox = withinBox;
+	static distanceInMeters = distanceInMeters;
+
+	// Type Casting
+	static toNumber = toNumber;
+	static toText = toText;
 }

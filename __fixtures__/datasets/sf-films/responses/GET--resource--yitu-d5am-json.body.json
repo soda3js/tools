@@ -1,0 +1,55 @@
+[
+  {
+    "title": "180",
+    "release_year": "2011",
+    "locations": "Epic Roasthouse (399 Embarcadero)",
+    "production_company": "SPI Cinemas",
+    "distributor": "SPI Cinemas",
+    "director": "Jayendra",
+    "writer": "Umarji Anuradha, Jayendra",
+    "actor_1": "Siddarth",
+    "actor_2": "Nithya Menon",
+    "actor_3": "Priya Anand"
+  },
+  {
+    "title": "24 Hours on Craigslist",
+    "release_year": "2005",
+    "locations": "Various",
+    "production_company": "PorchLight Entertainment",
+    "director": "Michael Ferris Gibson",
+    "writer": "Michael Ferris Gibson",
+    "actor_1": "Craig Newmark"
+  },
+  {
+    "title": "A Jitney Elopement",
+    "release_year": "1915",
+    "locations": "Golden Gate Park",
+    "production_company": "Essanay Film Manufacturing Company",
+    "director": "Charles Chaplin",
+    "writer": "Charles Chaplin",
+    "actor_1": "Charles Chaplin",
+    "actor_2": "Edna Purviance"
+  },
+  {
+    "title": "A Night Full of Rain",
+    "release_year": "1978",
+    "locations": "Nob Hill",
+    "production_company": "Liberty Films",
+    "director": "Lina Wertmuller",
+    "writer": "Lina Wertmuller",
+    "actor_1": "Candice Bergen",
+    "actor_2": "Giancarlo Giannini"
+  },
+  {
+    "title": "A View to a Kill",
+    "release_year": "1985",
+    "locations": "City Hall",
+    "production_company": "Eon Productions",
+    "distributor": "Metro-Goldwyn Mayer",
+    "director": "John Glen",
+    "writer": "Richard Maibaum",
+    "actor_1": "Roger Moore",
+    "actor_2": "Christopher Walken",
+    "actor_3": "Tanya Roberts"
+  }
+]

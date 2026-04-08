@@ -47,7 +47,9 @@ describe("BrowserCache", () => {
 		const body = new Uint8Array([10, 20, 30, 40]);
 		await cache.set("key1", makeEntry({ body, sizeBytes: 4 }));
 		const result = await cache.get("key1");
-		expect(new Uint8Array(result!.body)).toEqual(body);
+		expect(result).toBeDefined();
+		if (!result) throw new Error("unreachable");
+		expect(new Uint8Array(result.body)).toEqual(body);
 	});
 
 	it("reports existence with has()", async () => {

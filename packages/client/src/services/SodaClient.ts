@@ -2,16 +2,20 @@ import { HttpClient, HttpClientRequest } from "@effect/platform";
 import type { SoQLBuilder } from "@soda3js/soql";
 import type { Stream } from "effect";
 import { Context, Effect, Schema } from "effect";
+import type { DiscoveryParams } from "../endpoints/discovery.js";
+import { discoveryEndpoint } from "../endpoints/discovery.js";
 import { exportEndpoint } from "../endpoints/export.js";
 import { metadataEndpoint } from "../endpoints/metadata.js";
 import { queryEndpoint } from "../endpoints/query.js";
 import { queryAllEndpoint } from "../endpoints/query-all.js";
 import type { SodaAuthError } from "../errors/SodaAuthError.js";
 import type { SodaNotFoundError } from "../errors/SodaNotFoundError.js";
+import { SodaParseError } from "../errors/SodaParseError.js";
 import type { SodaQueryError } from "../errors/SodaQueryError.js";
 import type { SodaRateLimitError } from "../errors/SodaRateLimitError.js";
 import { SodaServerError } from "../errors/SodaServerError.js";
 import type { SodaTimeoutError } from "../errors/SodaTimeoutError.js";
+import type { CatalogResponse } from "../schemas/CatalogResponse.js";
 import { cachedMetadata, cachedQuery } from "../utils/cache.js";
 import { resolveMode } from "../utils/mode.js";
 
@@ -33,7 +37,8 @@ export class SodaClient extends Context.Tag("@soda3js/client/SodaClient")<
 			domain: string,
 			datasetId: string,
 			soql: SoQLBuilder,
-		) => Effect.Effect<ReadonlyArray<Record<string, unknown>>, SodaError>;
+			options?: { schema?: Schema.Schema<unknown, unknown> },
+		) => Effect.Effect<ReadonlyArray<unknown>, SodaError | SodaParseError>;
 		readonly queryAll: (
 			domain: string,
 			datasetId: string,
@@ -45,6 +50,7 @@ export class SodaClient extends Context.Tag("@soda3js/client/SodaClient")<
 			datasetId: string,
 			format: "csv" | "json" | "tsv",
 		) => Effect.Effect<Stream.Stream<Uint8Array, SodaError>, SodaError>;
+		readonly discover: (params: DiscoveryParams) => Effect.Effect<CatalogResponse, SodaError>;
 	}
 >() {
 	/**
@@ -96,16 +102,14 @@ export class SodaClient extends Context.Tag("@soda3js/client/SodaClient")<
 			}
 
 			return {
-				query: (domain, datasetId, soql) => {
+				query: (domain, datasetId, soql, options?) => {
 					const client = SodaClient.buildClient(baseClient, domain, config);
 					const mode = resolveModeForDomain(domain);
 					const baseQuery = queryEndpoint(client, domain, datasetId, soql, mode);
 
-					if (!cache) return baseQuery;
-
-					return Effect.tryPromise({
-						try: () =>
-							cachedQuery({
+					const resolvedQuery = !cache
+						? baseQuery
+						: cachedQuery({
 								cache,
 								ttl: cacheTtl,
 								domain,
@@ -113,17 +117,40 @@ export class SodaClient extends Context.Tag("@soda3js/client/SodaClient")<
 								query: soql.toParams(),
 								format: "json",
 								fetchMetadata: () =>
-									Effect.runPromise(metadataEndpoint(client, domain, datasetId)).then((meta) => ({
-										rowsUpdatedAt: meta.rowsUpdatedAt,
-									})),
-								fetchData: () => Effect.runPromise(baseQuery),
-							}),
-						catch: (error) =>
-							new SodaServerError({
-								code: "cache_error",
-								message: error instanceof Error ? error.message : "Cache operation failed",
-							}),
-					});
+									metadataEndpoint(client, domain, datasetId).pipe(
+										Effect.map((meta) => ({ rowsUpdatedAt: meta.rowsUpdatedAt })),
+									),
+								fetchData: () => baseQuery,
+							}).pipe(
+								Effect.catchAll((error) =>
+									Effect.fail(
+										new SodaServerError({
+											code: "cache_error",
+											message: error instanceof Error ? error.message : "Cache operation failed",
+										}),
+									),
+								),
+							);
+
+					if (!options?.schema) return resolvedQuery;
+
+					const schema = options.schema;
+					return resolvedQuery.pipe(
+						Effect.flatMap((rows) =>
+							Effect.forEach(rows, (row) =>
+								Schema.decodeUnknown(schema)(row).pipe(
+									Effect.catchTag("ParseError", (e) =>
+										Effect.fail(
+											new SodaParseError({
+												message: "Row failed schema validation",
+												errors: e,
+											}),
+										),
+									),
+								),
+							),
+						),
+					);
 				},
 
 				queryAll: (domain, datasetId, soql) => {
@@ -138,40 +165,46 @@ export class SodaClient extends Context.Tag("@soda3js/client/SodaClient")<
 
 					if (!cache) return baseMetadata;
 
-					return Effect.tryPromise({
-						try: () =>
-							cachedMetadata({
-								cache,
-								ttl: cacheTtl,
-								domain,
-								datasetId,
-								fetchMetadata: () =>
-									Effect.runPromise(baseMetadata).then((meta) => meta as unknown as Record<string, unknown>),
-							}),
-						catch: (error) =>
-							new SodaServerError({
-								code: "cache_error",
-								message: error instanceof Error ? error.message : "Cache operation failed",
-							}),
-					}).pipe(
-						Effect.flatMap((raw) =>
-							Schema.decodeUnknown(DatasetMetadata)(raw).pipe(
-								Effect.catchTag("ParseError", () =>
-									Effect.fail(
-										new SodaServerError({
-											code: "cache_error",
-											message: "Failed to decode cached metadata",
-										}),
+					return cachedMetadata({
+						cache,
+						ttl: cacheTtl,
+						domain,
+						datasetId,
+						fetchMetadata: () => baseMetadata.pipe(Effect.map((meta) => meta as unknown as Record<string, unknown>)),
+					})
+						.pipe(
+							Effect.catchAll((error) =>
+								Effect.fail(
+									new SodaServerError({
+										code: "cache_error",
+										message: error instanceof Error ? error.message : "Cache operation failed",
+									}),
+								),
+							),
+						)
+						.pipe(
+							Effect.flatMap((raw) =>
+								Schema.decodeUnknown(DatasetMetadata)(raw).pipe(
+									Effect.catchTag("ParseError", () =>
+										Effect.fail(
+											new SodaServerError({
+												code: "cache_error",
+												message: "Failed to decode cached metadata",
+											}),
+										),
 									),
 								),
 							),
-						),
-					);
+						);
 				},
 
 				export_: (domain, datasetId, format) => {
 					const client = SodaClient.buildClient(baseClient, domain, config);
 					return exportEndpoint(client, domain, datasetId, format);
+				},
+
+				discover: (params) => {
+					return discoveryEndpoint(baseClient, params);
 				},
 			} satisfies SodaClient["Type"];
 		});

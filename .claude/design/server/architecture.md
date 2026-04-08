@@ -3,12 +3,13 @@ status: current
 module: server
 category: architecture
 created: 2026-04-04
-updated: 2026-04-05
-last-synced: 2026-04-05
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 95
 related:
   - ../rest/architecture.md
   - ../client/architecture.md
+  - ../cli/architecture.md
 dependencies: []
 ---
 
@@ -320,8 +321,10 @@ with `pnpm test`. Fixtures for the tests themselves live in
 
 ---
 
-**Document Status:** Current -- all planned server functionality implemented
-on `feat/cli` branch.
+**Document Status:** Current -- all planned server functionality implemented.
+Integration tests in `@soda3js/rest`, `@soda3js/cli`, and `@soda3js/client`
+exercise the server with fixtures for 4 portals (Chicago, NYC 311, NYC
+Restaurants, SF Films). CI e2e workflow runs against the replay server.
 
-**Next Update:** When integration tests in `@soda3js/rest` or `@soda3js/cli`
-begin exercising the server and new fixture patterns emerge.
+**Next Update:** When new fixture patterns or additional server modes are
+needed.
