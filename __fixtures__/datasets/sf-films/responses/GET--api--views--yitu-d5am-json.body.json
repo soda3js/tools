@@ -1,0 +1,104 @@
+{
+  "id": "yitu-d5am",
+  "name": "Film Locations in San Francisco",
+  "description": "This data includes the locations of movies filmed in San Francisco starting from 1924.",
+  "assetType": "dataset",
+  "category": "Culture and Recreation",
+  "tags": ["film", "movies", "locations", "san francisco"],
+  "columns": [
+    {
+      "id": 1,
+      "fieldName": "title",
+      "dataTypeName": "text",
+      "description": "Title of the film",
+      "renderTypeName": "text",
+      "position": 1
+    },
+    {
+      "id": 2,
+      "fieldName": "release_year",
+      "dataTypeName": "text",
+      "description": "Year the film was released",
+      "renderTypeName": "text",
+      "position": 2
+    },
+    {
+      "id": 3,
+      "fieldName": "locations",
+      "dataTypeName": "text",
+      "description": "Filming locations in San Francisco",
+      "renderTypeName": "text",
+      "position": 3
+    },
+    {
+      "id": 4,
+      "fieldName": "fun_facts",
+      "dataTypeName": "text",
+      "description": "Fun facts about the location",
+      "renderTypeName": "text",
+      "position": 4
+    },
+    {
+      "id": 5,
+      "fieldName": "production_company",
+      "dataTypeName": "text",
+      "description": "Production company",
+      "renderTypeName": "text",
+      "position": 5
+    },
+    {
+      "id": 6,
+      "fieldName": "distributor",
+      "dataTypeName": "text",
+      "description": "Film distributor",
+      "renderTypeName": "text",
+      "position": 6
+    },
+    {
+      "id": 7,
+      "fieldName": "director",
+      "dataTypeName": "text",
+      "description": "Film director",
+      "renderTypeName": "text",
+      "position": 7
+    },
+    {
+      "id": 8,
+      "fieldName": "writer",
+      "dataTypeName": "text",
+      "description": "Film writer",
+      "renderTypeName": "text",
+      "position": 8
+    },
+    {
+      "id": 9,
+      "fieldName": "actor_1",
+      "dataTypeName": "text",
+      "description": "Lead actor",
+      "renderTypeName": "text",
+      "position": 9
+    },
+    {
+      "id": 10,
+      "fieldName": "actor_2",
+      "dataTypeName": "text",
+      "description": "Supporting actor",
+      "renderTypeName": "text",
+      "position": 10
+    },
+    {
+      "id": 11,
+      "fieldName": "actor_3",
+      "dataTypeName": "text",
+      "description": "Supporting actor 2",
+      "renderTypeName": "text",
+      "position": 11
+    }
+  ],
+  "owner": {
+    "id": "test-owner-1",
+    "displayName": "SF Open Data"
+  },
+  "rowsUpdatedAt": 1712000000,
+  "viewLastModified": 1712000000
+}

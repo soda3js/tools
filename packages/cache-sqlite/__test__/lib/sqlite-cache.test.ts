@@ -63,7 +63,8 @@ describe("SqliteCacheImpl", () => {
 		await cache.set("body-test", makeEntry({ body, sizeBytes: 5 }));
 		const result = await cache.get("body-test");
 		expect(result).toBeDefined();
-		expect(new Uint8Array(result!.body)).toEqual(body);
+		if (!result) throw new Error("unreachable");
+		expect(new Uint8Array(result.body)).toEqual(body);
 	});
 
 	it("preserves headers through round-trip", async () => {

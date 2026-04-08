@@ -114,6 +114,28 @@
 				"siteDocs": null
 			}
 		},
+		"config": {
+			"path": "packages/config",
+			"designDocsPath": ".claude/design/config",
+			"categories": ["architecture"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/config/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
+		"mcp": {
+			"path": "packages/mcp",
+			"designDocsPath": ".claude/design/mcp",
+			"categories": ["architecture", "integration"],
+			"maintainer": "C. Spencer Beggs",
+			"userDocs": {
+				"readme": "packages/mcp/README.md",
+				"repoDocs": null,
+				"siteDocs": null
+			}
+		},
 		"workflow": {
 			"path": ".claude",
 			"designDocsPath": ".claude/design/workflow",

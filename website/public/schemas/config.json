@@ -1,0 +1,73 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$defs": {
+		"Soda3Config": {
+			"type": "object",
+			"required": [],
+			"properties": {
+				"format": {
+					"type": "string"
+				},
+				"default_profile": {
+					"type": "string"
+				},
+				"cache": {
+					"$ref": "#/$defs/CacheConfig"
+				},
+				"profiles": {
+					"type": "object",
+					"required": [],
+					"properties": {},
+					"additionalProperties": {
+						"$ref": "#/$defs/Profile"
+					},
+					"description": "Named portal profiles"
+				}
+			},
+			"additionalProperties": false,
+			"description": "Configuration file for soda3js tools",
+			"title": "Soda3Config"
+		},
+		"CacheConfig": {
+			"type": "object",
+			"required": [],
+			"properties": {
+				"enabled": {
+					"type": "boolean",
+					"description": "Enable response caching"
+				},
+				"ttl": {
+					"type": "number",
+					"description": "Cache time-to-live in seconds"
+				}
+			},
+			"additionalProperties": false,
+			"description": "Cache behavior settings"
+		},
+		"Profile": {
+			"type": "object",
+			"required": ["domain"],
+			"properties": {
+				"domain": {
+					"type": "string",
+					"description": "Socrata portal domain (e.g. data.sfgov.org)"
+				},
+				"token": {
+					"type": "string",
+					"description": "Socrata app token for this portal"
+				},
+				"cache": {
+					"allOf": [
+						{
+							"$ref": "#/$defs/CacheConfig"
+						}
+					],
+					"description": "Per-profile cache override"
+				}
+			},
+			"additionalProperties": false,
+			"description": "Named portal configuration"
+		}
+	},
+	"$ref": "#/$defs/Soda3Config"
+}

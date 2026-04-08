@@ -1,0 +1,52 @@
+{
+  "dataset_id": "ijzp-q8t2",
+  "portal": "data.cityofchicago.org",
+  "recorded_at": "2026-04-07T21:35:28.488Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": true,
+    "token_used": true
+  },
+  "request": {
+    "method": "POST",
+    "path": "/api/v3/views/ijzp-q8t2/query.json",
+    "headers": {
+      "host": "localhost:50534",
+      "connection": "keep-alive",
+      "content-type": "application/json",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate",
+      "content-length": "30"
+    },
+    "body": {
+      "query": "SELECT * LIMIT 100"
+    }
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:35:28 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "last-modified": "Tue, 07 Apr 2026 21:34:49 GMT",
+      "etag": "W/\"mdPnbiqi73w07xWDLd0W2gWJ6ilew60WxcWNrWdtNQY\"",
+      "x-soda2-secondary": "pg.pg14-c-fedramp-prod",
+      "x-soda2-cached": "false",
+      "x-soda2-data-out-of-date": "[]",
+      "x-soda2-warning": "X-SODA2-Fields, X-SODA2-Types, and X-SODA2-Legacy-Types are deprecated",
+      "x-soda2-fields": "[\"id\",\"case_number\",\"date\",\"block\",\"iucr\",\"primary_type\",\"description\",\"location_description\",\"arrest\",\"domestic\",\"beat\",\"district\",\"ward\",\"community_area\",\"fbi_code\",\"x_coordinate\",\"y_coordinate\",\"year\",\"updated_on\",\"latitude\",\"longitude\",\"location\",\":id\",\":version\",\":created_at\",\":updated_at\",\":@computed_region_awaf_s7ux\",\":@computed_region_6mkv_f3dw\",\":@computed_region_vrxf_vc4k\",\":@computed_region_bdys_3d7i\",\":@computed_region_43wa_7qmu\",\":@computed_region_rpca_8um6\",\":@computed_region_d9mm_jgwp\",\":@computed_region_d3ds_rm58\",\":@computed_region_8hcu_yrd4\"]",
+      "x-soda2-types": "[\"number\",\"text\",\"floating_timestamp\",\"text\",\"text\",\"text\",\"text\",\"text\",\"boolean\",\"boolean\",\"text\",\"text\",\"number\",\"text\",\"text\",\"number\",\"number\",\"number\",\"floating_timestamp\",\"number\",\"number\",\"location\",\"row_identifier\",\"row_version\",\"fixed_timestamp\",\"fixed_timestamp\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\"]",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "00b9eb64b5e53edb85116cf370f583c2"
+    },
+    "body_file": "POST--api--v3--views--ijzp-q8t2--query-json--308d7d89.body.json"
+  }
+}

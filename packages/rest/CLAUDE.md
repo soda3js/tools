@@ -15,11 +15,18 @@ Each entry point re-exports a pre-wired `Soda3Client` class.
 
 ## Architecture
 
-- `soda3-client.ts` -- `Soda3Client` class wrapping the Effect-based
+- `soda3-client.ts` -- `Soda3ClientBase` class wrapping the Effect-based
   `SodaClient` service. Provides a class-based API that runs Effects
   internally, suitable for non-Effect codebases.
+  - `query(datasetId, options?)` -- simple query with QueryOptions
+  - `execute<T>(datasetId, builder)` -- advanced query with SoQLBuilder
+  - `metadata(datasetId)` -- dataset metadata
+  - `discover(params)` -- Discovery API (Socrata Catalog search)
+  - `queryAll(datasetId, options?)` -- async iterable for paginated results
+  - `export_(datasetId, format)` -- ReadableStream export (csv/json/tsv)
 - `node.ts` / `bun.ts` / `browser.ts` -- Platform entry points that
-  wire `Soda3Client` with the correct `HttpClient` layer
+  wire `Soda3ClientBase` with the correct `HttpClient` layer
+- Re-exports `CatalogResponse` and `DatasetMetadata` types from client
 
 ## Dependencies
 

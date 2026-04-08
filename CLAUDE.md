@@ -4,11 +4,9 @@ A modern TypeScript toolkit for the Socrata SODA3 Open Data API.
 
 ## Current Phase
 
-**Phase 4 — `@soda3js/cli` — Up Next**
-
-Phases 1 (soql), 2 (protocol, client, rest), and 3 (server) are
-complete. Current branch: `feat/cli`. Phase 4 builds the terminal
-client package (`cli`).
+Phase 5 (wrap-up). Phases 1 (soql), 2 (protocol, client, rest),
+3 (server), and 4 (cli, config, mcp) are complete.
+Current branch: `feat/wrap-up`.
 
 Before writing any code, read `.claude/design/workflow/agent-workflow.md`. It explains the
 full issue/spec/board workflow expected in every session.
@@ -17,27 +15,32 @@ full issue/spec/board workflow expected in every session.
 
 ## Project Structure
 
-Monorepo with nine packages under `packages/`:
+Monorepo with eleven packages under `packages/`:
 
 | Package | Purpose | Published |
 | --- | --- | --- |
-| `@soda3js/soql` | SoQL query builder (pure TS, zero deps) -- Phase 1 complete | Yes |
+| `@soda3js/soql` | SoQL query builder (pure TS, zero deps) | Yes |
 | `@soda3js/protocol` | Wire-format TS interfaces for SODA3 responses (zero deps) | Yes |
 | `@soda3js/client` | Platform-agnostic Effect service library (single entry point) | Yes |
 | `@soda3js/rest` | Batteries-included REST client (`Soda3Client` class, subpath exports: `./node`, `./bun`, `./browser`) | Yes |
-| `@soda3js/cli` | Terminal client (`@effect/cli`, bin: `soda3`) | Yes |
+| `@soda3js/cli` | Terminal client (`@effect/cli` + Ink, bin: `soda3`, 6 subcommands) | Yes |
+| `@soda3js/config` | Shared XDG dirs, TOML config loading, schemas (`Soda3Config` class) | Yes |
+| `@soda3js/mcp` | MCP server for AI agents (8 tools, 3 resources, bin: `soda3-mcp`) | Yes |
 | `@soda3js/cache` | Response caching (MemoryCache, BrowserCache, cache key builder) | Yes |
 | `@soda3js/cache-fs` | Filesystem cache (XDG dirs, Effect Layer) | Yes |
 | `@soda3js/cache-sqlite` | SQLite cache (Effect SQL, migrations) | Yes |
 | `@soda3js/server` | Replay/record/chaos test server (Node, Vitest plugin) | No (private) |
 
 Dependency graph: `soql` and `protocol` are leaves (zero deps).
+`config` depends on `effect` + `smol-toml` (XDG dirs, TOML config).
 `client` depends on `soql` (peers: `effect`, `@effect/platform`).
 `rest` depends on `client` + `soql` (fixed deps, not peers; bundles
-all Effect platform deps). `cli` depends on `client` + `soql`
-directly (not `rest`). `cache` depends on `protocol`. `cache-fs`
-peers: `effect`, `@effect/platform`. `cache-sqlite` peers: `effect`,
-`@effect/sql`. `server` has no runtime deps (optional peer: `vitest`).
+all Effect platform deps). `cli` depends on `client` + `soql` +
+`config` + `cache-fs` (Ink for UI). `mcp` depends on `client` +
+`soql` + `config` (MCP SDK + Zod for tool schemas). `cache` depends
+on `protocol`. `cache-fs` peers: `effect`, `@effect/platform`.
+`cache-sqlite` peers: `effect`, `@effect/sql`. `server` has no
+runtime deps (optional peer: `vitest`).
 
 ## Toolchain
 
@@ -45,7 +48,7 @@ peers: `effect`, `@effect/platform`. `cache-sqlite` peers: `effect`,
 - **Build orchestration:** Turborepo
 - **Linting/formatting:** Biome (extends `@savvy-web/lint-staged/biome/silk.jsonc`)
 - **Testing:** `@savvy-web/vitest` for test discovery and coverage
-- **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `protocol`, `client`, `rest`, `cli`, `cache`, `cache-fs`, `cache-sqlite`
+- **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `protocol`, `client`, `rest`, `cli`, `config`, `mcp`, `cache`, `cache-fs`, `cache-sqlite`
 - **Commits:** Husky + lint-staged + commitlint (DCO signoff required)
 - **Builders:** `@savvy-web/rslib-builder` for all packages
 
@@ -94,22 +97,25 @@ symlinks resolve to compiled output after `pnpm install`.
 
 ```bash
 npx tsx scripts/test-rest.ts  # Exercise rest API against live Socrata portals
+npx soda3 search "crime"      # CLI search via Discovery API
+npx soda3-mcp                 # Start MCP server (stdio transport)
 ```
 
-`SOCRATA_APP_TOKEN` env var is required for SODA3-mode requests in
-`scripts/test-rest.ts`.
-
-This setup prepares for Phase 4 (CLI) testing: root-level integration
-tests will spin up the test server (Phase 3) and point both CLI and
-rest client at it.
+`SOCRATA_APP_TOKEN` env var is required for SODA3-mode requests.
+Config profiles in `~/.config/soda3js/config.toml` can also store tokens.
 
 ## Design Documentation
 
-- **Agent workflow guide:** `.claude/design/workflow/agent-workflow.md` — read this first every session
+- **Agent workflow guide:** `.claude/design/workflow/agent-workflow.md` -- read this first every session
 - **Full project spec:** `docs/superpowers/specs/2026-04-02-soda3js-toolkit-design.md`
 - **Design docs:** `.claude/design/` with per-module subdirectories
+- **SoQL architecture:** `.claude/design/soql/architecture.md`
+- **Client architecture:** `.claude/design/client/architecture.md`
+- **REST architecture:** `.claude/design/rest/architecture.md`
+- **CLI architecture:** `.claude/design/cli/architecture.md`
 - **Server architecture:** `.claude/design/server/architecture.md`
 - **Cache architecture:** `.claude/design/cache/architecture.md`
 - **Cache-FS architecture:** `.claude/design/cache-fs/architecture.md`
 - **Cache-SQLite architecture:** `.claude/design/cache-sqlite/architecture.md`
+- **Protocol architecture:** `.claude/design/protocol/architecture.md`
 - **Design config:** `.claude/design/design.config.json`

@@ -3,9 +3,9 @@ status: current
 module: rest
 category: architecture
 created: 2026-04-04
-updated: 2026-04-05
-last-synced: 2026-04-04
-completeness: 80
+updated: 2026-04-07
+last-synced: 2026-04-07
+completeness: 85
 related:
   - ../architecture.md
   - ../client/architecture.md
@@ -57,9 +57,10 @@ packages/rest/src/
   browser.ts         # Browser entry (FetchHttpClient.layer)
 ```
 
-The `Soda3Client` class exposes `query()`, `queryAll()`, and `metadata()`
-as Promise-returning methods. Each platform entry point re-exports
-`Soda3Client` pre-wired with the appropriate `HttpClient` layer.
+The `Soda3ClientBase` class exposes `query()`, `execute()`, `queryAll()`,
+`metadata()`, `discover()`, and `export_()` as Promise-returning or
+streaming methods. Each platform entry point re-exports `Soda3ClientBase`
+(as `Soda3Client`) pre-wired with the appropriate `HttpClient` layer.
 
 ---
 
@@ -122,19 +123,26 @@ it with the platform-specific `HttpClient` layer pre-applied. The
 
 ## Soda3Client Class
 
-The core class in `soda3-client.ts`:
+The core class in `soda3-client.ts` (`Soda3ClientBase`):
 
 - Constructor takes `Soda3ClientConfig` (domain, optional appToken, optional
-  mode) and an optional `platformLayer` parameter defaulting to
-  `FetchHttpClient.layer`
+  mode, optional cache, optional cacheTtl) and an optional `platformLayer`
+  parameter defaulting to `FetchHttpClient.layer`
 - Captures `domain` for use in all method calls
 - Builds a composed `Layer<SodaClient>` from `SodaClientLive` and the
   platform layer
 - Exposes methods:
   - `query(datasetId, options?)` -- returns `Promise<ReadonlyArray<Record>>`
-  - `queryAll(datasetId, options?)` -- returns `Promise<ReadonlyArray<Record>>`
-    (collects the paginated stream)
+  - `execute<T>(datasetId, builder)` -- accepts a `SoQLBuilder` directly,
+    returns `Promise<ReadonlyArray<T>>` for typed query results
+  - `queryAll(datasetId, options?)` -- returns `AsyncIterableIterator<Record>`
+    (streams paginated results)
   - `metadata(datasetId)` -- returns `Promise<DatasetMetadata>`
+  - `discover(params)` -- returns `Promise<CatalogResponse>` for catalog search
+  - `export_(datasetId, format)` -- returns `ReadableStream<Uint8Array>`
+
+Re-exports `CatalogResponse` and `DatasetMetadata` types from
+`@soda3js/client`.
 
 **QueryOptions parsing:** The `orderBy` option in `QueryOptions` accepts
 strings in `"column:DIR"` format (e.g., `"population:DESC"`). A
@@ -142,7 +150,7 @@ strings in `"column:DIR"` format (e.g., `"population:DESC"`). A
 arguments for the SoQL builder's `.orderBy(column, direction)` call.
 
 Each method internally runs an Effect program against the composed layer via
-`Effect.runPromise`.
+a private `run()` helper.
 
 ---
 
@@ -198,16 +206,15 @@ The underlying Effect logic is tested in `@soda3js/client`'s test suite.
 
 ## Future Work
 
-- Add `export_()` method to `Soda3Client` for file download support
-- Add streaming query method that yields rows incrementally (AsyncIterable)
 - Add request/response interceptor hooks for custom middleware
 - Consider a `Soda3Client.create()` static factory as an alternative to
   `new Soda3Client()`
+- Add typed `execute()` with Schema validation passthrough
 
 ---
 
-**Document Status:** Current -- all planned Phase 2 functionality implemented
-on `feat/client` branch.
+**Document Status:** Current -- Phase 2 functionality plus Discovery API,
+`execute()` builder method, `export_()`, and `queryAll()` async iterable
+implemented on `feat/wrap-up` branch.
 
-**Next Update:** When additional `Soda3Client` methods or streaming APIs are
-added.
+**Next Update:** When interceptor hooks or additional APIs are added.

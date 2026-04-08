@@ -1,0 +1,48 @@
+{
+  "dataset_id": "ijzp-q8t2",
+  "portal": "data.cityofchicago.org",
+  "recorded_at": "2026-04-07T21:34:49.768Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": false,
+    "token_used": true
+  },
+  "request": {
+    "method": "GET",
+    "path": "/resource/ijzp-q8t2.json",
+    "headers": {
+      "host": "localhost:50534",
+      "connection": "keep-alive",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json;charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:34:49 GMT",
+      "content-type": "application/json;charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "etag": "W/\"Zm94dHJvdC43MTEzXzEwXzI0NjIyOUkwNTRQWG15N0ExNnZYRDhsS21SS3pFVFNB---gzipzjv2yuNRoSYK2OjXwtjCFUBIl2I--gzip--gzip\"",
+      "x-soda2-fields": "[\"id\",\"case_number\",\"date\",\"block\",\"iucr\",\"primary_type\",\"description\",\"location_description\",\"arrest\",\"domestic\",\"beat\",\"district\",\"ward\",\"community_area\",\"fbi_code\",\"x_coordinate\",\"y_coordinate\",\"year\",\"updated_on\",\"latitude\",\"longitude\",\"location\",\":@computed_region_awaf_s7ux\",\":@computed_region_6mkv_f3dw\",\":@computed_region_vrxf_vc4k\",\":@computed_region_bdys_3d7i\",\":@computed_region_43wa_7qmu\",\":@computed_region_rpca_8um6\",\":@computed_region_d9mm_jgwp\",\":@computed_region_d3ds_rm58\",\":@computed_region_8hcu_yrd4\"]",
+      "x-soda2-types": "[\"number\",\"text\",\"floating_timestamp\",\"text\",\"text\",\"text\",\"text\",\"text\",\"boolean\",\"boolean\",\"text\",\"text\",\"number\",\"text\",\"text\",\"number\",\"number\",\"number\",\"floating_timestamp\",\"number\",\"number\",\"location\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\",\"number\"]",
+      "x-soda2-data-out-of-date": "false",
+      "x-soda2-truth-last-modified": "Tue, 07 Apr 2026 11:26:34 GMT",
+      "x-soda2-secondary-last-modified": "Tue, 07 Apr 2026 11:26:34 GMT",
+      "last-modified": "Tue, 07 Apr 2026 11:26:34 GMT",
+      "vary": "Accept-Encoding",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "3ad973e894e06c49842ce37ddf6e3792"
+    },
+    "body_file": "GET--resource--ijzp-q8t2-json.body.json"
+  }
+}

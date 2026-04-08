@@ -1,0 +1,2417 @@
+{
+  "id": "ijzp-q8t2",
+  "name": "Crimes - 2001 to Present",
+  "assetType": "dataset",
+  "attribution": "Chicago Police Department",
+  "attributionLink": "https://www.chicagopolice.org/data-statistics/",
+  "averageRating": 0,
+  "category": "Public Safety",
+  "createdAt": 1317405571,
+  "description": "This dataset reflects reported incidents of crime (with the exception of murders where data exists for each victim) that occurred in the City of Chicago from 2001 to present, minus the most recent seven days. Data is extracted from the Chicago Police Department's CLEAR (Citizen Law Enforcement Analysis and Reporting) system. In order to protect the privacy of crime victims, addresses are shown at the block level only and specific locations are not identified. Should you have questions about this dataset, you may contact the Data Fulfillment and Analysis Division of the Chicago Police Department at DFA@ChicagoPolice.org.  Disclaimer: These crimes may be based upon preliminary information supplied to the Police Department by the reporting parties that have not been verified. The preliminary crime classifications may be changed at a later date based upon additional investigation and there is always the possibility of mechanical or human error. Therefore, the Chicago Police Department does not guarantee (either expressed or implied) the accuracy, completeness, timeliness, or correct sequencing of the information and the information should not be used for comparison purposes over time. The Chicago Police Department will not be responsible for any error or omission, or for the use of, or the results obtained from the use of this information. All data visualizations on maps should be considered approximate and attempts to derive specific addresses are strictly prohibited. The Chicago Police Department is not responsible for the content of any off-site pages that are referenced by or that reference this web page other than an official City of Chicago or Chicago Police Department web page. The user specifically acknowledges that the Chicago Police Department is not responsible for any defamatory, offensive, misleading, or illegal conduct of other users, links, or third parties and that the risk of injury from the foregoing rests entirely with the user.  The unauthorized use of the words \"Chicago Police Department,\" \"Chicago Police,\" or any colorable imitation of these words or the unauthorized use of the Chicago Police Department logo is unlawful. This web page does not, in any way, authorize such use. Data are updated daily. To access a list of Chicago Police Department - Illinois Uniform Crime Reporting (IUCR) codes, go to http://data.cityofchicago.org/Public-Safety/Chicago-Police-Department-Illinois-Uniform-Crime-R/c7ck-438e",
+  "diciBackend": false,
+  "displayType": "table",
+  "downloadCount": 879271,
+  "hideFromCatalog": false,
+  "hideFromDataJson": false,
+  "licenseId": "SEE_TERMS_OF_USE",
+  "locked": false,
+  "newBackend": true,
+  "numberOfComments": 0,
+  "oid": 39959650,
+  "provenance": "official",
+  "publicationAppendEnabled": false,
+  "publicationDate": 1694750301,
+  "publicationGroup": 239997,
+  "publicationStage": "published",
+  "resourceName": "crimes",
+  "rowIdentifierColumnId": 580897883,
+  "rowsUpdatedAt": 1775561185,
+  "rowsUpdatedBy": "n9j5-zhen",
+  "tableId": 19289201,
+  "totalTimesRated": 0,
+  "viewCount": 1249496,
+  "viewLastModified": 1733778034,
+  "viewType": "tabular",
+  "approvals": [
+    {
+      "reviewedAt": 1465420961,
+      "reviewedAutomatically": true,
+      "state": "approved",
+      "submissionId": 5770302,
+      "submissionObject": "public_audience_request",
+      "submissionOutcome": "change_audience",
+      "submittedAt": 1465420961,
+      "targetAudience": "public",
+      "workflowId": 2226,
+      "submissionDetails": {
+        "permissionType": "READ"
+      },
+      "submissionOutcomeApplication": {
+        "failureCount": 0,
+        "status": "success"
+      },
+      "submitter": {
+        "id": "scy9-9wg4",
+        "displayName": "cocadmin"
+      }
+    }
+  ],
+  "clientContext": {
+    "clientContextVariables": [],
+    "inheritedVariables": {}
+  },
+  "columns": [
+    {
+      "id": 580897883,
+      "name": "ID",
+      "dataTypeName": "number",
+      "description": "Unique identifier for the record.",
+      "fieldName": "id",
+      "position": 1,
+      "renderTypeName": "number",
+      "tableColumnId": 2154841,
+      "width": 100,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "14158480",
+        "null": "0",
+        "top": [
+          {
+            "item": "635",
+            "count": "1"
+          },
+          {
+            "item": "636",
+            "count": "1"
+          },
+          {
+            "item": "637",
+            "count": "1"
+          },
+          {
+            "item": "638",
+            "count": "1"
+          },
+          {
+            "item": "639",
+            "count": "1"
+          },
+          {
+            "item": "640",
+            "count": "1"
+          },
+          {
+            "item": "641",
+            "count": "1"
+          },
+          {
+            "item": "642",
+            "count": "1"
+          },
+          {
+            "item": "643",
+            "count": "1"
+          },
+          {
+            "item": "644",
+            "count": "1"
+          },
+          {
+            "item": "645",
+            "count": "1"
+          },
+          {
+            "item": "646",
+            "count": "1"
+          },
+          {
+            "item": "647",
+            "count": "1"
+          },
+          {
+            "item": "648",
+            "count": "1"
+          },
+          {
+            "item": "649",
+            "count": "1"
+          },
+          {
+            "item": "650",
+            "count": "1"
+          },
+          {
+            "item": "651",
+            "count": "1"
+          },
+          {
+            "item": "652",
+            "count": "1"
+          },
+          {
+            "item": "653",
+            "count": "1"
+          },
+          {
+            "item": "634",
+            "count": "1"
+          }
+        ],
+        "smallest": "634",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "precisionStyle": "standard",
+        "noCommas": "true",
+        "align": "right"
+      }
+    },
+    {
+      "id": 580897884,
+      "name": "Case Number",
+      "dataTypeName": "text",
+      "description": "The Chicago Police Department RD Number (Records Division Number), which is unique to the incident. ",
+      "fieldName": "case_number",
+      "position": 2,
+      "renderTypeName": "text",
+      "tableColumnId": 1514295,
+      "width": 134,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "ZZZ199957",
+        "null": "0",
+        "top": [
+          {
+            "item": "HZ140230",
+            "count": "6"
+          },
+          {
+            "item": "HJ590004",
+            "count": "6"
+          },
+          {
+            "item": "HS256531",
+            "count": "5"
+          },
+          {
+            "item": "JC470284",
+            "count": "5"
+          },
+          {
+            "item": "HP296582",
+            "count": "5"
+          },
+          {
+            "item": "JE266473",
+            "count": "5"
+          },
+          {
+            "item": "JJ309322",
+            "count": "4"
+          },
+          {
+            "item": "JD286197",
+            "count": "4"
+          },
+          {
+            "item": "JJ318710",
+            "count": "4"
+          },
+          {
+            "item": "HZ554936",
+            "count": "4"
+          },
+          {
+            "item": "HN217726",
+            "count": "4"
+          },
+          {
+            "item": "HZ403466",
+            "count": "4"
+          },
+          {
+            "item": "JA206252",
+            "count": "4"
+          },
+          {
+            "item": "JF505994",
+            "count": "4"
+          },
+          {
+            "item": "HY346207",
+            "count": "4"
+          },
+          {
+            "item": "HJ104730",
+            "count": "4"
+          },
+          {
+            "item": "JA432970",
+            "count": "4"
+          },
+          {
+            "item": "HS496074",
+            "count": "4"
+          },
+          {
+            "item": "HJ756295",
+            "count": "4"
+          },
+          {
+            "item": "HM763064",
+            "count": "3"
+          }
+        ],
+        "smallest": "01G050460",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left",
+        "aggregate": "count"
+      }
+    },
+    {
+      "id": 580897885,
+      "name": "Date",
+      "dataTypeName": "calendar_date",
+      "description": "Date when the incident occurred. this is sometimes a best estimate. ",
+      "fieldName": "date",
+      "position": 3,
+      "renderTypeName": "calendar_date",
+      "tableColumnId": 1514296,
+      "width": 148,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "2026-03-30T00:00:00.000",
+        "null": "0",
+        "top": [
+          {
+            "item": "2008-01-01T00:01:00.000",
+            "count": "305"
+          },
+          {
+            "item": "2007-01-01T00:01:00.000",
+            "count": "260"
+          },
+          {
+            "item": "2006-01-01T00:01:00.000",
+            "count": "226"
+          },
+          {
+            "item": "2004-01-01T00:00:00.000",
+            "count": "221"
+          },
+          {
+            "item": "2003-01-01T00:00:00.000",
+            "count": "215"
+          },
+          {
+            "item": "2005-01-01T00:01:00.000",
+            "count": "215"
+          },
+          {
+            "item": "2003-01-01T00:01:00.000",
+            "count": "214"
+          },
+          {
+            "item": "2007-01-01T00:00:00.000",
+            "count": "207"
+          },
+          {
+            "item": "2015-01-01T00:00:00.000",
+            "count": "203"
+          },
+          {
+            "item": "2015-01-01T00:01:00.000",
+            "count": "202"
+          },
+          {
+            "item": "2001-01-01T00:00:00.000",
+            "count": "200"
+          },
+          {
+            "item": "2012-01-01T00:01:00.000",
+            "count": "199"
+          },
+          {
+            "item": "2009-01-01T00:01:00.000",
+            "count": "198"
+          },
+          {
+            "item": "2005-01-01T00:00:00.000",
+            "count": "192"
+          },
+          {
+            "item": "2008-01-01T00:00:00.000",
+            "count": "184"
+          },
+          {
+            "item": "2006-01-01T00:00:00.000",
+            "count": "183"
+          },
+          {
+            "item": "2021-01-01T00:00:00.000",
+            "count": "182"
+          },
+          {
+            "item": "2023-01-01T00:00:00.000",
+            "count": "182"
+          },
+          {
+            "item": "2017-01-01T00:00:00.000",
+            "count": "181"
+          },
+          {
+            "item": "2016-01-01T00:01:00.000",
+            "count": "180"
+          }
+        ],
+        "smallest": "2001-01-01T00:00:00.000",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "view": "date_time",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897886,
+      "name": "Block",
+      "dataTypeName": "text",
+      "description": "The partially redacted address where the incident occurred, placing it on the same block as the actual address. ",
+      "fieldName": "block",
+      "position": 4,
+      "renderTypeName": "text",
+      "tableColumnId": 1514297,
+      "width": 160,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "XX  UNKNOWN",
+        "null": "0",
+        "top": [
+          {
+            "item": "001XX N STATE ST",
+            "count": "17176"
+          },
+          {
+            "item": "100XX W OHARE ST",
+            "count": "17045"
+          },
+          {
+            "item": "076XX S CICERO AVE",
+            "count": "10955"
+          },
+          {
+            "item": "0000X N STATE ST",
+            "count": "10407"
+          },
+          {
+            "item": "008XX N MICHIGAN AVE",
+            "count": "9772"
+          },
+          {
+            "item": "0000X W TERMINAL ST",
+            "count": "8028"
+          },
+          {
+            "item": "064XX S DR MARTIN LUTHER KING JR DR",
+            "count": "6551"
+          },
+          {
+            "item": "063XX S DR MARTIN LUTHER KING JR DR",
+            "count": "6004"
+          },
+          {
+            "item": "023XX S STATE ST",
+            "count": "5353"
+          },
+          {
+            "item": "0000X S STATE ST",
+            "count": "5079"
+          },
+          {
+            "item": "001XX W 87TH ST",
+            "count": "4989"
+          },
+          {
+            "item": "057XX S CICERO AVE",
+            "count": "4983"
+          },
+          {
+            "item": "006XX N MICHIGAN AVE",
+            "count": "4920"
+          },
+          {
+            "item": "012XX S WABASH AVE",
+            "count": "4812"
+          },
+          {
+            "item": "008XX N STATE ST",
+            "count": "4568"
+          },
+          {
+            "item": "009XX W BELMONT AVE",
+            "count": "4478"
+          },
+          {
+            "item": "033XX W FILLMORE ST",
+            "count": "4478"
+          },
+          {
+            "item": "075XX S STONY ISLAND AVE",
+            "count": "4321"
+          },
+          {
+            "item": "007XX N MICHIGAN AVE",
+            "count": "4275"
+          },
+          {
+            "item": "071XX S JEFFERY BLVD",
+            "count": "4204"
+          }
+        ],
+        "smallest": "0000X E 100 PL",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897887,
+      "name": "IUCR",
+      "dataTypeName": "text",
+      "description": "The Illinois Uniform Crime Reporting code. This is directly linked to the Primary Type and Description. See the list of IUCR codes at https://data.cityofchicago.org/d/c7ck-438e.",
+      "fieldName": "iucr",
+      "position": 5,
+      "renderTypeName": "text",
+      "tableColumnId": 1514298,
+      "width": 148,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "9901",
+        "null": "0",
+        "top": [
+          {
+            "item": "0820",
+            "count": "682835"
+          },
+          {
+            "item": "0486",
+            "count": "666305"
+          },
+          {
+            "item": "0460",
+            "count": "607540"
+          },
+          {
+            "item": "0810",
+            "count": "464689"
+          },
+          {
+            "item": "1320",
+            "count": "462843"
+          },
+          {
+            "item": "1310",
+            "count": "444067"
+          },
+          {
+            "item": "0560",
+            "count": "390790"
+          },
+          {
+            "item": "0910",
+            "count": "343526"
+          },
+          {
+            "item": "0610",
+            "count": "295469"
+          },
+          {
+            "item": "1811",
+            "count": "279941"
+          },
+          {
+            "item": "0890",
+            "count": "269381"
+          },
+          {
+            "item": "0860",
+            "count": "240562"
+          },
+          {
+            "item": "2820",
+            "count": "159869"
+          },
+          {
+            "item": "1330",
+            "count": "140686"
+          },
+          {
+            "item": "2027",
+            "count": "125539"
+          },
+          {
+            "item": "0620",
+            "count": "122596"
+          },
+          {
+            "item": "2825",
+            "count": "118897"
+          },
+          {
+            "item": "031A",
+            "count": "113930"
+          },
+          {
+            "item": "0320",
+            "count": "104269"
+          },
+          {
+            "item": "2024",
+            "count": "103389"
+          }
+        ],
+        "smallest": "0110",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897888,
+      "name": "Primary Type",
+      "dataTypeName": "text",
+      "description": "The primary description of the IUCR code.",
+      "fieldName": "primary_type",
+      "position": 6,
+      "renderTypeName": "text",
+      "tableColumnId": 1514299,
+      "width": 244,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "WEAPONS VIOLATION",
+        "null": "0",
+        "top": [
+          {
+            "item": "THEFT",
+            "count": "1811255"
+          },
+          {
+            "item": "BATTERY",
+            "count": "1553109"
+          },
+          {
+            "item": "CRIMINAL DAMAGE",
+            "count": "969230"
+          },
+          {
+            "item": "NARCOTICS",
+            "count": "766778"
+          },
+          {
+            "item": "ASSAULT",
+            "count": "573219"
+          },
+          {
+            "item": "OTHER OFFENSE",
+            "count": "532545"
+          },
+          {
+            "item": "BURGLARY",
+            "count": "450525"
+          },
+          {
+            "item": "MOTOR VEHICLE THEFT",
+            "count": "438874"
+          },
+          {
+            "item": "DECEPTIVE PRACTICE",
+            "count": "395121"
+          },
+          {
+            "item": "ROBBERY",
+            "count": "316672"
+          },
+          {
+            "item": "CRIMINAL TRESPASS",
+            "count": "229158"
+          },
+          {
+            "item": "WEAPONS VIOLATION",
+            "count": "126857"
+          },
+          {
+            "item": "PROSTITUTION",
+            "count": "70483"
+          },
+          {
+            "item": "OFFENSE INVOLVING CHILDREN",
+            "count": "61248"
+          },
+          {
+            "item": "PUBLIC PEACE VIOLATION",
+            "count": "55235"
+          },
+          {
+            "item": "SEX OFFENSE",
+            "count": "34839"
+          },
+          {
+            "item": "CRIM SEXUAL ASSAULT",
+            "count": "27245"
+          },
+          {
+            "item": "INTERFERENCE WITH PUBLIC OFFICER",
+            "count": "20640"
+          },
+          {
+            "item": "LIQUOR LAW VIOLATION",
+            "count": "15471"
+          },
+          {
+            "item": "GAMBLING",
+            "count": "14666"
+          }
+        ],
+        "smallest": "ARSON",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897889,
+      "name": "Description",
+      "dataTypeName": "text",
+      "description": "The secondary description of the IUCR code, a subcategory of the primary description.",
+      "fieldName": "description",
+      "position": 7,
+      "renderTypeName": "text",
+      "tableColumnId": 1514300,
+      "width": 298,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "WIREROOM/SPORTS",
+        "null": "0",
+        "top": [
+          {
+            "item": "SIMPLE",
+            "count": "1003201"
+          },
+          {
+            "item": "$500 AND UNDER",
+            "count": "682819"
+          },
+          {
+            "item": "DOMESTIC BATTERY SIMPLE",
+            "count": "666305"
+          },
+          {
+            "item": "TO VEHICLE",
+            "count": "479476"
+          },
+          {
+            "item": "OVER $500",
+            "count": "464676"
+          },
+          {
+            "item": "TO PROPERTY",
+            "count": "444067"
+          },
+          {
+            "item": "AUTOMOBILE",
+            "count": "343526"
+          },
+          {
+            "item": "FORCIBLE ENTRY",
+            "count": "295469"
+          },
+          {
+            "item": "POSS: CANNABIS 30GMS OR LESS",
+            "count": "278136"
+          },
+          {
+            "item": "FROM BUILDING",
+            "count": "269381"
+          },
+          {
+            "item": "RETAIL THEFT",
+            "count": "240562"
+          },
+          {
+            "item": "TELEPHONE THREAT",
+            "count": "159869"
+          },
+          {
+            "item": "TO LAND",
+            "count": "140686"
+          },
+          {
+            "item": "UNLAWFUL ENTRY",
+            "count": "122596"
+          },
+          {
+            "item": "POSS: CRACK",
+            "count": "121109"
+          },
+          {
+            "item": "HARASSMENT BY TELEPHONE",
+            "count": "118897"
+          },
+          {
+            "item": "AGGRAVATED: OTHER DANG WEAPON",
+            "count": "96718"
+          },
+          {
+            "item": "POSS: HEROIN(WHITE)",
+            "count": "95786"
+          },
+          {
+            "item": "ARMED: HANDGUN",
+            "count": "93126"
+          },
+          {
+            "item": "STRONGARM - NO WEAPON",
+            "count": "91320"
+          }
+        ],
+        "smallest": "$300 AND UNDER",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897890,
+      "name": "Location Description",
+      "dataTypeName": "text",
+      "description": "Description of the location where the incident occurred.",
+      "fieldName": "location_description",
+      "position": 8,
+      "renderTypeName": "text",
+      "tableColumnId": 1514301,
+      "width": 340,
+      "cachedContents": {
+        "non_null": "8510885",
+        "largest": "YMCA",
+        "null": "15826",
+        "top": [
+          {
+            "item": "STREET",
+            "count": "2228445"
+          },
+          {
+            "item": "RESIDENCE",
+            "count": "1395560"
+          },
+          {
+            "item": "APARTMENT",
+            "count": "1022234"
+          },
+          {
+            "item": "SIDEWALK",
+            "count": "766808"
+          },
+          {
+            "item": "OTHER",
+            "count": "269920"
+          },
+          {
+            "item": "PARKING LOT/GARAGE(NON.RESID.)",
+            "count": "202917"
+          },
+          {
+            "item": "ALLEY",
+            "count": "189467"
+          },
+          {
+            "item": "SMALL RETAIL STORE",
+            "count": "173108"
+          },
+          {
+            "item": "SCHOOL, PUBLIC, BUILDING",
+            "count": "146365"
+          },
+          {
+            "item": "RESTAURANT",
+            "count": "143984"
+          },
+          {
+            "item": "VEHICLE NON-COMMERCIAL",
+            "count": "135075"
+          },
+          {
+            "item": "RESIDENCE-GARAGE",
+            "count": "134949"
+          },
+          {
+            "item": "RESIDENCE PORCH/HALLWAY",
+            "count": "124154"
+          },
+          {
+            "item": "DEPARTMENT STORE",
+            "count": "114235"
+          },
+          {
+            "item": "GROCERY FOOD STORE",
+            "count": "106249"
+          },
+          {
+            "item": "GAS STATION",
+            "count": "95219"
+          },
+          {
+            "item": "RESIDENTIAL YARD (FRONT/BACK)",
+            "count": "75134"
+          },
+          {
+            "item": "COMMERCIAL / BUSINESS OFFICE",
+            "count": "71079"
+          },
+          {
+            "item": "PARK PROPERTY",
+            "count": "64043"
+          },
+          {
+            "item": "CHA PARKING LOT/GROUNDS",
+            "count": "56093"
+          }
+        ],
+        "smallest": "ABANDONED BUILDING",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897891,
+      "name": "Arrest",
+      "dataTypeName": "checkbox",
+      "description": "Indicates whether an arrest was made.",
+      "fieldName": "arrest",
+      "position": 9,
+      "renderTypeName": "checkbox",
+      "tableColumnId": 1514302,
+      "width": 106,
+      "cachedContents": {
+        "non_null": "8526711",
+        "null": "0",
+        "top": [
+          {
+            "item": false,
+            "count": "6384967"
+          },
+          {
+            "item": true,
+            "count": "2141744"
+          }
+        ],
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "align": "center"
+      }
+    },
+    {
+      "id": 580897892,
+      "name": "Domestic",
+      "dataTypeName": "checkbox",
+      "description": "Indicates whether the incident was domestic-related as defined by the Illinois Domestic Violence Act.",
+      "fieldName": "domestic",
+      "position": 10,
+      "renderTypeName": "checkbox",
+      "tableColumnId": 1514303,
+      "width": 127,
+      "cachedContents": {
+        "non_null": "8526711",
+        "null": "0",
+        "top": [
+          {
+            "item": false,
+            "count": "7052899"
+          },
+          {
+            "item": true,
+            "count": "1473812"
+          }
+        ],
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "align": "center"
+      }
+    },
+    {
+      "id": 580897893,
+      "name": "Beat",
+      "dataTypeName": "text",
+      "description": "Indicates the beat where the incident occurred.  A beat is the smallest police geographic area – each beat has a dedicated police beat car.  Three to five beats make up a police sector, and three sectors make up a police district.  The Chicago Police Department has 22 police districts.  \n\nSee the beats at https://data.cityofchicago.org/d/aerh-rz74.\n",
+      "fieldName": "beat",
+      "position": 11,
+      "renderTypeName": "text",
+      "tableColumnId": 1514304,
+      "width": 148,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "2535",
+        "null": "0",
+        "top": [
+          {
+            "item": "0421",
+            "count": "66185"
+          },
+          {
+            "item": "0423",
+            "count": "64748"
+          },
+          {
+            "item": "1834",
+            "count": "64631"
+          },
+          {
+            "item": "0624",
+            "count": "59799"
+          },
+          {
+            "item": "0511",
+            "count": "58175"
+          },
+          {
+            "item": "1533",
+            "count": "56584"
+          },
+          {
+            "item": "0823",
+            "count": "56497"
+          },
+          {
+            "item": "1112",
+            "count": "56428"
+          },
+          {
+            "item": "0414",
+            "count": "53107"
+          },
+          {
+            "item": "1522",
+            "count": "52161"
+          },
+          {
+            "item": "2533",
+            "count": "51685"
+          },
+          {
+            "item": "0621",
+            "count": "51448"
+          },
+          {
+            "item": "0612",
+            "count": "50971"
+          },
+          {
+            "item": "0631",
+            "count": "49433"
+          },
+          {
+            "item": "0321",
+            "count": "49402"
+          },
+          {
+            "item": "0825",
+            "count": "47256"
+          },
+          {
+            "item": "1831",
+            "count": "47070"
+          },
+          {
+            "item": "0512",
+            "count": "46988"
+          },
+          {
+            "item": "1011",
+            "count": "46718"
+          },
+          {
+            "item": "1121",
+            "count": "46203"
+          }
+        ],
+        "smallest": "0111",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897894,
+      "name": "District",
+      "dataTypeName": "text",
+      "description": "Indicates the police district where the incident occurred.  See the districts at https://data.cityofchicago.org/d/fthy-xz3r.",
+      "fieldName": "district",
+      "position": 12,
+      "renderTypeName": "text",
+      "tableColumnId": 5086344,
+      "width": 100,
+      "cachedContents": {
+        "non_null": "8526664",
+        "largest": "16",
+        "null": "47",
+        "top": [
+          {
+            "item": "008",
+            "count": "571543"
+          },
+          {
+            "item": "011",
+            "count": "539881"
+          },
+          {
+            "item": "006",
+            "count": "498007"
+          },
+          {
+            "item": "004",
+            "count": "482518"
+          },
+          {
+            "item": "007",
+            "count": "481249"
+          },
+          {
+            "item": "025",
+            "count": "480857"
+          },
+          {
+            "item": "003",
+            "count": "433163"
+          },
+          {
+            "item": "012",
+            "count": "431815"
+          },
+          {
+            "item": "009",
+            "count": "413314"
+          },
+          {
+            "item": "002",
+            "count": "407301"
+          },
+          {
+            "item": "019",
+            "count": "389108"
+          },
+          {
+            "item": "018",
+            "count": "388613"
+          },
+          {
+            "item": "005",
+            "count": "374281"
+          },
+          {
+            "item": "010",
+            "count": "365768"
+          },
+          {
+            "item": "015",
+            "count": "358148"
+          },
+          {
+            "item": "001",
+            "count": "356722"
+          },
+          {
+            "item": "014",
+            "count": "327978"
+          },
+          {
+            "item": "016",
+            "count": "286776"
+          },
+          {
+            "item": "022",
+            "count": "278322"
+          },
+          {
+            "item": "024",
+            "count": "260200"
+          }
+        ],
+        "smallest": "001",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897895,
+      "name": "Ward",
+      "dataTypeName": "number",
+      "description": "The ward (City Council district) where the incident occurred.  See the wards at https://data.cityofchicago.org/d/sp34-6z76.",
+      "fieldName": "ward",
+      "position": 13,
+      "renderTypeName": "number",
+      "tableColumnId": 1514305,
+      "width": 148,
+      "cachedContents": {
+        "non_null": "7911895",
+        "largest": "50",
+        "null": "614816",
+        "top": [
+          {
+            "item": "28",
+            "count": "361597"
+          },
+          {
+            "item": "42",
+            "count": "324139"
+          },
+          {
+            "item": "24",
+            "count": "307240"
+          },
+          {
+            "item": "27",
+            "count": "304594"
+          },
+          {
+            "item": "2",
+            "count": "266745"
+          },
+          {
+            "item": "6",
+            "count": "264905"
+          },
+          {
+            "item": "17",
+            "count": "260792"
+          },
+          {
+            "item": "20",
+            "count": "259598"
+          },
+          {
+            "item": "21",
+            "count": "239644"
+          },
+          {
+            "item": "3",
+            "count": "238349"
+          },
+          {
+            "item": "16",
+            "count": "228771"
+          },
+          {
+            "item": "34",
+            "count": "220836"
+          },
+          {
+            "item": "8",
+            "count": "220358"
+          },
+          {
+            "item": "7",
+            "count": "216150"
+          },
+          {
+            "item": "37",
+            "count": "214055"
+          },
+          {
+            "item": "9",
+            "count": "208392"
+          },
+          {
+            "item": "15",
+            "count": "197271"
+          },
+          {
+            "item": "5",
+            "count": "189605"
+          },
+          {
+            "item": "29",
+            "count": "182002"
+          },
+          {
+            "item": "4",
+            "count": "167059"
+          }
+        ],
+        "smallest": "1",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "precisionStyle": "standard",
+        "noCommas": "false",
+        "align": "right"
+      }
+    },
+    {
+      "id": 580897896,
+      "name": "Community Area",
+      "dataTypeName": "text",
+      "description": "Indicates the community area where the incident occurred.  Chicago has 77 community areas. \n\nSee the community areas at https://data.cityofchicago.org/d/cauq-8yn6.\n",
+      "fieldName": "community_area",
+      "position": 14,
+      "renderTypeName": "text",
+      "tableColumnId": 5086360,
+      "width": 170,
+      "cachedContents": {
+        "non_null": "7912984",
+        "largest": "9",
+        "null": "613727",
+        "top": [
+          {
+            "item": "25",
+            "count": "484903"
+          },
+          {
+            "item": "8",
+            "count": "285916"
+          },
+          {
+            "item": "43",
+            "count": "261212"
+          },
+          {
+            "item": "28",
+            "count": "248205"
+          },
+          {
+            "item": "23",
+            "count": "243794"
+          },
+          {
+            "item": "24",
+            "count": "232540"
+          },
+          {
+            "item": "29",
+            "count": "229579"
+          },
+          {
+            "item": "71",
+            "count": "222158"
+          },
+          {
+            "item": "67",
+            "count": "218495"
+          },
+          {
+            "item": "49",
+            "count": "207165"
+          },
+          {
+            "item": "32",
+            "count": "203829"
+          },
+          {
+            "item": "68",
+            "count": "201931"
+          },
+          {
+            "item": "69",
+            "count": "197081"
+          },
+          {
+            "item": "66",
+            "count": "189549"
+          },
+          {
+            "item": "44",
+            "count": "174983"
+          },
+          {
+            "item": "6",
+            "count": "163921"
+          },
+          {
+            "item": "22",
+            "count": "163176"
+          },
+          {
+            "item": "61",
+            "count": "156166"
+          },
+          {
+            "item": "26",
+            "count": "146273"
+          },
+          {
+            "item": "27",
+            "count": "145826"
+          }
+        ],
+        "smallest": "0",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897897,
+      "name": "FBI Code",
+      "dataTypeName": "text",
+      "description": "Indicates the crime classification as outlined in the FBI's National Incident-Based Reporting System (NIBRS).See the Chicago Police Department listing of these classifications at https://gis.chicagopolice.org/pages/crime_details.",
+      "fieldName": "fbi_code",
+      "position": 15,
+      "renderTypeName": "text",
+      "tableColumnId": 1514306,
+      "width": 196,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "26",
+        "null": "0",
+        "top": [
+          {
+            "item": "06",
+            "count": "1817072"
+          },
+          {
+            "item": "08B",
+            "count": "1333909"
+          },
+          {
+            "item": "14",
+            "count": "969230"
+          },
+          {
+            "item": "18",
+            "count": "765799"
+          },
+          {
+            "item": "26",
+            "count": "614051"
+          },
+          {
+            "item": "08A",
+            "count": "584638"
+          },
+          {
+            "item": "05",
+            "count": "444708"
+          },
+          {
+            "item": "07",
+            "count": "438874"
+          },
+          {
+            "item": "11",
+            "count": "342208"
+          },
+          {
+            "item": "03",
+            "count": "316672"
+          },
+          {
+            "item": "04B",
+            "count": "236607"
+          },
+          {
+            "item": "04A",
+            "count": "158276"
+          },
+          {
+            "item": "15",
+            "count": "128621"
+          },
+          {
+            "item": "24",
+            "count": "74708"
+          },
+          {
+            "item": "16",
+            "count": "70483"
+          },
+          {
+            "item": "17",
+            "count": "49770"
+          },
+          {
+            "item": "10",
+            "count": "47984"
+          },
+          {
+            "item": "02",
+            "count": "46474"
+          },
+          {
+            "item": "20",
+            "count": "22559"
+          },
+          {
+            "item": "22",
+            "count": "15471"
+          }
+        ],
+        "smallest": "01A",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "displayStyle": "plain",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897898,
+      "name": "X Coordinate",
+      "dataTypeName": "number",
+      "description": "The x coordinate of the location where the incident occurred in State Plane Illinois East NAD 1983 projection.  This location is shifted from the actual location for partial redaction but falls on the same block.",
+      "fieldName": "x_coordinate",
+      "position": 16,
+      "renderTypeName": "number",
+      "tableColumnId": 1514307,
+      "width": 143,
+      "cachedContents": {
+        "non_null": "8430474",
+        "largest": "1205119",
+        "null": "96237",
+        "top": [
+          {
+            "item": "1100658",
+            "count": "14816"
+          },
+          {
+            "item": "1145727",
+            "count": "11202"
+          },
+          {
+            "item": "1176352",
+            "count": "10700"
+          },
+          {
+            "item": "1177338",
+            "count": "7423"
+          },
+          {
+            "item": "1176436",
+            "count": "5124"
+          },
+          {
+            "item": "1176963",
+            "count": "4100"
+          },
+          {
+            "item": "1145654",
+            "count": "3996"
+          },
+          {
+            "item": "1176365",
+            "count": "3951"
+          },
+          {
+            "item": "1145011",
+            "count": "3807"
+          },
+          {
+            "item": "1176223",
+            "count": "3492"
+          },
+          {
+            "item": "1149512",
+            "count": "3446"
+          },
+          {
+            "item": "1176364",
+            "count": "3360"
+          },
+          {
+            "item": "1173303",
+            "count": "3312"
+          },
+          {
+            "item": "1154228",
+            "count": "3217"
+          },
+          {
+            "item": "1176389",
+            "count": "3073"
+          },
+          {
+            "item": "1171084",
+            "count": "3067"
+          },
+          {
+            "item": "1100317",
+            "count": "3066"
+          },
+          {
+            "item": "1163126",
+            "count": "3020"
+          },
+          {
+            "item": "1176740",
+            "count": "3016"
+          },
+          {
+            "item": "1177762",
+            "count": "2939"
+          }
+        ],
+        "smallest": "0",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "precisionStyle": "standard",
+        "noCommas": "true",
+        "align": "right"
+      }
+    },
+    {
+      "id": 580897899,
+      "name": "Y Coordinate",
+      "dataTypeName": "number",
+      "description": "The y coordinate of the location where the incident occurred in State Plane Illinois East NAD 1983 projection. This location is shifted from the actual location for partial redaction but falls on the same block.",
+      "fieldName": "y_coordinate",
+      "position": 17,
+      "renderTypeName": "number",
+      "tableColumnId": 1514308,
+      "width": 142,
+      "cachedContents": {
+        "non_null": "8430474",
+        "largest": "1951622",
+        "null": "96237",
+        "top": [
+          {
+            "item": "1934241",
+            "count": "14832"
+          },
+          {
+            "item": "1853720",
+            "count": "11309"
+          },
+          {
+            "item": "1900927",
+            "count": "9292"
+          },
+          {
+            "item": "1906181",
+            "count": "5180"
+          },
+          {
+            "item": "1910225",
+            "count": "4188"
+          },
+          {
+            "item": "1866253",
+            "count": "4063"
+          },
+          {
+            "item": "1950347",
+            "count": "3560"
+          },
+          {
+            "item": "1905805",
+            "count": "3513"
+          },
+          {
+            "item": "1950346",
+            "count": "3381"
+          },
+          {
+            "item": "1895451",
+            "count": "3205"
+          },
+          {
+            "item": "1901446",
+            "count": "3146"
+          },
+          {
+            "item": "1895173",
+            "count": "3106"
+          },
+          {
+            "item": "1935229",
+            "count": "3076"
+          },
+          {
+            "item": "1903917",
+            "count": "2986"
+          },
+          {
+            "item": "1900524",
+            "count": "2966"
+          },
+          {
+            "item": "1847273",
+            "count": "2956"
+          },
+          {
+            "item": "1900502",
+            "count": "2941"
+          },
+          {
+            "item": "1841949",
+            "count": "2939"
+          },
+          {
+            "item": "1921430",
+            "count": "2906"
+          },
+          {
+            "item": "1917657",
+            "count": "2789"
+          }
+        ],
+        "smallest": "0",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "precisionStyle": "standard",
+        "noCommas": "true",
+        "align": "right"
+      }
+    },
+    {
+      "id": 580897900,
+      "name": "Year",
+      "dataTypeName": "number",
+      "description": "Year the incident occurred.",
+      "fieldName": "year",
+      "position": 18,
+      "renderTypeName": "number",
+      "tableColumnId": 1518776,
+      "width": 100,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "2026",
+        "null": "0",
+        "top": [
+          {
+            "item": "2002",
+            "count": "486832"
+          },
+          {
+            "item": "2001",
+            "count": "485962"
+          },
+          {
+            "item": "2003",
+            "count": "475999"
+          },
+          {
+            "item": "2004",
+            "count": "469443"
+          },
+          {
+            "item": "2005",
+            "count": "453789"
+          },
+          {
+            "item": "2006",
+            "count": "448198"
+          },
+          {
+            "item": "2007",
+            "count": "437109"
+          },
+          {
+            "item": "2008",
+            "count": "427218"
+          },
+          {
+            "item": "2009",
+            "count": "392866"
+          },
+          {
+            "item": "2010",
+            "count": "370568"
+          },
+          {
+            "item": "2011",
+            "count": "352058"
+          },
+          {
+            "item": "2012",
+            "count": "336375"
+          },
+          {
+            "item": "2013",
+            "count": "307620"
+          },
+          {
+            "item": "2014",
+            "count": "275880"
+          },
+          {
+            "item": "2016",
+            "count": "269968"
+          },
+          {
+            "item": "2017",
+            "count": "269291"
+          },
+          {
+            "item": "2018",
+            "count": "269156"
+          },
+          {
+            "item": "2015",
+            "count": "264893"
+          },
+          {
+            "item": "2023",
+            "count": "263305"
+          },
+          {
+            "item": "2019",
+            "count": "261709"
+          }
+        ],
+        "smallest": "2001",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "precisionStyle": "standard",
+        "noCommas": "true",
+        "align": "right"
+      }
+    },
+    {
+      "id": 580897901,
+      "name": "Updated On",
+      "dataTypeName": "calendar_date",
+      "description": "Date and time the record was last updated.",
+      "fieldName": "updated_on",
+      "position": 19,
+      "renderTypeName": "calendar_date",
+      "tableColumnId": 2154842,
+      "width": 164,
+      "cachedContents": {
+        "non_null": "8526711",
+        "largest": "2026-04-06T15:43:43.000",
+        "null": "0",
+        "top": [
+          {
+            "item": "2018-02-10T15:50:01.000",
+            "count": "2622782"
+          },
+          {
+            "item": "2018-02-28T15:56:25.000",
+            "count": "2545923"
+          },
+          {
+            "item": "2015-08-17T15:03:40.000",
+            "count": "489509"
+          },
+          {
+            "item": "2016-02-04T06:33:39.000",
+            "count": "330038"
+          },
+          {
+            "item": "2021-09-07T15:41:02.000",
+            "count": "237466"
+          },
+          {
+            "item": "2025-09-23T15:41:47.000",
+            "count": "233653"
+          },
+          {
+            "item": "2026-03-14T15:41:39.000",
+            "count": "228478"
+          },
+          {
+            "item": "2023-01-03T15:40:27.000",
+            "count": "226853"
+          },
+          {
+            "item": "2023-08-19T15:40:26.000",
+            "count": "153085"
+          },
+          {
+            "item": "2025-05-17T15:40:52.000",
+            "count": "143456"
+          },
+          {
+            "item": "2024-12-21T15:40:46.000",
+            "count": "97277"
+          },
+          {
+            "item": "2018-05-04T15:51:04.000",
+            "count": "80035"
+          },
+          {
+            "item": "2025-11-02T15:41:09.000",
+            "count": "63942"
+          },
+          {
+            "item": "2020-12-17T15:40:05.000",
+            "count": "30129"
+          },
+          {
+            "item": "2019-06-30T15:41:21.000",
+            "count": "24244"
+          },
+          {
+            "item": "2017-02-14T15:49:42.000",
+            "count": "17328"
+          },
+          {
+            "item": "2019-07-19T15:40:03.000",
+            "count": "8523"
+          },
+          {
+            "item": "2022-09-19T15:41:05.000",
+            "count": "8457"
+          },
+          {
+            "item": "2018-02-09T15:44:29.000",
+            "count": "5778"
+          },
+          {
+            "item": "2019-01-18T09:37:14.000",
+            "count": "5116"
+          }
+        ],
+        "smallest": "2006-03-31T22:03:38.000",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "view": "date_time",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897902,
+      "name": "Latitude",
+      "dataTypeName": "number",
+      "description": "The latitude of the location where the incident occurred. This location is shifted from the actual location for partial redaction but falls on the same block.",
+      "fieldName": "latitude",
+      "position": 20,
+      "renderTypeName": "number",
+      "tableColumnId": 1514309,
+      "width": 119,
+      "cachedContents": {
+        "non_null": "8430474",
+        "largest": "42.022910333",
+        "null": "96237",
+        "top": [
+          {
+            "item": "41.976290414",
+            "count": "14816"
+          },
+          {
+            "item": "41.754592961",
+            "count": "11166"
+          },
+          {
+            "item": "41.883500187",
+            "count": "9266"
+          },
+          {
+            "item": "41.897895128",
+            "count": "5010"
+          },
+          {
+            "item": "41.788987036",
+            "count": "3961"
+          },
+          {
+            "item": "41.909664252",
+            "count": "3797"
+          },
+          {
+            "item": "41.896888586",
+            "count": "3478"
+          },
+          {
+            "item": "41.868541914",
+            "count": "3165"
+          },
+          {
+            "item": "41.868180939",
+            "count": "3095"
+          },
+          {
+            "item": "41.979006297",
+            "count": "3066"
+          },
+          {
+            "item": "41.885487535",
+            "count": "2968"
+          },
+          {
+            "item": "42.019399237",
+            "count": "2920"
+          },
+          {
+            "item": "41.88233367",
+            "count": "2917"
+          },
+          {
+            "item": "41.736259984",
+            "count": "2883"
+          },
+          {
+            "item": "41.721627204",
+            "count": "2842"
+          },
+          {
+            "item": "41.882394062",
+            "count": "2787"
+          },
+          {
+            "item": "41.929743818",
+            "count": "2759"
+          },
+          {
+            "item": "41.891694878",
+            "count": "2744"
+          },
+          {
+            "item": "41.891990384",
+            "count": "2697"
+          },
+          {
+            "item": "41.88171846",
+            "count": "2567"
+          }
+        ],
+        "smallest": "36.619446395",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "precisionStyle": "standard",
+        "noCommas": "false",
+        "align": "right"
+      }
+    },
+    {
+      "id": 580897903,
+      "name": "Longitude",
+      "dataTypeName": "number",
+      "description": "The longitude of the location where the incident occurred. This location is shifted from the actual location for partial redaction but falls on the same block.",
+      "fieldName": "longitude",
+      "position": 21,
+      "renderTypeName": "number",
+      "tableColumnId": 1514310,
+      "width": 133,
+      "cachedContents": {
+        "non_null": "8430474",
+        "largest": "-87.524529378",
+        "null": "96237",
+        "top": [
+          {
+            "item": "-87.905227221",
+            "count": "14816"
+          },
+          {
+            "item": "-87.741528537",
+            "count": "11166"
+          },
+          {
+            "item": "-87.627876698",
+            "count": "9266"
+          },
+          {
+            "item": "-87.624096605",
+            "count": "5016"
+          },
+          {
+            "item": "-87.74147999",
+            "count": "3961"
+          },
+          {
+            "item": "-87.742728815",
+            "count": "3797"
+          },
+          {
+            "item": "-87.628203192",
+            "count": "3478"
+          },
+          {
+            "item": "-87.639235361",
+            "count": "3165"
+          },
+          {
+            "item": "-87.709271389",
+            "count": "3095"
+          },
+          {
+            "item": "-87.906463155",
+            "count": "3066"
+          },
+          {
+            "item": "-87.726422045",
+            "count": "2968"
+          },
+          {
+            "item": "-87.675049485",
+            "count": "2920"
+          },
+          {
+            "item": "-87.627841791",
+            "count": "2917"
+          },
+          {
+            "item": "-87.628068782",
+            "count": "2883"
+          },
+          {
+            "item": "-87.624485177",
+            "count": "2842"
+          },
+          {
+            "item": "-87.627844798",
+            "count": "2787"
+          },
+          {
+            "item": "-87.684273777",
+            "count": "2759"
+          },
+          {
+            "item": "-87.626155832",
+            "count": "2744"
+          },
+          {
+            "item": "-87.611461502",
+            "count": "2697"
+          },
+          {
+            "item": "-87.627760426",
+            "count": "2567"
+          }
+        ],
+        "smallest": "-91.686565684",
+        "count": "8526711",
+        "cardinality": "8526711"
+      },
+      "format": {
+        "precisionStyle": "standard",
+        "noCommas": "false",
+        "align": "right"
+      }
+    },
+    {
+      "id": 580897904,
+      "name": "Location",
+      "dataTypeName": "location",
+      "description": "The location where the incident occurred in a format that allows for creation of maps and other geographic operations on this data portal. This location is shifted from the actual location for partial redaction but falls on the same block.",
+      "fieldName": "location",
+      "position": 22,
+      "renderTypeName": "location",
+      "tableColumnId": 1514311,
+      "width": 196,
+      "format": {
+        "view": "coords",
+        "align": "left"
+      }
+    },
+    {
+      "id": 580897909,
+      "name": "Historical Wards 2003-2015",
+      "dataTypeName": "number",
+      "fieldName": ":@computed_region_awaf_s7ux",
+      "position": 27,
+      "renderTypeName": "number",
+      "tableColumnId": 27782213,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_awaf-s7ux",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897910,
+      "name": "Zip Codes",
+      "dataTypeName": "number",
+      "fieldName": ":@computed_region_6mkv_f3dw",
+      "position": 28,
+      "renderTypeName": "number",
+      "tableColumnId": 27782214,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_6mkv-f3dw",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897911,
+      "name": "Community Areas",
+      "dataTypeName": "number",
+      "fieldName": ":@computed_region_vrxf_vc4k",
+      "position": 29,
+      "renderTypeName": "number",
+      "tableColumnId": 27782215,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_vrxf-vc4k",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897912,
+      "name": "Census Tracts",
+      "dataTypeName": "number",
+      "fieldName": ":@computed_region_bdys_3d7i",
+      "position": 30,
+      "renderTypeName": "number",
+      "tableColumnId": 27782216,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_bdys-3d7i",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897913,
+      "name": "Wards",
+      "dataTypeName": "number",
+      "description": "",
+      "fieldName": ":@computed_region_43wa_7qmu",
+      "position": 31,
+      "renderTypeName": "number",
+      "tableColumnId": 28240039,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_43wa-7qmu",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897914,
+      "name": "Boundaries - ZIP Codes",
+      "dataTypeName": "number",
+      "fieldName": ":@computed_region_rpca_8um6",
+      "position": 32,
+      "renderTypeName": "number",
+      "tableColumnId": 35863212,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_rpca-8um6",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897915,
+      "name": "Police Districts",
+      "dataTypeName": "number",
+      "fieldName": ":@computed_region_d9mm_jgwp",
+      "position": 33,
+      "renderTypeName": "number",
+      "tableColumnId": 42660468,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_d9mm-jgwp",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897916,
+      "name": "Police Beats",
+      "dataTypeName": "number",
+      "fieldName": ":@computed_region_d3ds_rm58",
+      "position": 34,
+      "renderTypeName": "number",
+      "tableColumnId": 42671243,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_d3ds-rm58",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    },
+    {
+      "id": 580897917,
+      "name": "Wards 2023-",
+      "dataTypeName": "number",
+      "description": "This column was automatically created in order to record in what polygon from the dataset 'Wards 2023-' (8hcu-yrd4) the point in column 'location' is located.  This enables the creation of region maps (choropleths) in the visualization canvas and data lens.",
+      "fieldName": ":@computed_region_8hcu_yrd4",
+      "position": 35,
+      "renderTypeName": "number",
+      "tableColumnId": 148460106,
+      "computationStrategy": {
+        "source_columns": [
+          "location"
+        ],
+        "type": "georegion_match_on_point",
+        "parameters": {
+          "region": "_8hcu-yrd4",
+          "primary_key": "_feature_id"
+        }
+      },
+      "format": {}
+    }
+  ],
+  "grants": [
+    {
+      "inherited": false,
+      "type": "viewer",
+      "flags": [
+        "public"
+      ]
+    }
+  ],
+  "license": {
+    "name": "See Terms of Use"
+  },
+  "metadata": {
+    "rdfSubject": "0",
+    "jsonQuery": {
+      "order": [
+        {
+          "columnFieldName": "date",
+          "ascending": false
+        }
+      ]
+    },
+    "custom_fields": {
+      "Metadata": {
+        "Time Period": "2001 to present, minus the most recent seven days",
+        "Frequency": "Data are updated daily.",
+        "Data Owner": "Police"
+      }
+    },
+    "rowIdentifier": 580897883,
+    "rowLabel": "Reported Crime",
+    "availableDisplayTypes": [
+      "table",
+      "fatrow",
+      "page"
+    ],
+    "renderTypeConfig": {
+      "visible": {
+        "table": true
+      }
+    }
+  },
+  "owner": {
+    "id": "scy9-9wg4",
+    "displayName": "cocadmin",
+    "profileImageUrlLarge": "/api/users/scy9-9wg4/profile_images/LARGE",
+    "profileImageUrlMedium": "/api/users/scy9-9wg4/profile_images/THUMB",
+    "profileImageUrlSmall": "/api/users/scy9-9wg4/profile_images/TINY",
+    "screenName": "cocadmin",
+    "type": "interactive",
+    "flags": [
+      "acceptedEula",
+      "mayBeStoriesCoOwner"
+    ]
+  },
+  "query": {
+    "orderBys": [
+      {
+        "ascending": false,
+        "expression": {
+          "columnId": 580897885,
+          "type": "column"
+        }
+      }
+    ]
+  },
+  "rights": [
+    "read"
+  ],
+  "tableAuthor": {
+    "id": "scy9-9wg4",
+    "displayName": "cocadmin",
+    "profileImageUrlLarge": "/api/users/scy9-9wg4/profile_images/LARGE",
+    "profileImageUrlMedium": "/api/users/scy9-9wg4/profile_images/THUMB",
+    "profileImageUrlSmall": "/api/users/scy9-9wg4/profile_images/TINY",
+    "screenName": "cocadmin",
+    "type": "interactive",
+    "flags": [
+      "acceptedEula",
+      "mayBeStoriesCoOwner"
+    ]
+  },
+  "tags": [
+    "crime",
+    "police"
+  ],
+  "flags": [
+    "default",
+    "ownerMayBeContacted",
+    "restorable",
+    "restorePossibleForType"
+  ]
+}

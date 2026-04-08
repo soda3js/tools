@@ -13,7 +13,7 @@ when you provide an app token.
 
 ## Packages
 
-This monorepo contains six packages:
+This monorepo contains eleven packages:
 
 | Package | Description | Install |
 | --- | --- | --- |
@@ -22,6 +22,11 @@ This monorepo contains six packages:
 | `@soda3js/client` | Effect-TS HTTP client with Node/Bun/Browser support | `npm i @soda3js/client` |
 | `@soda3js/rest` | Batteries-included REST client (Node/Bun/Browser) | `npm i @soda3js/rest` |
 | `@soda3js/cli` | Terminal client for querying datasets (`soda3` binary) | `npm i -g @soda3js/cli` |
+| `@soda3js/mcp` | MCP server for AI agent dataset discovery | `npx @soda3js/mcp` |
+| `@soda3js/config` | XDG config, TOML loading, Effect Schemas | `npm i @soda3js/config` |
+| `@soda3js/cache` | In-memory response cache and cache key builder | `npm i @soda3js/cache` |
+| `@soda3js/cache-fs` | Filesystem cache (XDG dirs, Effect Layer) | `npm i @soda3js/cache-fs` |
+| `@soda3js/cache-sqlite` | SQLite cache (Effect SQL, migrations) | `npm i @soda3js/cache-sqlite` |
 | `@soda3js/server` | Internal integration test harness | Private |
 
 ## Quick Start
@@ -77,6 +82,11 @@ soda3js/tools/
     client/        # Effect-TS HTTP client
     rest/          # Batteries-included REST client
     cli/           # Terminal client (soda3 binary)
+    mcp/           # MCP server for AI agents
+    config/        # XDG config, TOML, Effect Schemas
+    cache/         # In-memory cache + key builder
+    cache-fs/      # Filesystem cache
+    cache-sqlite/  # SQLite cache
     server/        # Internal test harness (private)
   website/         # RSPress documentation site
   __fixtures__/    # Shared test fixture data
@@ -92,8 +102,8 @@ pnpm typecheck
 pnpm lint
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](./LICENSE)

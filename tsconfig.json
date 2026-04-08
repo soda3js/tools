@@ -10,5 +10,6 @@
 		"strictNullChecks": true,
 		"target": "es2023"
 	},
+	"exclude": ["lib/scripts/**"],
 	"include": ["*.ts", "lib/**/*.ts", "lib/**/*.mts"]
 }

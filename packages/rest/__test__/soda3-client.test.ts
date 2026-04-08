@@ -145,5 +145,20 @@ describe("Soda3ClientBase", () => {
 			}
 			expect(items).toEqual([]);
 		});
+
+		it("has execute method", () => {
+			const soda = new Soda3ClientBase({ domain: "data.example.com" });
+			expect(typeof soda.execute).toBe("function");
+		});
+
+		it("execute() accepts a SoQLBuilder and returns rows", async () => {
+			const mock = makeMockHttpClient();
+			const soda = new Soda3ClientBase({ domain: "data.example.com", mode: "soda2" }, mock.layer);
+			const { SoQL } = await import("@soda3js/soql");
+			const builder = SoQL.query().select("name").limit(10);
+			const result = await soda.execute("xxxx-yyyy", builder);
+			expect(result).toEqual([]);
+			expect(mock.requests[0].url).toContain("$select=");
+		});
 	});
 });

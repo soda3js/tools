@@ -1,0 +1,42 @@
+import { execFile } from "node:child_process";
+import { resolve } from "node:path";
+import { promisify } from "node:util";
+import { describe, expect, it } from "vitest";
+
+const execFileAsync = promisify(execFile);
+const CLI_ENTRY = resolve(import.meta.dirname, "../../src/cli/index.ts");
+const TSX = resolve(import.meta.dirname, "../../../../node_modules/.bin/tsx");
+
+async function runCli(args: string[]): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+	try {
+		const { stdout, stderr } = await execFileAsync(TSX, [CLI_ENTRY, ...args], {
+			timeout: 10_000,
+			env: { ...process.env, NO_COLOR: "1" },
+		});
+		return { stdout, stderr, exitCode: 0 };
+	} catch (error) {
+		const e = error as { stdout?: string; stderr?: string; code?: number };
+		return {
+			stdout: e.stdout ?? "",
+			stderr: e.stderr ?? "",
+			exitCode: e.code ?? 1,
+		};
+	}
+}
+
+describe("CLI query command integration", () => {
+	it("shows help with --help flag", async () => {
+		const result = await runCli(["query", "--help"]);
+		expect(result.stdout + result.stderr).toContain("dataset-id");
+	});
+
+	it("exits with error when dataset-id is missing", async () => {
+		const result = await runCli(["query"]);
+		expect(result.exitCode).not.toBe(0);
+	});
+
+	it("exits with error when domain is not configured", async () => {
+		const result = await runCli(["query", "test-1234", "--domain", "nonexistent.example.com"]);
+		expect(result.exitCode).not.toBe(0);
+	});
+});

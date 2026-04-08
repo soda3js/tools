@@ -23,6 +23,7 @@
 		"types:check": "tsgo --noEmit"
 	},
 	"dependencies": {
+		"@soda3js/config": "workspace:*",
 		"@soda3js/protocol": "workspace:*"
 	},
 	"devDependencies": {

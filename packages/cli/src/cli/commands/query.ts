@@ -1,14 +1,15 @@
 import { Args, Command, Options } from "@effect/cli";
 import { NodeHttpClient } from "@effect/platform-node";
 import { SodaClient, SodaClientConfig, SodaClientLive } from "@soda3js/client";
+import { Soda3Config } from "@soda3js/config";
 import type { SoQLBuilder } from "@soda3js/soql";
 import { SoQL } from "@soda3js/soql";
 import { Console, Effect, Layer, Option } from "effect";
 import { createCache, resolveCacheConfig } from "../../lib/cache-factory.js";
-import { readConfig } from "../../lib/config-store.js";
 import { resolveDomain } from "../../lib/domain.js";
 import type { OutputFormat } from "../../lib/output.js";
 import { detectFormat, formatOutput } from "../../lib/output.js";
+import { isTTY, renderInk } from "../../ui/render.js";
 
 // ---------------------------------------------------------------------------
 // Arguments & Options
@@ -160,7 +161,7 @@ export const queryCommand = Command.make(
 	({ datasetId, domain, profile, select, where, limit, offset, order, format, q, noCache, cacheTtl, groupBy }) =>
 		Effect.gen(function* () {
 			// 1. Read config and resolve domain
-			const config = yield* Effect.promise(() => readConfig());
+			const config = yield* Effect.promise(() => Soda3Config.load());
 			const profileName = profile._tag === "Some" ? profile.value : undefined;
 			const resolved = resolveDomain(config, {
 				...(profileName !== undefined ? { profile: profileName } : {}),
@@ -209,11 +210,20 @@ export const queryCommand = Command.make(
 				return yield* client.query(resolved.domain, datasetId, soql);
 			});
 
-			const rows = yield* Effect.provide(queryEffect, clientLayer);
+			const rawRows = yield* Effect.provide(queryEffect, clientLayer);
+			const rows = rawRows as ReadonlyArray<Record<string, unknown>>;
 
 			// 5. Format and output
 			const fmt: OutputFormat = format._tag === "Some" ? format.value : detectFormat(rows.length);
-			const output = formatOutput(rows, fmt);
-			yield* Console.log(output);
+			if (fmt === "table" && isTTY()) {
+				const output = yield* renderInk(async (React) => {
+					const { Table } = await import("../../ui/Table.js");
+					return React.createElement(Table, { data: rows as Record<string, unknown>[] });
+				});
+				yield* Console.log(output);
+			} else {
+				const output = formatOutput(rows, fmt);
+				yield* Console.log(output);
+			}
 		}),
 ).pipe(Command.withDescription("Query a Socrata dataset"));

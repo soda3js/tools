@@ -3,8 +3,8 @@ status: current
 module: cache
 category: architecture
 created: 2026-04-06
-updated: 2026-04-06
-last-synced: 2026-04-06
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 90
 related:
   - ../protocol/architecture.md

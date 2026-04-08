@@ -2,9 +2,9 @@ import { createWriteStream } from "node:fs";
 import { Args, Command, Options } from "@effect/cli";
 import { NodeHttpClient } from "@effect/platform-node";
 import { SodaClient, SodaClientConfig, SodaClientLive } from "@soda3js/client";
+import { Soda3Config } from "@soda3js/config";
 import { Console, Effect, Layer, Option, Stream } from "effect";
 import { createCache, resolveCacheConfig } from "../../lib/cache-factory.js";
-import { readConfig } from "../../lib/config-store.js";
 import { resolveDomain } from "../../lib/domain.js";
 
 const datasetIdArg = Args.text({ name: "dataset-id" }).pipe(Args.withDescription("Socrata dataset identifier"));
@@ -52,7 +52,7 @@ export const exportCommand = Command.make(
 	},
 	({ datasetId, domain, profile, format, output, noCache, cacheTtl }) =>
 		Effect.gen(function* () {
-			const config = yield* Effect.promise(() => readConfig());
+			const config = yield* Effect.promise(() => Soda3Config.load());
 			const profileName = profile._tag === "Some" ? profile.value : undefined;
 			const opts: { profile?: string; domain?: string } = {};
 			if (profileName !== undefined) opts.profile = profileName;

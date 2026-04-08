@@ -52,6 +52,10 @@ export function compileExpression(expr: Expression): string {
 				result += ` ELSE ${compileExpression(elseExpr)} END`;
 				return result;
 			}
+			// count(DISTINCT col)
+			if (expr.name === "__count_distinct") {
+				return `count(DISTINCT ${expr.args.map((a) => compileExpression(a)).join(", ")})`;
+			}
 			const args = expr.args.map((a) => compileExpression(a)).join(", ");
 			return `${expr.name}(${args})`;
 		}

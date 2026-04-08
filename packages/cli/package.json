@@ -29,13 +29,17 @@
 		"@effect/platform-node": "catalog:silk",
 		"@soda3js/cache-fs": "workspace:*",
 		"@soda3js/client": "workspace:*",
+		"@soda3js/config": "workspace:*",
 		"@soda3js/soql": "workspace:*",
 		"effect": "catalog:silk",
-		"smol-toml": ">=1.6.1"
+		"ink": "^6.8.0",
+		"react": "^19.2.4"
 	},
 	"devDependencies": {
+		"@rsbuild/plugin-react": "^1.4.6",
 		"@savvy-web/rslib-builder": "^0.19.1",
-		"@types/node": "catalog:silk"
+		"@types/node": "catalog:silk",
+		"@types/react": "^19.2.14"
 	},
 	"publishConfig": {
 		"access": "public",

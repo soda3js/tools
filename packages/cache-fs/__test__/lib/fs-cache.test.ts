@@ -43,7 +43,7 @@ describe("FileSystemCacheImpl (hierarchical)", () => {
 		await cache.set(key, makeEntry());
 		const result = await cache.get(key);
 		expect(result).toBeDefined();
-		expect(result!.datasetId).toBe("test-1234");
+		expect(result?.datasetId).toBe("test-1234");
 	});
 
 	it("creates hierarchical directory structure with queries/ subdir", async () => {
@@ -75,7 +75,9 @@ describe("FileSystemCacheImpl (hierarchical)", () => {
 		const body = new Uint8Array([10, 20, 30, 40, 50]);
 		await cache.set("test.example.com/test-1234/abc123", makeEntry({ body, sizeBytes: 5 }));
 		const result = await cache.get("test.example.com/test-1234/abc123");
-		expect(new Uint8Array(result!.body)).toEqual(body);
+		expect(result).toBeDefined();
+		if (!result) throw new Error("unreachable");
+		expect(new Uint8Array(result.body)).toEqual(body);
 	});
 
 	it("has() checks for sidecar file existence", async () => {
@@ -179,7 +181,8 @@ describe("FileSystemCacheImpl (freshness)", () => {
 
 		const result = await cache.get(key);
 		expect(result).toBeDefined();
-		const decoded = JSON.parse(new TextDecoder().decode(result!.body));
+		if (!result) throw new Error("unreachable");
+		const decoded = JSON.parse(new TextDecoder().decode(result.body));
 		expect(decoded.rowsUpdatedAt).toBe(1712345678);
 	});
 
@@ -248,8 +251,9 @@ describe("FileSystemCacheImpl (metadata)", () => {
 
 		const result = await cache.get(key);
 		expect(result).toBeDefined();
-		expect(result!.query).toBe("__metadata__");
-		const decoded = JSON.parse(new TextDecoder().decode(result!.body));
+		if (!result) throw new Error("unreachable");
+		expect(result.query).toBe("__metadata__");
+		const decoded = JSON.parse(new TextDecoder().decode(result.body));
 		expect(decoded.columns[0].name).toBe("id");
 	});
 

@@ -14,10 +14,11 @@ import { configCommand } from "./commands/config.js";
 import { exportCommand } from "./commands/export.js";
 import { metaCommand } from "./commands/meta.js";
 import { queryCommand } from "./commands/query.js";
+import { searchCommand } from "./commands/search.js";
 
 /* v8 ignore start -- CLI registration; each command tested via exported handler */
 const rootCommand = Command.make("soda3").pipe(
-	Command.withSubcommands([queryCommand, exportCommand, metaCommand, configCommand, cacheCommand]),
+	Command.withSubcommands([queryCommand, exportCommand, metaCommand, searchCommand, configCommand, cacheCommand]),
 );
 
 const cli = Command.run(rootCommand, {

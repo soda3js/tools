@@ -1,6 +1,7 @@
 import type { CacheStore } from "@soda3js/cache-fs";
-import { FileSystemCacheImpl, cacheDir } from "@soda3js/cache-fs";
-import type { CacheConfig } from "./config-store.js";
+import { FileSystemCacheImpl } from "@soda3js/cache-fs";
+import type { CacheConfig } from "@soda3js/config";
+import { Soda3Config } from "@soda3js/config";
 
 export interface ResolvedCacheConfig {
 	enabled: boolean;
@@ -26,6 +27,6 @@ export function resolveCacheConfig(
 
 export function createCache(): CacheStore {
 	return new FileSystemCacheImpl({
-		cacheDir: cacheDir(),
+		cacheDir: Soda3Config.cacheDir(),
 	});
 }

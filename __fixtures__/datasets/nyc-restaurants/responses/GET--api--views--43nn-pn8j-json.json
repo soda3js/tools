@@ -1,0 +1,41 @@
+{
+  "dataset_id": "43nn-pn8j",
+  "portal": "data.cityofnewyork.us",
+  "recorded_at": "2026-04-07T21:34:07.779Z",
+  "latency_ms": 0,
+  "auth": {
+    "required": false,
+    "token_used": true
+  },
+  "request": {
+    "method": "GET",
+    "path": "/api/views/43nn-pn8j.json",
+    "headers": {
+      "host": "localhost:50407",
+      "connection": "keep-alive",
+      "x-app-token": "[REDACTED]",
+      "accept": "*/*",
+      "accept-language": "*",
+      "sec-fetch-mode": "cors",
+      "user-agent": "node",
+      "accept-encoding": "gzip, deflate"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "headers": {
+      "server": "nginx",
+      "date": "Tue, 07 Apr 2026 21:34:07 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "keep-alive",
+      "access-control-allow-origin": "*",
+      "vary": "Accept-Encoding",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-socrata-requestid": "be9ae4f02c70b1afb25e6e5f487f2f9f"
+    },
+    "body_file": "GET--api--views--43nn-pn8j-json.body.json"
+  }
+}

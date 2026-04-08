@@ -3,12 +3,14 @@ status: current
 module: cli
 category: architecture
 created: 2026-04-05
-updated: 2026-04-05
-last-synced: 2026-04-05
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 90
 related:
   - ../client/architecture.md
   - ../soql/architecture.md
+  - ../config/architecture.md
+  - ../cache-fs/architecture.md
 dependencies: []
 ---
 
@@ -21,30 +23,59 @@ Terminal client for querying Socrata open data portals, built with
 
 1. [Overview](#overview)
 2. [Current State](#current-state)
-3. [Commands](#commands)
-4. [Library Modules](#library-modules)
-5. [Dependency Strategy](#dependency-strategy)
-6. [Testing Strategy](#testing-strategy)
+3. [Rationale](#rationale)
+4. [Commands](#commands)
+5. [Library Modules](#library-modules)
+6. [Dependency Strategy](#dependency-strategy)
+7. [Testing Strategy](#testing-strategy)
 
 ---
 
 ## Overview
 
-The CLI provides four commands for interacting with Socrata SODA3 API
-portals from the terminal: `query`, `export`, `meta`, and `config`. It
-uses TOML-based profile management for multi-portal configuration and
-supports multiple output formats with TTY auto-detection.
+The CLI provides six commands for interacting with Socrata SODA3 API
+portals from the terminal: `query`, `export`, `meta`, `search`, `cache`,
+and `config`. It uses TOML-based profile management (via
+`@soda3js/config`) for multi-portal configuration and supports multiple
+output formats with TTY auto-detection and Ink-based React rendering.
 
-The package depends on `@soda3js/client` and `@soda3js/soql` directly
-(not `@soda3js/rest`), wires its own `NodeHttpClient.layerUndici` layer,
-and controls the full Effect runtime.
+The package depends on `@soda3js/client`, `@soda3js/soql`, and
+`@soda3js/config` directly (not `@soda3js/rest`), wires its own
+`NodeHttpClient.layerUndici` layer, and controls the full Effect runtime.
 
 ---
 
 ## Current State
 
-Phase 4 is complete. All four commands are implemented with 75 unit tests.
-The package is ready for the v0.1.0 release.
+Phase 4+ is complete. Six commands are implemented with Ink-based output
+components and integration tests against the replay server.
+
+---
+
+## Rationale
+
+### Why @effect/cli
+
+The CLI uses `@effect/cli` for command parsing rather than popular
+alternatives like `commander` or `yargs`. This keeps the CLI in the same
+Effect ecosystem as the client library, enabling seamless composition of
+Effect programs within command handlers. Error handling, resource cleanup,
+and cancellation propagate naturally through the Effect fiber system.
+
+### Why Ink-Based Output
+
+Terminal-aware rendering via React/Ink provides richer output than plain
+`console.log`. Ink components support Unicode box-drawing, color, and
+layout without manual string formatting. The lazy-loading pattern
+(`renderInk()`) ensures Ink and React are only imported when TTY output
+is active, avoiding process-exit issues in piped or test contexts.
+
+### Why Config Migration to @soda3js/config
+
+The CLI previously had its own `config-store.ts` for TOML config handling.
+Moving to `@soda3js/config` centralized XDG path resolution and config
+parsing, enabling the MCP server to share the same config file and
+profile format without duplication.
 
 ---
 
@@ -55,7 +86,7 @@ The package is ready for the v0.1.0 release.
 Executes a SoQL query against a dataset. Supports structured options
 (`--select`, `--where`, `--limit`, `--offset`, `--order`) and a raw
 SoQL shorthand (`-q`). Output formatted via `--format` or TTY
-auto-detection.
+auto-detection. TTY mode renders via Ink `Table` component.
 
 ### `soda3 export <dataset-id>`
 
@@ -66,7 +97,24 @@ instead of stdout.
 ### `soda3 meta <dataset-id>`
 
 Fetches and displays dataset metadata (name, description, columns, last
-updated). Supports `--format table|json`.
+updated). Supports `--format table|json`. TTY mode renders via Ink
+`MetadataView` component.
+
+### `soda3 search [query]`
+
+Searches the Socrata catalog via the Discovery API. Supports filters:
+`--domain`, `--category`, `--tags`, `--only`, `--limit`, `--offset`.
+Output formats: `table`, `json`, `ndjson`. TTY mode renders via Ink
+`SearchResults` component.
+
+### `soda3 cache`
+
+Cache management with four subcommands:
+
+- `cache status` -- show cache directory info and size
+- `cache inspect` -- list cached entries with metadata
+- `cache clear` -- remove all cached responses
+- `cache prune` -- remove expired entries
 
 ### `soda3 config`
 
@@ -81,35 +129,24 @@ Profile management with four subcommands:
 
 ## Library Modules
 
-### `config-store.ts`
-
-TOML config store at `~/.config/soda3js/config.toml` (XDG-compliant,
-respects `XDG_CONFIG_HOME`). Provides read/write operations and profile
-CRUD. Uses `smol-toml` for parsing.
-
-Config shape:
-
-```toml
-format = "table"
-default_profile = "nyc"
-
-[profiles.nyc]
-domain = "data.cityofnewyork.us"
-token = "..."
-```
-
 ### `domain.ts`
 
-Resolves domain and app token from CLI flags and config. Resolution
-priority:
+Resolves domain and app token from CLI flags and config (via
+`@soda3js/config`). Resolution priority:
 
-1. `--profile <name>` flag -- look up in config profiles
+1. `--profile <name>` flag -- look up in `Soda3Config` profiles
 2. `--domain <domain>` flag -- use directly (no token, SODA2 mode)
-3. `default_profile` from config -- look up in config profiles
+3. `defaultProfile` from config -- look up in profiles
 4. Error -- no domain could be resolved
 
 Maps the config `token` field to `appToken` for `SodaClientConfig`
 compatibility.
+
+### `cache-factory.ts`
+
+Creates a `FileSystemCacheImpl` from CLI flags and config. Reads cache
+settings from the resolved profile and global config via `Soda3Config`.
+Supports `--no-cache` and `--cache-ttl` CLI overrides.
 
 ### `output.ts`
 
@@ -123,13 +160,26 @@ auto-detection selects the default format:
 The `table` formatter renders aligned columns with Unicode box-drawing
 separators.
 
+### Ink UI Components (`ui/`)
+
+React/Ink components for rich terminal rendering, lazy-loaded via
+`renderInk()` to avoid side effects at module scope:
+
+- `Table.tsx` -- Aligned data table with Unicode borders
+- `SearchResults.tsx` -- Discovery API result cards
+- `MetadataView.tsx` -- Dataset metadata display
+- `ErrorView.tsx` -- Styled error messages
+- `Spinner.tsx` -- Loading indicator
+- `render.ts` -- `renderInk(factory)` helper and `isTTY()` check
+
 ---
 
 ## Dependency Strategy
 
-The CLI imports `@soda3js/client` (Effect service library) and
-`@soda3js/soql` (query builder) as direct dependencies. It does NOT use
-`@soda3js/rest` because:
+The CLI imports `@soda3js/client` (Effect service library),
+`@soda3js/soql` (query builder), and `@soda3js/config` (shared
+configuration) as direct dependencies. It does NOT use `@soda3js/rest`
+because:
 
 - The CLI needs full Effect composition control for structured error
   handling, observability, and resource management
@@ -138,36 +188,39 @@ The CLI imports `@soda3js/client` (Effect service library) and
 
 Each command handler follows the same pattern:
 
-1. Read config via `readConfig()`
+1. Load config via `Soda3Config.load()`
 2. Resolve domain via `resolveDomain(config, options)`
 3. Build `SodaClientConfig` from resolved domain/token
-4. Provide `SodaClientLive(config)` + `NodeHttpClient.layerUndici`
-5. Execute the client operation inside `Effect.gen`
-6. Format and print output
+4. Optionally create cache via `cache-factory.ts`
+5. Provide `SodaClientLive(config)` + `NodeHttpClient.layerUndici`
+6. Execute the client operation inside `Effect.gen`
+7. Format and print output (Ink components for TTY, plain text otherwise)
 
 ---
 
 ## Testing Strategy
 
-75 unit tests across the library modules and commands:
+Unit tests across the library modules and commands, plus integration
+tests against the replay server:
 
-- **config-store** (12 tests): TOML round-tripping, XDG path resolution,
-  profile CRUD, ENOENT handling via temp directories
-- **domain** (8 tests): Resolution priority, missing profile errors,
-  default profile fallback, token mapping
-- **output** (19 tests): All four formatters, CSV escaping, table
-  alignment, TTY auto-detection
-- **query** (14 tests): SoQL builder from structured options, raw mode,
-  option combinations
-- **meta** (12 tests): Metadata table formatting, column display, date
-  conversion
-- **export** (3 tests): Command structure verification
-- **config** (8 tests): Init, show, add-profile via temp directories
+- **domain:** Resolution priority, missing profile errors, default
+  profile fallback, token mapping
+- **output:** All four formatters, CSV escaping, table alignment, TTY
+  auto-detection
+- **query:** SoQL builder from structured options, raw mode, option
+  combinations
+- **meta:** Metadata table formatting, column display, date conversion
+- **search:** Discovery API formatting, search table/json/ndjson
+- **export:** Command structure verification
+- **cache:** Cache subcommand structure and formatting
+- **config:** Init, show, add-profile via temp directories
+- **integration:** End-to-end tests against the replay server for
+  query, meta, and example commands
 
 Command handlers that depend on network/Effect runtime are tested
-through their extracted helper functions rather than end-to-end.
-Integration tests against the replay server are planned under issue #31.
+through their extracted helper functions and integration tests.
 
 ---
 
-**Document Status:** Current -- reflects Phase 4 complete.
+**Document Status:** Current -- reflects Phase 4+ with search command,
+Ink components, cache commands, and config migration to `@soda3js/config`.

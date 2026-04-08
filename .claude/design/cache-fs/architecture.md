@@ -3,14 +3,15 @@ status: current
 module: cache-fs
 category: architecture
 created: 2026-04-06
-updated: 2026-04-06
-last-synced: 2026-04-06
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 90
 related:
   - ../protocol/architecture.md
   - ../cache/architecture.md
   - ../cache-sqlite/architecture.md
   - ../client/architecture.md
+  - ../config/architecture.md
 dependencies: []
 ---
 
@@ -306,14 +307,13 @@ request.
 
 ## XDG Path Resolution
 
-`lib/xdg.ts` resolves paths following XDG Base Directory conventions:
+XDG path resolution is now delegated to `@soda3js/config` via
+`Soda3Config.cacheDir()`. The previous `lib/xdg.ts` module has been
+replaced. `FileSystemCacheLive` calls `Soda3Config.cacheDir()` as the
+default cache directory when no override is provided.
 
-- **cacheDir():** `$XDG_CACHE_HOME/soda3js` or `~/.cache/soda3js`
-
-These functions are exported from the package for use by consumers who need
-to inspect or clean the cache directory. The `stateDir()` function is no
-longer needed since the centralized index was eliminated; all state now
-lives within the cache directory hierarchy.
+The `Soda3Config` class is re-exported from `cache-fs` for consumer
+convenience.
 
 ---
 
@@ -364,6 +364,7 @@ cache-sqlite packages.
 | Dependency | Type | Purpose |
 | --- | --- | --- |
 | `@soda3js/protocol` | fixed | `CacheStore` interface and cache types |
+| `@soda3js/config` | fixed | XDG path resolution via `Soda3Config.cacheDir()` |
 | `effect` | peer | Effect runtime, Context.Tag, Layer |
 | `@effect/platform` | peer | Platform abstractions |
 | `@effect/platform-node` | peer (optional) | Node platform layer |
@@ -397,7 +398,7 @@ additional dependencies.
 ---
 
 **Document Status:** Current -- hierarchical directory layout with sidecar
-metadata implemented. Index store eliminated. Integrated with
-`@soda3js/client` cache utilities on `feat/caching` branch.
+metadata. XDG resolution migrated to `@soda3js/config`. Integrated with
+`@soda3js/client` cache utilities.
 
 **Next Update:** When file locking or maxSize pruning is added.

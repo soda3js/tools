@@ -2,22 +2,25 @@
 status: current
 category: architecture
 created: 2026-04-04
-updated: 2026-04-04
-last-synced: 2026-04-04
+updated: 2026-04-07
+last-synced: 2026-04-07
 completeness: 90
 related:
   - soql/architecture.md
   - client/architecture.md
   - protocol/architecture.md
   - rest/architecture.md
+  - config/architecture.md
+  - mcp/architecture.md
 dependencies: []
 ---
 
 # soda3js Monorepo — Architecture
 
-A six-package TypeScript monorepo providing a full toolkit for the Socrata
+An eleven-package TypeScript monorepo providing a full toolkit for the Socrata
 SODA3 Open Data API, from a zero-dependency query builder through an
-Effect-TS service library to a batteries-included REST client and CLI.
+Effect-TS service library to a batteries-included REST client, CLI, and
+MCP server for AI agent integration.
 
 ## Table of Contents
 
@@ -36,10 +39,10 @@ Effect-TS service library to a batteries-included REST client and CLI.
 ## Overview
 
 The soda3js toolkit is organized around a clear separation of concerns across
-six packages under `packages/`. Two packages are pure-TypeScript leaves with
-zero runtime dependencies. The rest layer upward, each adding one concern:
-Effect service semantics, platform I/O adapters, a CLI runtime, or a
-server-side framework.
+eleven packages under `packages/`. Two packages are pure-TypeScript leaves
+with zero runtime dependencies. The rest layer upward, each adding one
+concern: Effect service semantics, platform I/O adapters, a CLI runtime,
+caching backends, shared configuration, an MCP server, or a test server.
 
 **Packages:**
 
@@ -50,6 +53,11 @@ server-side framework.
 | `@soda3js/client` | Effect service library (peer deps: effect, @effect/platform) | Yes |
 | `@soda3js/rest` | Batteries-included REST client (fixed platform deps) | Yes |
 | `@soda3js/cli` | Terminal client (`@effect/cli`, bin: `soda3`) | Yes |
+| `@soda3js/cache` | Response caching (MemoryCache, BrowserCache, cache key builder) | Yes |
+| `@soda3js/cache-fs` | Filesystem cache (XDG dirs, Effect Layer) | Yes |
+| `@soda3js/cache-sqlite` | SQLite cache (Effect SQL, migrations) | Yes |
+| `@soda3js/config` | Shared XDG directory resolution, TOML config loading | Yes |
+| `@soda3js/mcp` | MCP server for AI agent dataset discovery/querying (bin: `soda3-mcp`) | Yes |
 | `@soda3js/server` | Internal integration test harness (private) | No |
 
 **SODA API dual-mode operation:**
@@ -105,10 +113,34 @@ management, domain/profile resolution, and TTY-aware output formatting
 (table, json, ndjson, csv). Uses `@soda3js/client` directly with
 `NodeHttpClient.layerUndici`.
 
-### Phase 5 Pending — Release v0.1.0
+### Phase 5 Complete — Caching, Config, MCP, Discovery, SoQL Tier 2
 
-Documentation site, e2e testing against live portals, release hardening,
-and Tier 3 SoQL functions (geospatial).
+Major additions across the monorepo:
+
+- **New package `@soda3js/config`** -- shared XDG directory resolution,
+  TOML config loading, Effect Schema definitions. Centralizes config
+  previously duplicated across `cli`, `cache-fs`, and `cache-sqlite`.
+- **New package `@soda3js/mcp`** -- MCP server with 8 tools and 3 resources
+  for AI agent dataset discovery/querying. Published as `soda3-mcp` binary.
+- **Discovery API** -- `SodaClient.discover()` endpoint querying the Socrata
+  Catalog API. Protocol types (`DiscoveryResult`, `CatalogResponse`),
+  REST method, CLI `search` command with Ink rendering.
+- **SoQL Tier 2 functions** -- 19 new functions: date extract (8), date
+  truncate (3), geospatial (3), casting (2), string (contains, length),
+  aggregate (median, count DISTINCT), builder `whereRaw()`.
+- **Typed results** -- `SodaClient.query()` accepts optional Schema for
+  row-level validation. `SodaParseError` for validation failures.
+  `Soda3Client.execute()` builder method in REST.
+- **Response hooks** -- `ResponseHook`/`ResponseHooks` for response lifecycle
+  tapping.
+- **Ink-based CLI output** -- React/Ink components for `Table`, `SearchResults`,
+  `MetadataView`, `ErrorView`, `Spinner`. Lazy-loaded via `renderInk()`.
+- **Integration tests** -- fixtures for 4 portals, integration tests across
+  client/rest/cli/server, CI e2e workflow.
+
+### Phase 6 Pending — Release v0.1.0
+
+Documentation site, release hardening, and remaining test coverage.
 
 ---
 
@@ -167,16 +199,19 @@ Leaves are at the top. Arrows point from consumer to dependency.
 @soda3js/soql       @soda3js/protocol        (leaves, pure TS, zero deps)
     ^    ^                ^    ^
     |    |                |    |
-    |    +----------+     |    |
-    |               |     |    |
-@soda3js/client ----+-----+    (Effect service lib, peer deps)
-    ^    ^
-    |    |
-    |  @soda3js/rest           (batteries-included, fixed deps)
-    |
-@soda3js/cli                   (terminal client)
-
-@soda3js/server                (private test harness, standalone)
+    |    +----------+     |    +--------+--------+
+    |               |     |             |        |
+@soda3js/client ----+-----+    @soda3js/cache    |   (Effect service lib)
+    ^    ^    ^                    ^    ^         |
+    |    |    |                    |    |         |
+    |    |    +---@soda3js/mcp    |    |         |
+    |    |              |         |    |         |
+    |  @soda3js/rest    |   @soda3js/cache-fs    |
+    |                   |   @soda3js/cache-sqlite |
+    |                   |         |              |
+@soda3js/cli            +----+----+--> @soda3js/config
+                                          ^
+@soda3js/server                           (private test harness, standalone)
 ```
 
 **Key relationships:**
@@ -189,8 +224,16 @@ Leaves are at the top. Arrows point from consumer to dependency.
 - `rest` depends on `client` and re-exports `SoQL`. It bundles all platform
   adapters as fixed dependencies and provides conditional exports for Node, Bun,
   and browser.
-- `cli` depends on `client` and `soql` directly, wires its own HttpClient layer
-  (Node undici), and reads auth from TOML profiles.
+- `cli` depends on `client`, `soql`, and `config` directly, wires its own
+  HttpClient layer (Node undici), and reads auth from TOML profiles via
+  `Soda3Config`.
+- `cache` depends on `protocol` for `CacheStore` interface. `cache-fs` and
+  `cache-sqlite` depend on `protocol` and `config` (for XDG paths).
+- `config` depends on `effect` (for Schema) and `smol-toml`. Provides shared
+  XDG directory resolution and TOML config loading used by `cli`, `mcp`,
+  `cache-fs`, and `cache-sqlite`.
+- `mcp` depends on `client`, `soql`, and `config`. Uses MCP SDK for protocol
+  handling.
 - `server` is standalone with no workspace dependencies. It is a pure Node.js
   HTTP server used only for integration testing.
 
@@ -365,13 +408,20 @@ commands (`query`, `export`, `meta`, `config`), TOML profile management,
 domain/profile resolution, and TTY-aware output formatting (table, json,
 ndjson, csv).
 
-### Phase 5 — Full Release v0.1.0 (Pending)
+### Phase 5 — Caching + Config + MCP + Discovery + SoQL Tier 2 (Complete)
 
-Documentation site, e2e testing against live portals, release hardening,
-and Tier 3 SoQL functions (geospatial).
+Response caching across three backends (memory, filesystem, SQLite). Shared
+`@soda3js/config` package. `@soda3js/mcp` server for AI agents. Discovery
+API and CLI `search` command. SoQL Tier 2 functions (date, geospatial,
+casting). Typed query results with Schema validation. Ink-based CLI output
+components. Integration tests with 4-portal fixtures.
+
+### Phase 6 — Full Release v0.1.0 (Pending)
+
+Documentation site, remaining test coverage, release hardening.
 
 ---
 
-**Document Status:** Current — reflects Phases 1–4 complete.
+**Document Status:** Current -- reflects Phases 1-5 complete.
 
-**Next update:** When Phase 5 release work begins.
+**Next update:** When Phase 6 release work begins.

@@ -115,9 +115,10 @@ export function not(condition: Expression): UnaryOp {
 // Aggregate
 // ---------------------------------------------------------------------------
 
-export function count(col: string | Expression): FunctionCall {
+export function count(col: string | Expression, options?: { distinct?: boolean }): FunctionCall {
 	const arg = typeof col === "string" && col === "*" ? raw("*") : toExpression(col);
-	return functionCall("count", [arg]);
+	const name = options?.distinct ? "__count_distinct" : "count";
+	return functionCall(name, [arg]);
 }
 
 export function sum(col: string | Expression): FunctionCall {
@@ -175,6 +176,46 @@ export function div(left: string | number | Expression, right: string | number |
 }
 
 // ---------------------------------------------------------------------------
+// Geospatial
+// ---------------------------------------------------------------------------
+
+export function withinCircle(col: string | Expression, lat: number, lng: number, radiusMeters: number): FunctionCall {
+	return functionCall("within_circle", [toExpression(col), literal(lat), literal(lng), literal(radiusMeters)]);
+}
+
+export function withinBox(
+	col: string | Expression,
+	nwLat: number,
+	nwLng: number,
+	seLat: number,
+	seLng: number,
+): FunctionCall {
+	return functionCall("within_box", [
+		toExpression(col),
+		literal(nwLat),
+		literal(nwLng),
+		literal(seLat),
+		literal(seLng),
+	]);
+}
+
+export function distanceInMeters(point1: string | Expression, point2: string | Expression): FunctionCall {
+	return functionCall("distance_in_meters", [toExpression(point1), toExpression(point2)]);
+}
+
+// ---------------------------------------------------------------------------
+// Type Casting
+// ---------------------------------------------------------------------------
+
+export function toNumber(col: string | Expression): FunctionCall {
+	return functionCall("to_number", [toExpression(col)]);
+}
+
+export function toText(col: string | Expression): FunctionCall {
+	return functionCall("to_text", [toExpression(col)]);
+}
+
+// ---------------------------------------------------------------------------
 // Case
 // ---------------------------------------------------------------------------
 
@@ -185,4 +226,76 @@ export interface CaseWhen {
 
 export function case_(branches: ReadonlyArray<CaseWhen>, elseExpr: Expression): FunctionCall {
 	return functionCall("__case", [...branches.flatMap((b) => [b.when, b.result]), elseExpr]);
+}
+
+// ---------------------------------------------------------------------------
+// Date/Time Extract
+// ---------------------------------------------------------------------------
+
+export function dateExtractY(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_y", [toExpression(col)]);
+}
+
+export function dateExtractM(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_m", [toExpression(col)]);
+}
+
+export function dateExtractD(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_d", [toExpression(col)]);
+}
+
+export function dateExtractHH(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_hh", [toExpression(col)]);
+}
+
+export function dateExtractMM(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_mm", [toExpression(col)]);
+}
+
+export function dateExtractSS(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_ss", [toExpression(col)]);
+}
+
+export function dateExtractDow(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_dow", [toExpression(col)]);
+}
+
+export function dateExtractWoy(col: string | Expression): FunctionCall {
+	return functionCall("date_extract_woy", [toExpression(col)]);
+}
+
+// ---------------------------------------------------------------------------
+// Date/Time Truncate
+// ---------------------------------------------------------------------------
+
+export function dateTruncY(col: string | Expression): FunctionCall {
+	return functionCall("date_trunc_y", [toExpression(col)]);
+}
+
+export function dateTruncYM(col: string | Expression): FunctionCall {
+	return functionCall("date_trunc_ym", [toExpression(col)]);
+}
+
+export function dateTruncYMD(col: string | Expression): FunctionCall {
+	return functionCall("date_trunc_ymd", [toExpression(col)]);
+}
+
+// ---------------------------------------------------------------------------
+// Additional String
+// ---------------------------------------------------------------------------
+
+export function contains(col: string | Expression, substring: string): FunctionCall {
+	return functionCall("contains", [toExpression(col), literal(substring)]);
+}
+
+export function length(col: string | Expression): FunctionCall {
+	return functionCall("length", [toExpression(col)]);
+}
+
+// ---------------------------------------------------------------------------
+// Additional Aggregate
+// ---------------------------------------------------------------------------
+
+export function median(col: string | Expression): FunctionCall {
+	return functionCall("median", [toExpression(col)]);
 }

@@ -1,12 +1,13 @@
 import type { HttpClient } from "@effect/platform";
 import { FetchHttpClient } from "@effect/platform";
-import type { DatasetMetadata } from "@soda3js/client";
+import type { CatalogResponse, DatasetMetadata } from "@soda3js/client";
 import { SodaClient, SodaClientConfig } from "@soda3js/client";
 import type { CacheStore } from "@soda3js/protocol";
+import type { SoQLBuilder } from "@soda3js/soql";
 import { SoQL } from "@soda3js/soql";
 import { Effect, Layer, Stream } from "effect";
 
-export type { DatasetMetadata } from "@soda3js/client";
+export type { CatalogResponse, DatasetMetadata } from "@soda3js/client";
 
 type SortDirection = "ASC" | "DESC";
 
@@ -77,11 +78,31 @@ export class Soda3ClientBase {
 			soql = soql.orderBy(col, dir);
 		}
 
-		return this.run((soda) => soda.query(this.domain, datasetId, soql).pipe(Effect.orDie));
+		return this.run((soda) => soda.query(this.domain, datasetId, soql).pipe(Effect.orDie)) as Promise<
+			ReadonlyArray<Record<string, unknown>>
+		>;
+	}
+
+	execute<T = Record<string, unknown>>(datasetId: string, builder: SoQLBuilder): Promise<ReadonlyArray<T>> {
+		return this.run((soda) => soda.query(this.domain, datasetId, builder).pipe(Effect.orDie)) as Promise<
+			ReadonlyArray<T>
+		>;
 	}
 
 	metadata(datasetId: string): Promise<DatasetMetadata> {
 		return this.run((soda) => soda.metadata(this.domain, datasetId).pipe(Effect.orDie));
+	}
+
+	discover(params: {
+		q?: string;
+		domains?: string[];
+		categories?: string[];
+		tags?: string[];
+		only?: string[];
+		limit?: number;
+		offset?: number;
+	}): Promise<CatalogResponse> {
+		return this.run((soda) => soda.discover(params).pipe(Effect.orDie));
 	}
 
 	async *queryAll(datasetId: string, options: QueryOptions = {}): AsyncIterableIterator<Record<string, unknown>> {

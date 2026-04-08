@@ -1,0 +1,19 @@
+{
+  "dataset_id": "yitu-d5am",
+  "portal": "data.sfgov.org",
+  "recorded_at": "2026-04-07T00:00:00.000Z",
+  "latency_ms": 120,
+  "auth": { "required": false, "token_used": false },
+  "request": {
+    "method": "GET",
+    "path": "/api/views/yitu-d5am.json",
+    "headers": {},
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "content_type": "application/json",
+    "headers": {},
+    "body_file": "GET--api--views--yitu-d5am-json.body.json"
+  }
+}

@@ -1,6 +1,9 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.4.9/schema.json",
 	"extends": ["@savvy-web/lint-staged/biome/silk.jsonc"],
+	"files": {
+		"includes": ["!__fixtures__/**/*.csv"]
+	},
 	"overrides": [
 		{
 			// useImportExtensions rewrites .json to .js on JSON import assertions, breaking them
