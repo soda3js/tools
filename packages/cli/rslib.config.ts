@@ -5,6 +5,7 @@ export default NodeLibraryBuilder.create({
 	externals: ["effect", "@effect/cli", "@effect/platform", "@effect/platform-node", "smol-toml", "ink", "react"],
 	plugins: [pluginReact()],
 	apiModel: {
+		localPaths: ["../../website/lib/models/cli"],
 		suppressWarnings: [{ messageId: "ae-forgotten-export", pattern: "_base" }],
 		tsdoc: {
 			tagDefinitions: [{ tagName: "@since", syntaxKind: "block" }],

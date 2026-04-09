@@ -23,7 +23,7 @@
 			"userDocs": {
 				"readme": "packages/soql/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/soql"
 			}
 		},
 		"client": {
@@ -34,7 +34,7 @@
 			"userDocs": {
 				"readme": "packages/client/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/client"
 			}
 		},
 		"cli": {
@@ -45,7 +45,7 @@
 			"userDocs": {
 				"readme": "packages/cli/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/cli"
 			}
 		},
 		"server": {
@@ -67,7 +67,7 @@
 			"userDocs": {
 				"readme": "packages/protocol/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/protocol"
 			}
 		},
 		"cache": {
@@ -78,7 +78,7 @@
 			"userDocs": {
 				"readme": "packages/cache/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/cache"
 			}
 		},
 		"cache-fs": {
@@ -111,7 +111,7 @@
 			"userDocs": {
 				"readme": "packages/rest/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/rest"
 			}
 		},
 		"config": {
@@ -122,7 +122,7 @@
 			"userDocs": {
 				"readme": "packages/config/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/config"
 			}
 		},
 		"mcp": {
@@ -133,7 +133,7 @@
 			"userDocs": {
 				"readme": "packages/mcp/README.md",
 				"repoDocs": null,
-				"siteDocs": null
+				"siteDocs": "website/docs/mcp"
 			}
 		},
 		"workflow": {

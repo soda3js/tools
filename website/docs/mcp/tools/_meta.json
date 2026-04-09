@@ -1,0 +1,10 @@
+[
+	"search-datasets",
+	"get-metadata",
+	"get-columns",
+	"preview-dataset",
+	"query-dataset",
+	"summarize-column",
+	"list-domains",
+	"help"
+]

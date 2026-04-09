@@ -1,0 +1,31 @@
+[
+	{
+		"type": "section-header",
+		"label": "Getting Started"
+	},
+	{
+		"type": "file",
+		"name": "../cli.mdx",
+		"label": "Introduction"
+	},
+	"installation",
+	"configuration",
+	{
+		"type": "dir-section-header",
+		"name": "commands",
+		"label": "Commands"
+	},
+	{
+		"type": "section-header",
+		"label": "Reference"
+	},
+	"output-formats",
+	"architecture",
+	"examples",
+	{
+		"type": "dir",
+		"name": "api",
+		"label": "API Reference",
+		"collapsed": true
+	}
+]

@@ -5,3 +5,11 @@ autoInstallPeers: true
 configDependencies:
   "@savvy-web/pnpm-plugin-silk": 0.11.0+sha512-uvL2j/021Je7LsgFjTdO7kGkeE2uFUSWJFtIQJciESAIGXHlKxvFrVQ+PhQ4ScGGeTXfUyoTqHFKTM2UrgpRZA==
 loglevel: info
+overrides:
+  '@isaacs/brace-expansion': ^5.0.1
+  lodash: ^4.17.23
+  markdown-it: ^14.1.1
+  minimatch: '>=10.2.3'
+  rspress-plugin-api-extractor: link:../../spencerbeggs/rspress-plugin-api-extractor/plugin/dist/dev
+  smol-toml: '>=1.6.1'
+  tmp: ^0.2.4

@@ -1,0 +1,15 @@
+[
+	{
+		"type": "file",
+		"name": "../client.mdx",
+		"label": "Introduction"
+	},
+	"guide",
+	"caching",
+	{
+		"type": "dir",
+		"name": "api",
+		"label": "API Reference",
+		"collapsed": true
+	}
+]

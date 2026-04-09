@@ -36,3 +36,8 @@ pnpm-release.json
 .playwright-mcp
 .mcp.json
 docs/superpowers
+
+# Website build artifacts
+website/lib/models/**/*
+website/docs/*/api/**/*
+website/api-docs-snapshot.db*

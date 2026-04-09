@@ -12,6 +12,7 @@ export default NodeLibraryBuilder.create({
 		"better-sqlite3",
 	],
 	apiModel: {
+		localPaths: ["../../website/lib/models/cache-sqlite"],
 		suppressWarnings: [{ messageId: "ae-forgotten-export", pattern: "_base" }],
 		tsdoc: {
 			tagDefinitions: [{ tagName: "@since", syntaxKind: "block" }],
