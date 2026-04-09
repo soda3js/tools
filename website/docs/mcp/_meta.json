@@ -1,0 +1,30 @@
+[
+	{
+		"type": "section-header",
+		"label": "Getting Started"
+	},
+	{
+		"type": "file",
+		"name": "../mcp.mdx",
+		"label": "Introduction"
+	},
+	"setup",
+	{
+		"type": "dir-section-header",
+		"name": "tools",
+		"label": "Tools"
+	},
+	{
+		"type": "section-header",
+		"label": "Reference"
+	},
+	"resources",
+	"integration",
+	"examples",
+	{
+		"type": "dir",
+		"name": "api",
+		"label": "API Reference",
+		"collapsed": true
+	}
+]

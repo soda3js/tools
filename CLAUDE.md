@@ -15,7 +15,8 @@ full issue/spec/board workflow expected in every session.
 
 ## Project Structure
 
-Monorepo with eleven packages under `packages/`:
+Monorepo with eleven packages under `packages/` plus a documentation website
+under `website/`:
 
 | Package | Purpose | Published |
 | --- | --- | --- |
@@ -30,6 +31,7 @@ Monorepo with eleven packages under `packages/`:
 | `@soda3js/cache-fs` | Filesystem cache (XDG dirs, Effect Layer) | Yes |
 | `@soda3js/cache-sqlite` | SQLite cache (Effect SQL, migrations) | Yes |
 | `@soda3js/server` | Replay/record/chaos test server (Node, Vitest plugin) | No (private) |
+| `@soda3js/docs` | RSPress v2 documentation website with auto-generated API reference | No (private) |
 
 Dependency graph: `soql` and `protocol` are leaves (zero deps).
 `config` depends on `effect` + `smol-toml` (XDG dirs, TOML config).
@@ -51,6 +53,7 @@ runtime deps (optional peer: `vitest`).
 - **Versioning:** `@savvy-web/changesets` with fixed versioning across `soql`, `protocol`, `client`, `rest`, `cli`, `config`, `mcp`, `cache`, `cache-fs`, `cache-sqlite`
 - **Commits:** Husky + lint-staged + commitlint (DCO signoff required)
 - **Builders:** `@savvy-web/rslib-builder` for all packages
+- **Documentation site:** RSPress v2 (`website/`) with `rspress-plugin-api-extractor` for auto-generated API docs
 
 ## Build System (rslib-builder)
 
@@ -66,6 +69,12 @@ Source `package.json` files have `"private": true` intentionally. The
 
 Do not remove `private: true` from source package.json files or manually
 edit export paths. The `dist/npm/package.json` is the published artifact.
+
+Each package's `rslib.config.ts` includes `apiModel.localPaths` pointing to
+`website/lib/models/{pkg}/`. At build time, rslib-builder copies API Extractor
+`.api.json` models, `package.json`, and `tsconfig.json` into these directories.
+The website's RSPress config reads them to generate per-package API reference
+pages. The copied model files are gitignored (`website/lib/models/**/*`).
 
 ## Conventions
 
@@ -84,6 +93,14 @@ pnpm test                     # Run all tests
 pnpm lint                     # Check with Biome
 pnpm lint:fix                 # Fix with Biome
 pnpm typecheck                # TypeScript check (tsgo)
+```
+
+Website commands (run from `website/`):
+
+```bash
+pnpm dev                      # Start RSPress dev server (builds packages first)
+pnpm build                    # Production build
+pnpm preview                  # Preview production build
 ```
 
 ## Root-Level Scripts

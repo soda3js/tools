@@ -3,6 +3,7 @@ import { NodeLibraryBuilder } from "@savvy-web/rslib-builder";
 export default NodeLibraryBuilder.create({
 	externals: ["effect", "@effect/platform", "@effect/platform-node", "@modelcontextprotocol/sdk", "smol-toml", "zod"],
 	apiModel: {
+		localPaths: ["../../website/lib/models/mcp"],
 		suppressWarnings: [{ messageId: "ae-forgotten-export", pattern: "_base" }],
 		tsdoc: {
 			tagDefinitions: [{ tagName: "@since", syntaxKind: "block" }],

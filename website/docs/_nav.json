@@ -1,0 +1,59 @@
+[
+	{
+		"text": "Guide",
+		"link": "/guide/start/introduction",
+		"activeMatch": "^/guide/"
+	},
+	{
+		"text": "REST",
+		"link": "/rest",
+		"activeMatch": "^/rest"
+	},
+	{
+		"text": "CLI",
+		"link": "/cli",
+		"activeMatch": "^/cli"
+	},
+	{
+		"text": "MCP",
+		"link": "/mcp",
+		"activeMatch": "^/mcp"
+	},
+	{
+		"text": "Packages",
+		"items": [
+			{
+				"text": "@soda3js/rest",
+				"link": "/rest"
+			},
+			{
+				"text": "@soda3js/cli",
+				"link": "/cli"
+			},
+			{
+				"text": "@soda3js/mcp",
+				"link": "/mcp"
+			},
+			{
+				"text": "@soda3js/soql",
+				"link": "/soql"
+			},
+			{
+				"text": "@soda3js/protocol",
+				"link": "/protocol"
+			},
+			{
+				"text": "@soda3js/client",
+				"link": "/client"
+			},
+			{
+				"text": "@soda3js/config",
+				"link": "/config"
+			},
+			{
+				"text": "@soda3js/cache",
+				"link": "/cache"
+			}
+		]
+	}
+]

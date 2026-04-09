@@ -1,0 +1,14 @@
+[
+	{
+		"type": "file",
+		"name": "../protocol.mdx",
+		"label": "Introduction"
+	},
+	"reference",
+	{
+		"type": "dir",
+		"name": "api",
+		"label": "API Reference",
+		"collapsed": true
+	}
+]

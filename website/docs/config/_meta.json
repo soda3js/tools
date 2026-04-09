@@ -1,0 +1,15 @@
+[
+	{
+		"type": "file",
+		"name": "../config.mdx",
+		"label": "Introduction"
+	},
+	"guide",
+	"config-file",
+	{
+		"type": "dir",
+		"name": "api",
+		"label": "API Reference",
+		"collapsed": true
+	}
+]

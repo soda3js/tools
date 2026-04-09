@@ -1,0 +1,14 @@
+[
+	{
+		"type": "file",
+		"name": "../soql.mdx",
+		"label": "Introduction"
+	},
+	"guide",
+	{
+		"type": "dir",
+		"name": "api",
+		"label": "API Reference",
+		"collapsed": true
+	}
+]

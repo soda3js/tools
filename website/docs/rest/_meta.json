@@ -1,0 +1,32 @@
+[
+	{
+		"type": "section-header",
+		"label": "Getting Started"
+	},
+	{
+		"type": "file",
+		"name": "../rest.mdx",
+		"label": "Introduction"
+	},
+	"quick-start",
+	"platform-setup",
+	{
+		"type": "section-header",
+		"label": "Usage"
+	},
+	"querying",
+	"streaming",
+	"metadata-discovery",
+	"data-export",
+	{
+		"type": "section-header",
+		"label": "Reference"
+	},
+	"configuration",
+	{
+		"type": "dir",
+		"name": "api",
+		"label": "API Reference",
+		"collapsed": true
+	}
+]
