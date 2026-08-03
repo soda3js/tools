@@ -1,6 +1,6 @@
 {
 	"name": "@soda3js/cache",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"private": true,
 	"description": "Response caching for the Socrata SODA3 API",
 	"repository": {
